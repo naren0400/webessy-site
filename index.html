@@ -6,6 +6,8 @@
 <title>Website Design &amp; Development in Bengaluru | Webessy Studios</title>
 <meta name="description" content="We build fast, custom websites that make people choose you. Scroll animation, 3D and design built from scratch. From ₹6,499. Based in Bengaluru.">
 <meta name="theme-color" content="#05060F">
+<!-- font preload only on a real web address; opened from disk (file://) Chrome refuses it with a CORS error -->
+<script>if(location.protocol!=='file:'){var l=document.createElement('link');l.rel='preload';l.as='font';l.type='font/woff2';l.crossOrigin='anonymous';l.href='fonts/fraunces-opsz-normal.woff2';document.head.appendChild(l);}</script>
 <link rel="stylesheet" href="css/site.css">
 <noscript><style>html.intro-lock,html.intro-lock body{overflow:auto;height:auto}#intro{display:none}#nav{opacity:1}#navMark{visibility:visible}#headline{opacity:1}</style></noscript>
 </head>
@@ -36,14 +38,95 @@
     </div>
   </section>
 
-  <section id="work" class="section">
-    <small>02 &mdash; WORK</small>
-    <h2>Yauvana Estate case study goes here.</h2>
-    <p>Placeholder. The work, services, process, about and contact sections from WEBSITE-CONTENT.md are the next build.</p>
+  <!-- 02 WORK — title pinned left, screenshots scroll in on the right -->
+  <section id="work" class="work" aria-labelledby="work-title">
+    <div class="container">
+      <div class="work__top">
+        <div class="work__pin">
+          <p class="label reveal">02 / Work</p>
+          <h2 id="work-title" class="display work__title reveal">Work</h2>
+          <div class="work__project reveal">
+            <h3 class="h3">Yauvana Estate</h3>
+            <p class="work__meta">Premium plotted land · Thirthahalli, Malnad</p>
+            <p class="label tag">Self-initiated project</p>
+          </div>
+        </div>
+
+        <!-- Swap each placeholder for <img src width height alt loading="lazy">. Alt text is in WEBSITE-CONTENT.md §7. -->
+        <div class="work__media">
+          <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — desktop hero]</div></figure>
+          <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — 3D layout model, mid-interaction]</div></figure>
+          <div class="shot-pair">
+            <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — scroll sequence, frame 1]</div></figure>
+            <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — scroll sequence, frame 2]</div></figure>
+          </div>
+          <div class="shot-row">
+            <figure class="shot shot--phone"><div class="shot__ph label">[TODO: Yauvana screenshot — whole page on a phone]</div></figure>
+            <figure class="shot shot--form"><div class="shot__ph label">[TODO: Yauvana screenshot — enquiry form]</div></figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="case">
+        <div class="case__block">
+          <h4 class="label reveal">The problem</h4>
+          <div class="case__body prose reveal">
+            <p class="case__lead">Land buyers in Malnad cannot see what they are buying.</p>
+            <p>Plots are sold from a paper layout and a site visit that eats a whole day. Most property sites in the region are a photo gallery and a phone number. They show the land as it is today — trees, mud, a boundary stone. They do not show what it becomes.</p>
+            <p>So the buyer is asked to imagine, and then to trust. Most of them do neither.</p>
+          </div>
+        </div>
+        <div class="case__block">
+          <h4 class="label reveal">The decision</h4>
+          <div class="case__body prose reveal">
+            <p class="case__lead">Photographs were the wrong proof.</p>
+            <p>You cannot photograph a house that has not been built. For plotted land, the product is the future, not the present — which means renders and a 3D model are the honest way to show it, not decoration on top of photos.</p>
+            <p>That one decision shaped the whole build.</p>
+          </div>
+        </div>
+        <div class="case__block">
+          <h4 class="label reveal">What was built</h4>
+          <ul class="case__body built reveal">
+            <li>A scroll-driven image sequence that moves through the estate as you read, so the land reveals itself instead of sitting in a gallery</li>
+            <li>An interactive 3D layout model — buyers can turn the layout and look at it from any angle, instead of squinting at a flat PDF</li>
+            <li>An enquiry form wired to deliver straight to the seller, no dashboard, no middleman</li>
+            <li>Motion built with GSAP and Lenis, so scrolling feels considered rather than mechanical</li>
+            <li>Built, deployed and hosted end to end</li>
+          </ul>
+        </div>
+        <div class="case__block">
+          <h4 class="label reveal">What it proves</h4>
+          <div class="case__body prose reveal">
+            <p>Everything above is running, not mocked up. The 3D model, the scroll sequence and the motion are the parts most local studios will not attempt, and they are the parts that make a buyer stay long enough to enquire.</p>
+            <p class="case__kicker">The estate is a concept. The craft is not.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="work__live">
+        <h3 class="display work__live-title reveal">You are looking at one of them.</h3>
+        <div class="prose reveal">
+          <p>The logo you watched draw itself at the top of this page is not a video.</p>
+          <p>It is vector and canvas — the outline traced by a point of light, dust pulled in and absorbed, ink rising into the letterforms. A few kilobytes instead of the twenty megabytes a video would have cost, sharp on every screen, and it loads before a video would have finished buffering.</p>
+          <p class="case__kicker">That is the standard. Not “it looks nice on my laptop.”</p>
+        </div>
+      </div>
+
+      <div class="work__early">
+        <h3 class="display early-line"><span class="reveal">We are <em>early</em>.</span> <span class="reveal">That is the offer.</span></h3>
+        <div class="early-body prose reveal">
+          <p>Webessy is new. That is not a disclaimer, it is the reason to work with us now.</p>
+          <p>Early clients get the whole of our attention, not a slot in a queue. They get the pricing of a studio that is building its name, and the work of one that intends to keep it. In a year, both of those change.</p>
+          <p class="case__kicker">If you want a studio that treats your project like it matters, catch us early.</p>
+        </div>
+      </div>
+    </div>
   </section>
   <section id="services" class="section"><small>03 &mdash; WHAT WE DO</small><h2>From ₹6,499.</h2><p>Placeholder.</p></section>
   <section id="contact" class="section"><small>06 &mdash; CONTACT</small><h2>Let's talk.</h2><p>Placeholder.</p></section>
 </main>
+
+<a id="waFloat" class="btn btn--primary wa-float" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Message on WhatsApp</a>
 
 <div id="intro" aria-hidden="true">
   <div id="introBg"></div>
@@ -90,5 +173,7 @@
 <script src="js/gsap.min.js"></script>
 <script src="js/intro.js"></script>
 <script src="js/hero.js"></script>
+<script src="js/ScrollTrigger.min.js"></script>
+<script src="js/sections.js"></script>
 </body>
 </html>

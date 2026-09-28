@@ -3,6 +3,49 @@
    Palette taken from the hero footage. Orange is the only warm colour and is
    reserved for the call to action and the words "unfair advantage".
    ========================================================================== */
+
+/* ---------- fonts (self-hosted, SIL Open Font License — see fonts/OFL-*.txt) ---------- */
+/* latin files hold the basics; the small -ext files carry the ₹ sign and only load when it is used */
+@font-face {
+  font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url("../fonts/fraunces-opsz-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url("../fonts/fraunces-opsz-normal-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Fraunces"; font-style: italic; font-weight: 100 900; font-display: swap;
+  src: url("../fonts/fraunces-opsz-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../fonts/instrument-sans-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../fonts/instrument-sans-400-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Instrument Sans"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("../fonts/instrument-sans-500.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Instrument Sans"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("../fonts/instrument-sans-500-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../fonts/jetbrains-mono-400.woff2") format("woff2");
+}
+
 :root {
   --bg: #05060F;
   --deep: #1B1F5E;
@@ -12,10 +55,28 @@
   --ink: #ECEAFB;
   --muted: rgba(236, 234, 251, .62);
   --orange: #FF561D;
+  --hair: rgba(236, 234, 251, .12);
+  --surface: #0B0C18;
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  --t-display: clamp(44px, 6.2vw, 96px);
+  --t-h3: clamp(24px, 2.4vw, 34px);
+  --t-price: clamp(56px, 8vw, 120px);
+  --t-body: 16px;
+  --t-small: 14px;
+  --t-label: 11.5px;
+
+  --gutter: clamp(20px, 5vw, 64px);
+  --gap: clamp(16px, 2vw, 28px);
+  --section-pad: clamp(96px, 14vh, 180px);
 }
+@media (min-width: 720px) { :root { --t-body: 17px; } }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { background: var(--bg); color: var(--ink); }
-body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 html.intro-lock, html.intro-lock body { overflow: hidden; height: 100%; }
 
@@ -77,7 +138,7 @@ html.nav-done #navMark { visibility: visible; }
   padding: 26px 30px 24px; border-radius: 28px; text-align: center;
   opacity: 0; transform: translate(-50%, 24px);
 }
-#headline h1 { font-size: clamp(26px, 4.2vw, 50px); font-weight: 500; letter-spacing: -.022em; line-height: 1.06; text-wrap: balance; }
+#headline h1 { font-family: var(--font-display); font-size: clamp(26px, 4.2vw, 50px); font-weight: 500; letter-spacing: -.022em; line-height: 1.06; text-wrap: balance; }
 #headline.side { text-align: left; padding: 26px 28px 24px; }
 #headline.side h1 { font-size: clamp(26px, 2.7vw, 42px); }
 #headline p { margin-top: 12px; color: var(--muted); font-size: clamp(14px, 1.4vw, 17px); }
@@ -88,18 +149,118 @@ html.nav-done #navMark { visibility: visible; }
   font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--muted);
 }
 
-/* ---------- placeholder sections ---------- */
-.section {
-  position: relative; min-height: 90vh; padding: 20vh 8vw; overflow: hidden;
-  border-top: 1px solid rgba(142, 124, 255, .12);
-  background:
-    radial-gradient(60vw 40vw at 15% 20%, rgba(91, 63, 217, .16), transparent 70%),
-    radial-gradient(50vw 35vw at 85% 80%, rgba(61, 123, 255, .10), transparent 70%),
-    var(--bg);
-}
-.section small { letter-spacing: .3em; font-size: 11px; color: var(--muted); }
-.section h2 { margin-top: 14px; font-size: clamp(28px, 4vw, 54px); font-weight: 500; letter-spacing: -.02em; max-width: 16ch; line-height: 1.05; }
+/* ---------- placeholder sections (03 and 06 until they are built) ---------- */
+.section { position: relative; min-height: 90vh; padding: 20vh 8vw; border-top: 1px solid var(--hair); }
+.section small { font-family: var(--font-mono); letter-spacing: .14em; font-size: var(--t-label); color: var(--muted); }
+.section h2 { margin-top: 14px; font-family: var(--font-display); font-size: clamp(28px, 4vw, 54px); font-weight: 400; letter-spacing: -.02em; max-width: 16ch; line-height: 1.05; }
 .section p { margin-top: 18px; color: var(--muted); max-width: 52ch; line-height: 1.6; }
+
+/* ==========================================================================
+   Sections 02 to 06 — shared pieces
+   Below the hero the page is near-black. Orange is the only accent.
+   ========================================================================== */
+.container { width: 100%; max-width: calc(1240px + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+.label {
+  font-family: var(--font-mono); font-weight: 400; font-size: var(--t-label); line-height: 1.2;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.display {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-display);
+  line-height: 1; letter-spacing: -.025em; font-variation-settings: "opsz" 144;
+}
+.h3 {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-h3);
+  line-height: 1.15; letter-spacing: -.015em;
+}
+.display em, .h3 em { font-style: italic; }
+.prose p { font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 62ch; }
+.prose p + p { margin-top: 1em; }
+
+/* buttons — pill; one primary per section */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 22px; border-radius: 999px; border: 1px solid transparent;
+  font: 500 15px/1.2 var(--font-body); cursor: pointer;
+  transition: filter .2s ease, border-color .2s ease;
+}
+.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.btn--primary { background: var(--orange); color: #0C0C0A; }
+.btn--primary:hover { filter: brightness(1.08); }
+.btn--ghost { background: transparent; color: var(--ink); border-color: var(--hair); }
+.btn--ghost:hover { border-color: var(--muted); }
+
+/* sticky WhatsApp button — phones only, bottom-left so the hero's bottom-right stays clear.
+   sections.js adds .is-on after the hero and removes it again at Contact. */
+.wa-float { display: none; }
+@media (max-width: 719.98px) {
+  .wa-float {
+    display: inline-flex; position: fixed; z-index: 30;
+    left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 10px 28px rgba(3, 4, 12, .55);
+    opacity: 0; visibility: hidden; transform: translateY(12px);
+    transition: opacity .3s ease, transform .3s ease, visibility 0s linear .3s;
+  }
+  .wa-float.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity .3s ease, transform .3s ease; }
+}
+@media (prefers-reduced-motion: reduce) { .wa-float, .wa-float.is-on { transition: none; transform: none; } }
+
+/* ---------- 02 Work ---------- */
+.work { position: relative; padding-block: var(--section-pad); }
+.work__top { display: grid; gap: clamp(48px, 8vh, 80px); }
+.work__title { margin-top: 18px; }
+.work__project { margin-top: clamp(28px, 5vh, 56px); padding-top: 20px; border-top: 1px solid var(--hair); max-width: 34ch; }
+.work__meta { margin-top: 10px; font-size: var(--t-small); line-height: 1.5; color: var(--muted); }
+.tag { display: inline-block; margin-top: 16px; padding: 7px 10px 6px; border: 1px solid var(--hair); }
+
+.work__media { display: flex; flex-direction: column; gap: clamp(40px, 9vh, 112px); overflow-x: clip; }
+.shot { margin: 0; }
+.shot img { display: block; width: 100%; height: auto; }
+/* stand-in until the Yauvana screenshots arrive: same shape, visibly marked */
+.shot__ph {
+  display: grid; place-items: center; aspect-ratio: 16 / 10; padding: 20px;
+  background: var(--surface); border: 1px dashed rgba(236, 234, 251, .22);
+  text-align: center; text-transform: none; letter-spacing: .04em;
+}
+.shot--phone .shot__ph { aspect-ratio: 9 / 19.5; }
+.shot--form .shot__ph { aspect-ratio: 4 / 3; }
+.shot-pair, .shot-row { display: grid; gap: clamp(40px, 9vh, 112px); }
+.shot--phone { width: 62%; }
+
+.case { margin-top: clamp(96px, 16vh, 200px); }
+.case__block { padding-block: clamp(32px, 5vh, 56px); border-top: 1px solid var(--hair); display: grid; gap: 18px; }
+.prose .case__lead { font-family: var(--font-display); font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em; color: var(--ink); max-width: 26ch; margin-bottom: 8px; }
+.prose .case__kicker { font-family: var(--font-display); font-size: clamp(20px, 1.8vw, 26px); line-height: 1.3; margin-top: 28px; color: var(--ink); max-width: 28ch; }
+.built { list-style: none; max-width: 62ch; }
+.built li { padding-block: 14px; border-top: 1px solid var(--hair); font-size: var(--t-body); line-height: 1.55; color: var(--muted); }
+.built li:last-child { border-bottom: 1px solid var(--hair); }
+
+.work__live { margin-top: clamp(96px, 16vh, 200px); padding-top: clamp(32px, 5vh, 56px); border-top: 1px solid var(--hair); display: grid; gap: 28px; }
+.work__live-title { font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; max-width: 16ch; }
+.work__live .case__kicker { margin-top: 12px; }
+
+.work__early { margin-top: clamp(120px, 22vh, 260px); display: grid; gap: clamp(32px, 6vh, 64px); }
+.early-line { font-size: clamp(50px, 10.5vw, 168px); line-height: .95; letter-spacing: -.035em; }
+.early-line span { display: block; }
+.early-body .case__kicker { font-size: var(--t-h3); }
+
+@media (min-width: 720px) {
+  .shot-pair { grid-template-columns: 1fr 1fr; gap: var(--gap); }
+  .shot-row { grid-template-columns: 4fr 8fr; gap: var(--gap); align-items: end; }
+  .shot--phone { width: auto; }
+}
+@media (min-width: 960px) {
+  /* label and title stay pinned on the left while the screenshots scroll past on the right */
+  .work__top { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+  .work__pin { grid-column: 1 / span 4; position: sticky; top: 14vh; align-self: start; }
+  .work__media { grid-column: 6 / -1; }
+  .case__block, .work__live, .work__early { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+  .case__block > h4 { grid-column: 1 / span 3; }
+  .case__block > .case__body { grid-column: 5 / span 7; }
+  .work__live-title { grid-column: 1 / span 8; }
+  .work__live .prose { grid-column: 5 / span 7; }
+  .early-line { grid-column: 1 / -1; }
+  .early-body { grid-column: 7 / -1; }
+}
 
 /* ---------- intro (Ignition) ---------- */
 #intro { position: fixed; inset: 0; z-index: 60; overflow: hidden; }
