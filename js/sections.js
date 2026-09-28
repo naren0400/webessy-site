@@ -36,10 +36,12 @@
   gsap.registerPlugin(ScrollTrigger);
 
   /* ---------------- text reveal (all sections) ----------------
-     16px rise and fade, once, as the element comes into view. */
+     16px rise and fade, once, as the element comes into view.
+     Opacity only, never visibility: hidden, so buttons and links can still be
+     reached with the Tab key and read by screen readers before they fade in. */
   gsap.utils.toArray('.reveal').forEach(function (el) {
     gsap.from(el, {
-      y: 16, autoAlpha: 0, duration: 0.8, ease: 'power3.out',
+      y: 16, opacity: 0, duration: 0.8, ease: 'power3.out',
       scrollTrigger: { trigger: el, start: 'top 85%', once: true }
     });
   });

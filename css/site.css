@@ -149,7 +149,7 @@ html.nav-done #navMark { visibility: visible; }
   font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--muted);
 }
 
-/* ---------- placeholder sections (03 and 06 until they are built) ---------- */
+/* ---------- placeholder section (06 until it is built) ---------- */
 .section { position: relative; min-height: 90vh; padding: 20vh 8vw; border-top: 1px solid var(--hair); }
 .section small { font-family: var(--font-mono); letter-spacing: .14em; font-size: var(--t-label); color: var(--muted); }
 .section h2 { margin-top: 14px; font-family: var(--font-display); font-size: clamp(28px, 4vw, 54px); font-weight: 400; letter-spacing: -.02em; max-width: 16ch; line-height: 1.05; }
@@ -260,6 +260,116 @@ html.nav-done #navMark { visibility: visible; }
   .work__live .prose { grid-column: 5 / span 7; }
   .early-line { grid-column: 1 / -1; }
   .early-body { grid-column: 7 / -1; }
+}
+
+/* ---------- 03 What we do ---------- */
+.services { --card-pad: clamp(24px, 3vw, 44px); padding-block: var(--section-pad); }
+.services__title { margin-top: 18px; }
+.services__sub {
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(34px, 4.6vw, 64px);
+  line-height: 1.04; letter-spacing: -.02em; font-variation-settings: "opsz" 144; text-wrap: balance;
+}
+
+/* one static glow behind the pricing glass, so the glass has colour to blur. Never animated. */
+.glow-field { position: relative; isolation: isolate; }
+.glow-field::before {
+  content: ""; position: absolute; inset: -10% -5%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(40% 50% at 30% 40%, rgba(91, 63, 217, .30), transparent 70%),
+    radial-gradient(30% 40% at 75% 65%, rgba(255, 86, 29, .16), transparent 70%);
+  filter: blur(40px);
+}
+
+.plans { display: grid; gap: var(--gap); margin-top: clamp(48px, 8vh, 96px); }
+.price, .plan-card { border-radius: 16px; padding: var(--card-pad); }
+.price__head { font-family: var(--font-display); font-weight: 400; }
+.price__from { display: block; font-size: var(--t-h3); line-height: 1.15; letter-spacing: -.015em; }
+.price__from em { font-style: italic; color: var(--orange); }
+.price__num {
+  display: block; margin-top: 10px; font-size: var(--t-price); line-height: .95; letter-spacing: -.03em;
+  font-variation-settings: "opsz" 144; font-variant-numeric: lining-nums;
+}
+.price__lede { margin-top: 24px; font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 46ch; }
+.price__label { margin-top: clamp(32px, 5vh, 48px); }
+.includes { list-style: none; margin-top: 14px; }
+.includes li { padding-block: 13px; border-top: 1px solid var(--hair); font-size: var(--t-body); line-height: 1.5; }
+.includes li:last-child { border-bottom: 1px solid var(--hair); }
+.price__cta { margin-top: clamp(28px, 5vh, 40px); }
+
+.plans__side { display: grid; gap: var(--gap); }
+.plan-card p { font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 44ch; }
+.plan-card p + p { margin-top: 10px; }
+.plan-card .plan-card__lead {
+  display: block; margin: 18px 0 12px; font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(22px, 2vw, 28px); line-height: 1.2; letter-spacing: -.015em; color: var(--ink);
+}
+
+/* the two lines that protect the client — small, directly under the cards, lined up with the card text */
+.promises { display: grid; gap: 12px var(--gap); margin-top: clamp(24px, 4vh, 36px); }
+.promises p { padding-inline: var(--card-pad); font-size: var(--t-small); line-height: 1.55; color: var(--muted); }
+.promises strong { font-weight: 500; color: var(--ink); }
+
+/* what we build — plain text in four groups: no cards, no icons, no prices */
+.build { margin-top: clamp(96px, 16vh, 200px); }
+.build__groups { display: grid; gap: clamp(36px, 5vh, 48px) var(--gap); margin-top: clamp(32px, 6vh, 64px); }
+.build__group { padding-top: 18px; border-top: 1px solid var(--hair); }
+.build__group ul { list-style: none; margin-top: 20px; display: grid; gap: 10px; }
+.build__group li { font-family: var(--font-display); font-size: clamp(19px, 1.45vw, 21px); line-height: 1.25; letter-spacing: -.01em; }
+.audience { margin-top: clamp(64px, 11vh, 128px); }
+.audience__list { margin-top: 16px; font-family: var(--font-display); font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em; text-wrap: balance; }
+.audience__note { margin-top: 12px; font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 62ch; }
+
+/* what a website usually costs — full width, no card, no radius. Only the "Us" row is bright. */
+.costs { margin-top: clamp(96px, 16vh, 200px); }
+.costs__table {
+  width: 100%; margin-top: clamp(28px, 5vh, 48px); border-collapse: collapse;
+  font-size: var(--t-small); line-height: 1.5; color: var(--muted);
+}
+.costs__table th, .costs__table td { font-weight: 400; text-align: left; vertical-align: baseline; }
+.costs__table tbody th, .costs__table strong { font-weight: 500; }
+.costs__table thead th { font-family: var(--font-mono); font-size: var(--t-label); line-height: 1.2; letter-spacing: .14em; text-transform: uppercase; }
+/* prices in Fraunces: Instrument Sans has no ₹ sign, Fraunces does */
+.costs__pay { font-family: var(--font-display); font-size: var(--t-body); letter-spacing: -.005em; font-variant-numeric: lining-nums; white-space: nowrap; }
+.costs__us { color: var(--ink); }
+.costs__note {
+  margin-top: clamp(40px, 7vh, 72px); font-family: var(--font-display); font-size: clamp(24px, 2.8vw, 40px);
+  line-height: 1.2; letter-spacing: -.015em; max-width: 30ch; text-wrap: pretty;
+}
+
+/* phones: each table row becomes a stacked block (name and price on top, what you get below). No sideways scroll. */
+@media (max-width: 719.98px) {
+  .costs__table, .costs__table tbody, .costs__table tr, .costs__table th, .costs__table td { display: block; }
+  .costs__table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .costs__table tbody tr {
+    display: grid; grid-template-columns: 1fr auto; align-items: baseline; column-gap: 16px;
+    padding-block: 16px; border-top: 1px solid var(--hair);
+  }
+  .costs__table tbody tr:last-child { border-bottom: 1px solid var(--hair); }
+  .costs__table .costs__pay { text-align: right; }
+  .costs__table td:last-child { grid-column: 1 / -1; margin-top: 6px; }
+}
+@media (min-width: 720px) {
+  .plans__side, .promises { grid-template-columns: 1fr 1fr; }
+  .build__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .costs__table th, .costs__table td { padding: 20px 24px 20px 0; }
+  .costs__table thead th { padding-block: 0 14px; }
+  .costs__table tbody tr > * { border-top: 1px solid var(--hair); }
+  .costs__table tbody tr:last-child > * { border-bottom: 1px solid var(--hair); }
+  .costs__table thead td { width: 22%; }
+  .costs__table thead th:nth-child(2) { width: 26%; }
+}
+@media (min-width: 960px) {
+  /* 7/5 split: price card on the left, the two smaller cards sit lower on the right, bottoms lined up */
+  .plans, .promises { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .price, .promises p:first-child { grid-column: 1 / span 7; }
+  .plans__side, .promises p:last-child { grid-column: 8 / -1; }
+  .plans__side { grid-template-columns: none; align-self: end; }
+  .costs { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+  .costs > * { grid-column: 1 / -1; }
+  .costs .costs__note { grid-column: 5 / -1; }
+}
+@media (min-width: 1100px) {
+  .build__groups { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 /* ---------- intro (Ignition) ---------- */
