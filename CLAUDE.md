@@ -17,13 +17,20 @@ Explain everything to me in simple, plain English. Short sentences.
 ## Status
 - **DONE — FROZEN:** Ignition intro (`js/intro.js`), hero (`js/hero.js`, `js/logo3d.js`, `frames/`),
   nav. Only change these to fix a bug I report. Never refactor, restyle or "improve" them.
+  One approved nav change exists: over bone and orange sections its links show at full strength,
+  and over bone its glass is darker, so the links pass AA. It lives in the "section colours"
+  block of `css/site.css`. Nothing else in the nav changes.
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
-  Put any new motion code in a new file `js/sections.js`.
+  Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
 ## Files
 - `index.html` — the page. Placeholder sections `#work`, `#services`, `#contact` exist; replace them.
-- `css/site.css` — all styles. Palette variables and `.glass` already exist at the top. Reuse them.
+- `css/site.css` — all styles. Palette variables, the section colour themes and `.glass` are at
+  the top. Reuse them.
 - `js/gsap.min.js` (3.12.5), `js/three.min.js`, `js/logo3d.js`, `js/intro.js`, `js/hero.js`
+- `js/ScrollTrigger.min.js` (3.12.5) — scroll-linked motion
+- `js/reveal.js` — the text reveal and its splitter (see Motion below)
+- `js/sections.js` — section colours and all motion for sections 02 to 06
 - `frames/desktop/` (80 webp) and `frames/mobile/` (80 webp) — hero footage
 - `fonts/` — create it; self-hosted font files go here
 
@@ -53,17 +60,52 @@ Explain everything to me in simple, plain English. Short sentences.
 - **Fonts:** Fraunces for headings (max one italic accent word per heading), Instrument Sans
   for body and UI, JetBrains Mono for small labels such as `02 / WORK`.
   Self-host woff2 files in `fonts/` (all three are OFL licensed). No Google Fonts `<link>`.
-- **Colour:** violet and blue live in the hero only. Below the hero the page is near-black
-  `var(--bg)`. The only accent below the hero is `var(--orange)`: buttons and the words
-  "unfair advantage". No purple gradients. No gradient text.
+- **Accent word:** the one italic accent word in a heading may be orange. On bone use `#E84A12`
+  (`--orange-deep`) instead of `#FF561D`, and only in large headings (24px and up), because it
+  only reaches 3:1 there. On the orange Contact section the accent word stays ink.
+  In CSS: `color: var(--accent)` — the theme picks the right one.
+- **Colour: every section owns one background colour.**
+
+  | Section | Background | Text |
+  |---|---|---|
+  | 01 Hero | its own footage (unchanged) | unchanged |
+  | 02 Work | bone `#ECE7DA` | ink `#0C0C0A` |
+  | 03 What we do | ultramarine `#1B1F5E` | bone |
+  | 04 How it works | black `#05060F`; the 4 panels bone, orange, violet `#5B3FD9`, green `#79A643` | panels: ink, ink, bone, ink |
+  | 05 About | bone | ink |
+  | 06 Contact | orange `#FF561D` | ink |
+  | Footer | black | bone |
+
+  Each section declares its colour in the HTML: `<section data-theme="bone">` (themes: `black`,
+  `bone`, `ultramarine`, `orange`). The background blends from one colour to the next as you
+  scroll: when a section's top passes the middle of the screen, a fixed layer behind the page
+  fades to its colour (about 0.7 seconds). The text colour switches during the fade, at the
+  moment the new text colour reads better than the old one (about half-way).
+  Never tie that fade to every pixel of scroll: half-way between bone and black, neither text
+  colour passes AA, so the page must never be able to rest there.
+  Section CSS takes colours only from the theme tokens (`--fg`, `--fg-soft`, `--line`,
+  `--accent`, `--btn-bg`, `--btn-fg`). Never fixed colours.
+- **Contrast: every text/background pair must pass WCAG AA** — 4.5:1 for normal text, 3:1 for
+  text 24px and up, 3:1 for form borders and focus rings. Work the number out; don't guess.
+- **Orange** is for buttons, the words "unfair advantage", the italic accent word, the Contact
+  background and one 04 panel. **Violet** is one 04 panel and the glow behind glass. **Blue**
+  stays in the hero. No purple gradients. No gradient text.
 - **Glass (`.glass`) is allowed only in:** nav, hero (built), pricing cards, review cards.
   Nowhere else. The pricing section gets a soft static glow behind it so the glass has
-  something to refract.
+  something to refract. On bone (the 05 reviews), glass gets a light tint with ink text:
+  the dark glass turns grey on bone and fails AA.
 - **Avoid the AI look:** don't centre every section; vary the layout from section to section;
   no emoji; no icon-card grids; no identical rounded corners on everything; no words
   "unlock", "seamless", "elevate", "empower", "leverage", "cutting-edge".
 - **Motion:** subtle, scroll-driven, never decorative for its own sake.
   Always respect `prefers-reduced-motion`.
+- **Text reveal:** mark text in the HTML with `data-reveal`:
+  `"words"` for headings (the mono labels too), `"lines"` for paragraphs and lists,
+  `"chars"` only for a single big statement line. Things that aren't text (cards, tables) use
+  `class="reveal"`: a rise and fade. Text inside a card moves with its card; don't split it.
+  The splitter is our own, in `js/reveal.js`: no paid plugins (no SplitText), and GSAP stays at
+  3.12.5. Screen readers must read the text normally. With reduced motion nothing is split and
+  all text is simply there.
 
 ## Hard rules
 - **Never read, copy from, or commit `RATES.md`.** It is private and in `.gitignore`.

@@ -58,6 +58,14 @@
   --hair: rgba(236, 234, 251, .12);
   --surface: #0B0C18;
 
+  /* section palette (below the hero). The dark "ink" is --ink-dark here,
+     because --ink above is the hero's and the nav's light text colour. */
+  --bone: #ECE7DA;
+  --ink-dark: #0C0C0A;
+  --ultramarine: #1B1F5E;
+  --green: #79A643;
+  --orange-deep: #E84A12; /* the orange accent word on bone — large headings only */
+
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -79,6 +87,53 @@ html, body { background: var(--bg); color: var(--ink); }
 body { font-family: var(--font-body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 html.intro-lock, html.intro-lock body { overflow: hidden; height: 100%; }
+
+/* ---------- section colours ----------
+   Every section below the hero names its colour in the HTML: data-theme="bone".
+   The theme sets the tokens that section CSS uses:
+     --page     background              --fg       text
+     --fg-soft  secondary text          --line     hairlines
+     --accent   the one italic accent word in a heading
+     --btn-bg / --btn-fg                the main button
+   Every text colour here passes WCAG AA on its own background.
+   :root holds the black theme, so things outside a section have values too. */
+:root, [data-theme="black"] {
+  --page: var(--bg); --fg: var(--bone); --fg-soft: rgba(236, 231, 218, .62); --line: rgba(236, 231, 218, .14);
+  --accent: var(--orange); --btn-bg: var(--orange); --btn-fg: var(--ink-dark);
+}
+[data-theme="bone"] {
+  --page: var(--bone); --fg: var(--ink-dark); --fg-soft: rgba(12, 12, 10, .66); --line: rgba(12, 12, 10, .16);
+  --accent: var(--orange-deep); --btn-bg: var(--orange); --btn-fg: var(--ink-dark);
+}
+[data-theme="ultramarine"] {
+  --page: var(--ultramarine); --fg: var(--bone); --fg-soft: rgba(236, 231, 218, .66); --line: rgba(236, 231, 218, .16);
+  --accent: var(--orange); --btn-bg: var(--orange); --btn-fg: var(--ink-dark);
+}
+[data-theme="orange"] {
+  /* orange can't be the accent on orange, so the accent word stays ink, and the main button turns ink */
+  --page: var(--orange); --fg: var(--ink-dark); --fg-soft: rgba(12, 12, 10, .80); --line: rgba(12, 12, 10, .24);
+  --accent: var(--ink-dark); --btn-bg: var(--ink-dark); --btn-fg: var(--bone);
+}
+
+/* Without JavaScript each section paints its own colour, with hard edges.
+   sections.js moves the theme onto <html> instead (each section keeps its own
+   colour in data-band) and fades one fixed layer, .page-bg, behind the page. */
+body [data-theme] { background: var(--page); color: var(--fg); }
+[data-band] { color: var(--fg); }
+html.theme-live body { background: transparent; }
+.page-bg { position: fixed; left: 0; top: 0; z-index: -1; width: 100%; height: 100vh; height: 100lvh; pointer-events: none; }
+.page-bg > div { position: absolute; inset: 0; }
+
+/* The nav over bone and orange sections: links at full strength, and over bone
+   a darker glass, so the links pass AA. Nothing else in the nav changes, and
+   over the hero, 03 and black sections it looks exactly as before. */
+html[data-theme="bone"] #nav.glass {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02)),
+    rgba(12, 13, 32, .75);
+}
+html[data-theme="bone"] #nav .links,
+html[data-theme="orange"] #nav .links { color: var(--ink); }
 
 /* ---------- liquid glass ---------- */
 .glass {
@@ -150,19 +205,20 @@ html.nav-done #navMark { visibility: visible; }
 }
 
 /* ---------- placeholder section (06 until it is built) ---------- */
-.section { position: relative; min-height: 90vh; padding: 20vh 8vw; border-top: 1px solid var(--hair); }
-.section small { font-family: var(--font-mono); letter-spacing: .14em; font-size: var(--t-label); color: var(--muted); }
+.section { position: relative; min-height: 90vh; padding: 20vh 8vw; border-top: 1px solid var(--line); }
+.section small { font-family: var(--font-mono); letter-spacing: .14em; font-size: var(--t-label); color: var(--fg-soft); }
 .section h2 { margin-top: 14px; font-family: var(--font-display); font-size: clamp(28px, 4vw, 54px); font-weight: 400; letter-spacing: -.02em; max-width: 16ch; line-height: 1.05; }
-.section p { margin-top: 18px; color: var(--muted); max-width: 52ch; line-height: 1.6; }
+.section p { margin-top: 18px; color: var(--fg-soft); max-width: 52ch; line-height: 1.6; }
 
 /* ==========================================================================
    Sections 02 to 06 — shared pieces
-   Below the hero the page is near-black. Orange is the only accent.
+   Colours come from the section's theme (see "section colours" at the top):
+   use --fg, --fg-soft, --line, --accent, never fixed colours.
    ========================================================================== */
 .container { width: 100%; max-width: calc(1240px + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
 .label {
   font-family: var(--font-mono); font-weight: 400; font-size: var(--t-label); line-height: 1.2;
-  letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+  letter-spacing: .14em; text-transform: uppercase; color: var(--fg-soft);
 }
 .display {
   font-family: var(--font-display); font-weight: 400; font-size: var(--t-display);
@@ -173,21 +229,22 @@ html.nav-done #navMark { visibility: visible; }
   line-height: 1.15; letter-spacing: -.015em;
 }
 .display em, .h3 em { font-style: italic; }
-.prose p { font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 62ch; }
+.prose p { font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 62ch; }
 .prose p + p { margin-top: 1em; }
 
-/* buttons — pill; one primary per section */
+/* buttons — pill; one primary per section. Orange with ink text, except on
+   the orange section, where the theme turns it ink with bone text. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 14px 22px; border-radius: 999px; border: 1px solid transparent;
   font: 500 15px/1.2 var(--font-body); cursor: pointer;
   transition: filter .2s ease, border-color .2s ease;
 }
-.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.btn--primary { background: var(--orange); color: #0C0C0A; }
+.btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.btn--primary { background: var(--btn-bg); color: var(--btn-fg); }
 .btn--primary:hover { filter: brightness(1.08); }
-.btn--ghost { background: transparent; color: var(--ink); border-color: var(--hair); }
-.btn--ghost:hover { border-color: var(--muted); }
+.btn--ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn--ghost:hover { border-color: var(--fg-soft); }
 
 /* sticky WhatsApp button — phones only, bottom-left so the hero's bottom-right stays clear.
    sections.js adds .is-on after the hero and removes it again at Contact. */
@@ -204,21 +261,36 @@ html.nav-done #navMark { visibility: visible; }
 }
 @media (prefers-reduced-motion: reduce) { .wa-float, .wa-float.is-on { transition: none; transform: none; } }
 
+/* ---------- text reveal (js/reveal.js) ----------
+   While text is split, .rv-sr holds the original for screen readers (hidden
+   from sight) and .rv-vis is the aria-hidden copy that animates. Each .rv-m
+   is a mask and the .rv-i inside it rises. The masks' padding is cancelled by
+   negative margins, so nothing moves in the layout, but descenders and italic
+   letters have room and aren't clipped. */
+.rv-sr {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.rv-m { display: inline-block; vertical-align: top; overflow: hidden; padding: .14em .3em .24em; margin: -.14em -.3em -.24em; }
+.rv-i { display: inline-block; }
+.rv-w { display: inline-block; vertical-align: top; white-space: nowrap; } /* letter by letter: keeps each word's letters together */
+
 /* ---------- 02 Work ---------- */
 .work { position: relative; padding-block: var(--section-pad); }
 .work__top { display: grid; gap: clamp(48px, 8vh, 80px); }
 .work__title { margin-top: 18px; }
-.work__project { margin-top: clamp(28px, 5vh, 56px); padding-top: 20px; border-top: 1px solid var(--hair); max-width: 34ch; }
-.work__meta { margin-top: 10px; font-size: var(--t-small); line-height: 1.5; color: var(--muted); }
-.tag { display: inline-block; margin-top: 16px; padding: 7px 10px 6px; border: 1px solid var(--hair); }
+.work__project { margin-top: clamp(28px, 5vh, 56px); padding-top: 20px; border-top: 1px solid var(--line); max-width: 34ch; }
+.work__meta { margin-top: 10px; font-size: var(--t-small); line-height: 1.5; color: var(--fg-soft); }
+.tag { display: inline-block; margin-top: 16px; padding: 7px 10px 6px; border: 1px solid var(--line); }
 
 .work__media { display: flex; flex-direction: column; gap: clamp(40px, 9vh, 112px); overflow-x: clip; }
 .shot { margin: 0; }
 .shot img { display: block; width: 100%; height: auto; }
-/* stand-in until the Yauvana screenshots arrive: same shape, visibly marked */
+/* stand-in until the Yauvana screenshots arrive: same shape, visibly marked, tinted from the text colour */
 .shot__ph {
   display: grid; place-items: center; aspect-ratio: 16 / 10; padding: 20px;
-  background: var(--surface); border: 1px dashed rgba(236, 234, 251, .22);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--fg) 30%, transparent);
   text-align: center; text-transform: none; letter-spacing: .04em;
 }
 .shot--phone .shot__ph { aspect-ratio: 9 / 19.5; }
@@ -227,20 +299,20 @@ html.nav-done #navMark { visibility: visible; }
 .shot--phone { width: 62%; }
 
 .case { margin-top: clamp(96px, 16vh, 200px); }
-.case__block { padding-block: clamp(32px, 5vh, 56px); border-top: 1px solid var(--hair); display: grid; gap: 18px; }
-.prose .case__lead { font-family: var(--font-display); font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em; color: var(--ink); max-width: 26ch; margin-bottom: 8px; }
-.prose .case__kicker { font-family: var(--font-display); font-size: clamp(20px, 1.8vw, 26px); line-height: 1.3; margin-top: 28px; color: var(--ink); max-width: 28ch; }
+.case__block { padding-block: clamp(32px, 5vh, 56px); border-top: 1px solid var(--line); display: grid; gap: 18px; }
+.prose .case__lead { font-family: var(--font-display); font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em; color: var(--fg); max-width: 26ch; margin-bottom: 8px; }
+.prose .case__kicker { font-family: var(--font-display); font-size: clamp(20px, 1.8vw, 26px); line-height: 1.3; margin-top: 28px; color: var(--fg); max-width: 28ch; }
 .built { list-style: none; max-width: 62ch; }
-.built li { padding-block: 14px; border-top: 1px solid var(--hair); font-size: var(--t-body); line-height: 1.55; color: var(--muted); }
-.built li:last-child { border-bottom: 1px solid var(--hair); }
+.built li { padding-block: 14px; border-top: 1px solid var(--line); font-size: var(--t-body); line-height: 1.55; color: var(--fg-soft); }
+.built li:last-child { border-bottom: 1px solid var(--line); }
 
-.work__live { margin-top: clamp(96px, 16vh, 200px); padding-top: clamp(32px, 5vh, 56px); border-top: 1px solid var(--hair); display: grid; gap: 28px; }
+.work__live { margin-top: clamp(96px, 16vh, 200px); padding-top: clamp(32px, 5vh, 56px); border-top: 1px solid var(--line); display: grid; gap: 28px; }
 .work__live-title { font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; max-width: 16ch; }
 .work__live .case__kicker { margin-top: 12px; }
 
 .work__early { margin-top: clamp(120px, 22vh, 260px); display: grid; gap: clamp(32px, 6vh, 64px); }
 .early-line { font-size: clamp(50px, 10.5vw, 168px); line-height: .95; letter-spacing: -.035em; }
-.early-line span { display: block; }
+.early-line__part { display: block; }
 .early-body .case__kicker { font-size: var(--t-h3); }
 
 @media (min-width: 720px) {
@@ -284,53 +356,53 @@ html.nav-done #navMark { visibility: visible; }
 .price, .plan-card { border-radius: 16px; padding: var(--card-pad); }
 .price__head { font-family: var(--font-display); font-weight: 400; }
 .price__from { display: block; font-size: var(--t-h3); line-height: 1.15; letter-spacing: -.015em; }
-.price__from em { font-style: italic; color: var(--orange); }
+.price__from em { font-style: italic; color: var(--accent); }
 .price__num {
   display: block; margin-top: 10px; font-size: var(--t-price); line-height: .95; letter-spacing: -.03em;
   font-variation-settings: "opsz" 144; font-variant-numeric: lining-nums;
 }
-.price__lede { margin-top: 24px; font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 46ch; }
+.price__lede { margin-top: 24px; font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 46ch; }
 .price__label { margin-top: clamp(32px, 5vh, 48px); }
 .includes { list-style: none; margin-top: 14px; }
-.includes li { padding-block: 13px; border-top: 1px solid var(--hair); font-size: var(--t-body); line-height: 1.5; }
-.includes li:last-child { border-bottom: 1px solid var(--hair); }
+.includes li { padding-block: 13px; border-top: 1px solid var(--line); font-size: var(--t-body); line-height: 1.5; }
+.includes li:last-child { border-bottom: 1px solid var(--line); }
 .price__cta { margin-top: clamp(28px, 5vh, 40px); }
 
 .plans__side { display: grid; gap: var(--gap); }
-.plan-card p { font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 44ch; }
+.plan-card p { font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 44ch; }
 .plan-card p + p { margin-top: 10px; }
 .plan-card .plan-card__lead {
   display: block; margin: 18px 0 12px; font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(22px, 2vw, 28px); line-height: 1.2; letter-spacing: -.015em; color: var(--ink);
+  font-size: clamp(22px, 2vw, 28px); line-height: 1.2; letter-spacing: -.015em; color: var(--fg);
 }
 
 /* the two lines that protect the client — small, directly under the cards, lined up with the card text */
 .promises { display: grid; gap: 12px var(--gap); margin-top: clamp(24px, 4vh, 36px); }
-.promises p { padding-inline: var(--card-pad); font-size: var(--t-small); line-height: 1.55; color: var(--muted); }
-.promises strong { font-weight: 500; color: var(--ink); }
+.promises p { padding-inline: var(--card-pad); font-size: var(--t-small); line-height: 1.55; color: var(--fg-soft); }
+.promises strong { font-weight: 500; color: var(--fg); }
 
 /* what we build — plain text in four groups: no cards, no icons, no prices */
 .build { margin-top: clamp(96px, 16vh, 200px); }
 .build__groups { display: grid; gap: clamp(36px, 5vh, 48px) var(--gap); margin-top: clamp(32px, 6vh, 64px); }
-.build__group { padding-top: 18px; border-top: 1px solid var(--hair); }
+.build__group { padding-top: 18px; border-top: 1px solid var(--line); }
 .build__group ul { list-style: none; margin-top: 20px; display: grid; gap: 10px; }
 .build__group li { font-family: var(--font-display); font-size: clamp(19px, 1.45vw, 21px); line-height: 1.25; letter-spacing: -.01em; }
 .audience { margin-top: clamp(64px, 11vh, 128px); }
 .audience__list { margin-top: 16px; font-family: var(--font-display); font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em; text-wrap: balance; }
-.audience__note { margin-top: 12px; font-size: var(--t-body); line-height: 1.6; color: var(--muted); max-width: 62ch; }
+.audience__note { margin-top: 12px; font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 62ch; }
 
 /* what a website usually costs — full width, no card, no radius. Only the "Us" row is bright. */
 .costs { margin-top: clamp(96px, 16vh, 200px); }
 .costs__table {
   width: 100%; margin-top: clamp(28px, 5vh, 48px); border-collapse: collapse;
-  font-size: var(--t-small); line-height: 1.5; color: var(--muted);
+  font-size: var(--t-small); line-height: 1.5; color: var(--fg-soft);
 }
 .costs__table th, .costs__table td { font-weight: 400; text-align: left; vertical-align: baseline; }
 .costs__table tbody th, .costs__table strong { font-weight: 500; }
 .costs__table thead th { font-family: var(--font-mono); font-size: var(--t-label); line-height: 1.2; letter-spacing: .14em; text-transform: uppercase; }
 /* prices in Fraunces: Instrument Sans has no ₹ sign, Fraunces does */
 .costs__pay { font-family: var(--font-display); font-size: var(--t-body); letter-spacing: -.005em; font-variant-numeric: lining-nums; white-space: nowrap; }
-.costs__us { color: var(--ink); }
+.costs__us { color: var(--fg); }
 .costs__note {
   margin-top: clamp(40px, 7vh, 72px); font-family: var(--font-display); font-size: clamp(24px, 2.8vw, 40px);
   line-height: 1.2; letter-spacing: -.015em; max-width: 30ch; text-wrap: pretty;
@@ -342,9 +414,9 @@ html.nav-done #navMark { visibility: visible; }
   .costs__table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .costs__table tbody tr {
     display: grid; grid-template-columns: 1fr auto; align-items: baseline; column-gap: 16px;
-    padding-block: 16px; border-top: 1px solid var(--hair);
+    padding-block: 16px; border-top: 1px solid var(--line);
   }
-  .costs__table tbody tr:last-child { border-bottom: 1px solid var(--hair); }
+  .costs__table tbody tr:last-child { border-bottom: 1px solid var(--line); }
   .costs__table .costs__pay { text-align: right; }
   .costs__table td:last-child { grid-column: 1 / -1; margin-top: 6px; }
 }
@@ -353,8 +425,8 @@ html.nav-done #navMark { visibility: visible; }
   .build__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .costs__table th, .costs__table td { padding: 20px 24px 20px 0; }
   .costs__table thead th { padding-block: 0 14px; }
-  .costs__table tbody tr > * { border-top: 1px solid var(--hair); }
-  .costs__table tbody tr:last-child > * { border-bottom: 1px solid var(--hair); }
+  .costs__table tbody tr > * { border-top: 1px solid var(--line); }
+  .costs__table tbody tr:last-child > * { border-bottom: 1px solid var(--line); }
   .costs__table thead td { width: 22%; }
   .costs__table thead th:nth-child(2) { width: 26%; }
 }
