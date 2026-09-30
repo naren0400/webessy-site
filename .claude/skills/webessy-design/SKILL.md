@@ -212,6 +212,11 @@ never red, which fails on orange.
 - **02 Work screenshots:** each image starts `translateX(24%) scale(0.86)` at 40% opacity and
   reaches `translateX(0) scale(1)` full opacity as it crosses the middle of the viewport. Scrubbed
   to scroll, not time-based. Left column is `position: sticky; top: 14vh`.
+- **02 Work case study:** "What was built" pins mid-screen and its five cards (square corners,
+  hairline, big JetBrains Mono numbers) slide left, scrubbed, until card 05 meets the right edge —
+  phones too, one card at a time. Screens under 500px tall, reduced motion and no JavaScript get a
+  plain numbered list. "What it proves": its two closing lines slide in from opposite sides,
+  scrubbed, transform only — no fade, so the text never rests faint.
 - **04 How it works:** panels are `position: sticky` with `top: calc(12vh + index * 18px)`.
   As the next panel arrives, the previous scales to 0.95 and dims to 60% opacity.
 - **prefers-reduced-motion:** no transforms, no scrubbing; everything simply visible. Text is not

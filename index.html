@@ -67,39 +67,48 @@
         </div>
       </div>
 
+      <!-- the case study: four blocks, each with its own voice -->
       <div class="case">
-        <div class="case__block">
-          <h4 class="label" data-reveal="words">The problem</h4>
-          <div class="case__body prose" data-reveal="lines">
-            <p class="case__lead">Land buyers in Malnad cannot see what they are buying.</p>
+        <!-- The problem: a huge headline, then the text in two narrow columns -->
+        <div class="case__block problem">
+          <h4 class="label case__label" data-reveal="words">The problem</h4>
+          <p class="problem__head" data-reveal="words">Land buyers in Malnad cannot see what they are buying.</p>
+          <div class="problem__cols prose" data-reveal="lines">
             <p>Plots are sold from a paper layout and a site visit that eats a whole day. Most property sites in the region are a photo gallery and a phone number. They show the land as it is today — trees, mud, a boundary stone. They do not show what it becomes.</p>
             <p>So the buyer is asked to imagine, and then to trust. Most of them do neither.</p>
           </div>
         </div>
-        <div class="case__block">
-          <h4 class="label" data-reveal="words">The decision</h4>
-          <div class="case__body prose" data-reveal="lines">
-            <p class="case__lead">Photographs were the wrong proof.</p>
+
+        <!-- The decision: one upright line across the full width; the text below starts under "wrong" -->
+        <div class="case__block decision">
+          <h4 class="label case__label" data-reveal="words">The decision</h4>
+          <p class="decision__line" data-reveal="chars">Photographs were the <em>wrong</em> proof.</p>
+          <div class="decision__body prose" data-reveal="lines">
             <p>You cannot photograph a house that has not been built. For plotted land, the product is the future, not the present — which means renders and a 3D model are the honest way to show it, not decoration on top of photos.</p>
             <p>That one decision shaped the whole build.</p>
           </div>
         </div>
-        <div class="case__block">
-          <h4 class="label" data-reveal="words">What was built</h4>
-          <ul class="case__body built" data-reveal="lines">
-            <li>A scroll-driven image sequence that moves through the estate as you read, so the land reveals itself instead of sitting in a gallery</li>
-            <li>An interactive 3D layout model — buyers can turn the layout and look at it from any angle, instead of squinting at a flat PDF</li>
-            <li>An enquiry form wired to deliver straight to the seller, no dashboard, no middleman</li>
-            <li>Motion built with GSAP and Lenis, so scrolling feels considered rather than mechanical</li>
-            <li>Built, deployed and hosted end to end</li>
-          </ul>
+
+        <!-- What was built: pins, and the five cards slide sideways as you scroll (js/sections.js).
+             Without motion it stays a plain numbered list. The numbers are decoration: screen readers skip them. -->
+        <div class="case__block built">
+          <h4 class="label case__label" data-reveal="words">What was built</h4>
+          <ol class="built__track" role="list">
+            <li class="built__card"><span class="built__num" aria-hidden="true">01</span><p class="built__text">A scroll-driven image sequence that moves through the estate as you read, so the land reveals itself instead of sitting in a gallery</p></li>
+            <li class="built__card"><span class="built__num" aria-hidden="true">02</span><p class="built__text">An interactive 3D layout model — buyers can turn the layout and look at it from any angle, instead of squinting at a flat PDF</p></li>
+            <li class="built__card"><span class="built__num" aria-hidden="true">03</span><p class="built__text">An enquiry form wired to deliver straight to the seller, no dashboard, no middleman</p></li>
+            <li class="built__card"><span class="built__num" aria-hidden="true">04</span><p class="built__text">Motion built with GSAP and Lenis, so scrolling feels considered rather than mechanical</p></li>
+            <li class="built__card"><span class="built__num" aria-hidden="true">05</span><p class="built__text">Built, deployed and hosted end to end</p></li>
+          </ol>
         </div>
-        <div class="case__block">
-          <h4 class="label" data-reveal="words">What it proves</h4>
-          <div class="case__body prose" data-reveal="lines">
+
+        <!-- What it proves: the paragraph, then two lines that slide in from opposite sides (js/sections.js) -->
+        <div class="case__block proves">
+          <h4 class="label case__label" data-reveal="words">What it proves</h4>
+          <div class="proves__body prose" data-reveal="lines">
             <p>Everything above is running, not mocked up. The 3D model, the scroll sequence and the motion are the parts most local studios will not attempt, and they are the parts that make a buyer stay long enough to enquire.</p>
-            <p class="case__kicker">The estate is a concept. The craft is not.</p>
           </div>
+          <p class="proves__lines"><span class="proves__line">The estate is a concept.</span> <span class="proves__line">The craft is not.</span></p>
         </div>
       </div>
 

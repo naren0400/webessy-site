@@ -169,4 +169,41 @@
         });
     });
   });
+
+  /* ---------------- 02 Work: What was built ----------------
+     The block pins in the middle of the screen, and the five cards slide left
+     as you scroll down, until card 05 reaches the right edge. The cards move
+     only with the scroll. Phones too, one card at a time. A screen under 500px
+     tall (a phone on its side) can't fit a card below the nav, so there it
+     stays a plain numbered list, as it is without motion. */
+  (function builtCards() {
+    var block = document.querySelector('.work .built');
+    var track = block && block.querySelector('.built__track');
+    if (!track) return;
+    gsap.matchMedia().add('(min-height: 500px)', function () {
+      block.classList.add('is-sideways');
+      function distance() { return Math.max(0, track.scrollWidth - track.clientWidth); }
+      gsap.to(track, {
+        x: function () { return -distance(); }, ease: 'none',
+        scrollTrigger: {
+          trigger: block, start: 'center center', end: function () { return '+=' + distance(); },
+          pin: true, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
+          refreshPriority: 1 /* measured first, so everything further down counts the pinned length */
+        }
+      });
+      return function () { block.classList.remove('is-sideways'); };
+    });
+  })();
+
+  /* ---------------- 02 Work: What it proves ----------------
+     "The estate is a concept." slides in from the left, "The craft is not."
+     from the right. Tied to scroll, and in place before each line reaches
+     the middle of the screen. Movement only, no fade, so the text is never faint. */
+  gsap.utils.toArray('.work .proves__line').forEach(function (line, i) {
+    var side = i === 0 ? -1 : 1;
+    gsap.fromTo(line, { x: function () { return side * window.innerWidth * 0.3; } }, {
+      x: 0, ease: 'none',
+      scrollTrigger: { trigger: line, start: 'top bottom', end: 'center 65%', scrub: true, invalidateOnRefresh: true }
+    });
+  });
 })();

@@ -276,7 +276,9 @@ html.nav-done #navMark { visibility: visible; }
 .rv-w { display: inline-block; vertical-align: top; white-space: nowrap; } /* letter by letter: keeps each word's letters together */
 
 /* ---------- 02 Work ---------- */
-.work { position: relative; padding-block: var(--section-pad); }
+/* overflow-x: clip, so things sliding in from the sides never make the page scroll sideways
+   (clip, not hidden: the sticky title still works) */
+.work { position: relative; padding-block: var(--section-pad); overflow-x: clip; }
 .work__top { display: grid; gap: clamp(48px, 8vh, 80px); }
 .work__title { margin-top: 18px; }
 .work__project { margin-top: clamp(28px, 5vh, 56px); padding-top: 20px; border-top: 1px solid var(--line); max-width: 34ch; }
@@ -298,13 +300,73 @@ html.nav-done #navMark { visibility: visible; }
 .shot-pair, .shot-row { display: grid; gap: clamp(40px, 9vh, 112px); }
 .shot--phone { width: 62%; }
 
+/* the case study: four blocks, each with its own voice. Every block opens with its
+   mono label under a hairline. :not(:first-child), not a + b: the pinned block gets
+   wrapped in a spacer by ScrollTrigger, and a + b would stop matching after it. */
 .case { margin-top: clamp(96px, 16vh, 200px); }
-.case__block { padding-block: clamp(32px, 5vh, 56px); border-top: 1px solid var(--line); display: grid; gap: 18px; }
-.prose .case__lead { font-family: var(--font-display); font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em; color: var(--fg); max-width: 26ch; margin-bottom: 8px; }
+.case__block:not(:first-child) { margin-top: clamp(112px, 18vh, 208px); }
+.case__label { padding-top: 20px; border-top: 1px solid var(--line); }
+
+/* The problem: a huge headline, then the text in two narrow columns */
+.problem__head {
+  margin-top: clamp(28px, 5vh, 56px); max-width: 9em;
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(48px, 8vw, 128px);
+  line-height: .96; letter-spacing: -.03em; font-variation-settings: "opsz" 144; text-wrap: balance;
+}
+.problem__cols { margin-top: clamp(40px, 7vh, 80px); }
+
+/* The decision: one upright line that exactly fills the width. The line is 12.29em
+   long (measured in Fraunces), so 100cqi / 12.42 fills 99% of the block at any width.
+   On phones one line would be tiny, so there it breaks into big lines. */
+.decision { container-type: inline-size; }
+.decision__line {
+  margin-top: clamp(24px, 4vh, 44px);
+  font-family: var(--font-display); font-weight: 400; font-variation-settings: "opsz" 144;
+  font-size: 15vw; font-size: min(17cqi, 88px);
+  line-height: .98; letter-spacing: -.03em; text-wrap: balance;
+}
+.decision__line em { font-style: italic; color: var(--accent); }
+.decision__body { margin-top: clamp(28px, 5vh, 48px); }
+
+/* What was built. Without motion it's a plain numbered list. With motion, sections.js
+   adds .is-sideways: the block pins in the middle of the screen and the cards slide left.
+   Cards: square corners and a hairline, no glass. The card height follows the screen
+   height, so label and cards always fit between the nav and the bottom edge. */
+.built { --card-w: min(82vw, 400px); }
+.built__track { list-style: none; margin-top: clamp(24px, 4vh, 40px); }
+.built__card {
+  display: grid; grid-template-columns: minmax(64px, 12%) minmax(0, 1fr); column-gap: var(--gap);
+  align-items: baseline; padding-block: 18px; border-top: 1px solid var(--line);
+}
+.built__card:last-child { border-bottom: 1px solid var(--line); }
+.built__num { font-family: var(--font-mono); font-size: clamp(34px, 4vw, 56px); line-height: 1; letter-spacing: -.04em; }
+.built__text { font-size: var(--t-body); line-height: 1.5; max-width: 52ch; text-wrap: pretty; }
+
+.is-sideways .built__track { display: flex; gap: var(--gap); }
+.is-sideways .built__card {
+  flex: 0 0 var(--card-w); min-height: clamp(260px, 54vh, 540px); min-height: clamp(260px, 54svh, 540px);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 24px;
+  padding: clamp(20px, 2.4vw, 34px); border: 1px solid var(--line);
+}
+.is-sideways .built__num {
+  font-size: clamp(60px, min(8.6vw, 16vh), 124px); font-size: clamp(60px, min(8.6vw, 16svh), 124px);
+  line-height: .8;
+}
+.is-sideways .built__text { font-size: clamp(17px, 1.45vw, 21px); line-height: 1.45; max-width: none; }
+
+/* What it proves: the paragraph, then two big lines. sections.js slides the first
+   in from the left and the second from the right. */
+.proves__body { margin-top: clamp(24px, 4vh, 44px); }
+.proves__lines {
+  margin-top: clamp(56px, 10vh, 120px);
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(40px, 6.6vw, 100px);
+  line-height: 1.02; letter-spacing: -.03em; font-variation-settings: "opsz" 144;
+}
+.proves__line { display: block; }
+.proves__line + .proves__line { margin-top: .1em; text-align: right; } /* the second line sits on the right */
+
+/* kicker lines in the two blocks after the case study */
 .prose .case__kicker { font-family: var(--font-display); font-size: clamp(20px, 1.8vw, 26px); line-height: 1.3; margin-top: 28px; color: var(--fg); max-width: 28ch; }
-.built { list-style: none; max-width: 62ch; }
-.built li { padding-block: 14px; border-top: 1px solid var(--line); font-size: var(--t-body); line-height: 1.55; color: var(--fg-soft); }
-.built li:last-child { border-bottom: 1px solid var(--line); }
 
 .work__live { margin-top: clamp(96px, 16vh, 200px); padding-top: clamp(32px, 5vh, 56px); border-top: 1px solid var(--line); display: grid; gap: 28px; }
 .work__live-title { font-size: clamp(34px, 4.6vw, 64px); line-height: 1.04; max-width: 16ch; }
@@ -319,15 +381,22 @@ html.nav-done #navMark { visibility: visible; }
   .shot-pair { grid-template-columns: 1fr 1fr; gap: var(--gap); }
   .shot-row { grid-template-columns: 4fr 8fr; gap: var(--gap); align-items: end; }
   .shot--phone { width: auto; }
+
+  /* the problem text flows down the first column, then the second, like a newspaper */
+  .problem__cols { width: min(100%, 620px); margin-left: auto; columns: 2; column-gap: var(--gap); }
+  .decision__line { white-space: nowrap; font-size: min(7.1vw, 97px); font-size: calc(100cqi / 12.42); }
+  .proves__body { width: min(100%, 620px); margin-left: auto; }
+  .built { --card-w: 40vw; }
 }
 @media (min-width: 960px) {
   /* label and title stay pinned on the left while the screenshots scroll past on the right */
   .work__top { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
   .work__pin { grid-column: 1 / span 4; position: sticky; top: 14vh; align-self: start; }
   .work__media { grid-column: 6 / -1; }
-  .case__block, .work__live, .work__early { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
-  .case__block > h4 { grid-column: 1 / span 3; }
-  .case__block > .case__body { grid-column: 5 / span 7; }
+  /* the decision text starts under "wrong": 64% along the line (measured), x 0.99 */
+  .decision__body { margin-left: 63.4%; }
+  .built { --card-w: clamp(300px, 29vw, 430px); }
+  .work__live, .work__early { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
   .work__live-title { grid-column: 1 / span 8; }
   .work__live .prose { grid-column: 5 / span 7; }
   .early-line { grid-column: 1 / -1; }
