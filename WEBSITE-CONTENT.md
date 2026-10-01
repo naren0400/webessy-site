@@ -46,6 +46,28 @@ kept out of this repo.
 
 # 1. Hero
 
+## The welcome
+
+The first screen after the intro. It appears as the 0400 lands in the nav,
+over a picture of the earth's edge from space. When you start scrolling, the
+words rise and fade and the picture dissolves into the first frame of the hero.
+
+> YOU HAVE ARRIVED AT
+> # WEBESSY
+> THE STUDIO BEHIND THE BUSINESSES PEOPLE CHOOSE.
+>
+> Scroll to enter
+
+**How it is set**
+
+- The words sit straight on the picture, with no box behind them.
+- "WEBESSY" is giant, in Bodoni Moda capitals. The two small lines are in
+  widely spaced capitals.
+- Written in sentence case and shown in capitals, so screen readers read
+  ordinary words. "Webessy" is not a heading: the page's one `<h1>` stays
+  "Make people choose you."
+- "Scroll to enter" has a thin animated line under it, pointing down.
+
 ## The one line
 
 The first thing anyone reads. It closes the hero: the chrome 0400 appears in

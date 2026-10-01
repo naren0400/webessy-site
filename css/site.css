@@ -210,10 +210,113 @@ html.nav-done #navMark { visibility: visible; }
   background-image: radial-gradient(rgba(236, 234, 251, .08) 1px, transparent 0);
   background-size: 3px 3px;
 }
-#scrollHint {
-  position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%);
-  padding: 10px 18px; border-radius: 999px; opacity: 0;
-  font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--muted);
+
+/* The welcome: the first screen after the intro. A picture of the earth's edge
+   from space, fine stars in front of it, and the words straight on the picture,
+   no box. The words wait behind their masks until the 0400 lands in the nav
+   (html.nav-done), then rise in. hero.js lifts them away as you scroll and
+   dissolves the picture into the first frame. Nothing here sits in the
+   bottom-right corner, where the frames carry the Veo watermark: the words are
+   centred and there are no stars over the planet. */
+#welcome { position: absolute; inset: 0; overflow: hidden; pointer-events: none; color: var(--ink); }
+.wl-scene { position: absolute; inset: 0; }
+/* larger than the stage, so the picture can drift without showing an edge */
+.wl-pic { position: absolute; inset: -3%; }
+.wl-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.wl-stars { position: absolute; inset: 0; }
+/* two layers of stars, each larger than the stage by the furthest it drifts */
+.wl-layer { position: absolute; will-change: transform; }
+.wl-far { inset: calc(-3vw - 24px); }
+.wl-near { inset: calc(-5vw - 34px); }
+.wl-layer canvas { display: block; width: 100%; height: 100%; }
+
+/* the words, centred in the dark sky above the planet */
+.wl-words {
+  position: absolute; left: var(--gutter); right: var(--gutter); top: 88px;
+  bottom: calc(26svh + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(10px, 2.2svh, 24px); text-align: center; container-type: inline-size;
+}
+/* each line is a mask its words rise through; the padding (cancelled by the
+   negative margin) gives the letters room to lean without being clipped */
+.wl-row { overflow: hidden; overflow: clip; padding: .12em .2em .14em; margin: -.12em -.2em -.14em; }
+.wl-in { display: block; }
+/* "Webessy" fills the width: Bodoni Moda capitals measure 4.55em, plus the
+   letter-spacing (8 × .03em, counting the padding that centres it) and 1% to spare.
+   Capped on wide, short screens. */
+.wl-title {
+  font-family: var(--font-hero); font-weight: 400; text-transform: uppercase; line-height: .92;
+  font-size: min(calc(100cqi / 4.84), 36svh); letter-spacing: .03em;
+}
+.wl-title .wl-in { padding-left: .03em; } /* balances the space letter-spacing leaves after the last letter */
+.wl-ch { display: inline-block; transform-origin: 50% 88%; } /* letters lean from their baseline */
+.wl-kicker, .wl-sub {
+  font: 500 clamp(11px, .55vw + 6px, 13px)/1.6 var(--font-body); letter-spacing: .32em; text-transform: uppercase;
+  color: rgba(236, 234, 251, .82); text-shadow: 0 0 18px rgba(5, 6, 15, .9);
+}
+.wl-kicker .wl-in, .wl-sub .wl-in { padding-left: .32em; }
+.wl-sub { max-width: 60em; text-wrap: balance; }
+/* "Scroll to enter", with a thin line under it and a light running down it,
+   pointing at the planet. It stays in the dark sky: lower down, the city
+   lights would sit behind it. */
+.wl-cue {
+  margin-top: calc(clamp(8px, 3svh, 30px) - .12em);
+  font: 500 13px/1.4 var(--font-body); letter-spacing: .04em;
+  color: rgba(236, 234, 251, .82); text-shadow: 0 0 14px rgba(5, 6, 15, .9);
+}
+.wl-arrow {
+  position: relative; display: block; width: 1px; height: clamp(28px, 6svh, 56px); margin: 12px auto 0;
+  overflow: hidden; background: rgba(236, 234, 251, .2);
+}
+.wl-arrow::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(236, 234, 251, 0), var(--ink));
+  transform: translateY(-100%); animation: wl-arrow 2.2s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+@keyframes wl-arrow { 0% { transform: translateY(-100%); } 70%, 100% { transform: translateY(100%); } }
+
+/* the entrance: each line rises from behind its mask once the 0400 has landed.
+   hero.js holds them (.wl-wait) until Bodoni Moda has loaded. */
+.wl-in { transition: transform 1.3s cubic-bezier(.16, 1, .3, 1), opacity .9s ease-out; }
+.wl-title .wl-in { transition-delay: .1s; }
+.wl-sub .wl-in { transition-delay: .35s; }
+.wl-cue .wl-in { transition-delay: .8s; }
+html:not(.nav-done) .wl-in, #welcome.wl-wait .wl-in { transform: translate3d(0, 110%, 0); opacity: 0; transition: none; }
+
+/* stars float slowly, each layer its own way */
+.wl-far canvas { animation: wl-float-far 38s ease-in-out infinite alternate; }
+.wl-near canvas { animation: wl-float-near 27s ease-in-out infinite alternate; }
+@keyframes wl-float-far { from { transform: translate3d(14px, 8px, 0); } to { transform: translate3d(-14px, -8px, 0); } }
+@keyframes wl-float-near { from { transform: translate3d(-22px, 10px, 0); } to { transform: translate3d(22px, -10px, 0); } }
+
+/* Phones and tablets: no cursor, so the picture and the stars drift on their
+   own, slowly, the nearer stars further. CSS animations of transform only, so
+   they run off the main thread and the scroll stays smooth. On desktop hero.js
+   moves the same three things against the cursor instead. */
+#hero.lite .wl-pic img { animation: wl-drift 24s ease-in-out infinite alternate; }
+#hero.lite .wl-far { animation: wl-drift-far 24s ease-in-out infinite alternate; }
+#hero.lite .wl-near { animation: wl-drift-near 24s ease-in-out infinite alternate; }
+@keyframes wl-drift { from { transform: translate3d(1.6vw, .8svh, 0); } to { transform: translate3d(-1.6vw, -.8svh, 0); } }
+@keyframes wl-drift-far { from { transform: translate3d(2.9vw, 1.4svh, 0); } to { transform: translate3d(-2.9vw, -1.4svh, 0); } }
+@keyframes wl-drift-near { from { transform: translate3d(4.6vw, 2.3svh, 0); } to { transform: translate3d(-4.6vw, -2.3svh, 0); } }
+
+/* once the picture has dissolved, nothing in the welcome keeps animating */
+#welcome.wl-off .wl-pic img, #welcome.wl-off .wl-layer, #welcome.wl-off .wl-layer canvas,
+#welcome.wl-off .wl-arrow::after { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-in { transition: none; }
+  .wl-pic img, .wl-layer, .wl-layer canvas, #hero.lite .wl-pic img, #hero.lite .wl-layer { animation: none; }
+  .wl-arrow { background: rgba(236, 234, 251, .55); }
+  .wl-arrow::after { animation: none; display: none; }
+}
+/* short screens (a phone on its side): a smaller title and tighter gaps, so
+   the words fit between the nav and the horizon */
+@media (max-height: 560px) {
+  .wl-words { bottom: calc(20svh + env(safe-area-inset-bottom, 0px)); gap: 8px; }
+  .wl-title { font-size: min(calc(100cqi / 4.84), 24svh); }
+  .wl-cue { margin-top: calc(4px - .12em); }
+  .wl-arrow { height: 20px; margin-top: 6px; }
 }
 
 /* The statement that ends the hero: three lines of Bodoni Moda capitals, no box.
@@ -278,12 +381,11 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 
 /* Phones and tablets (hero.js adds .lite): no live blur anywhere in the hero.
    Blurring footage that changes every frame is the costliest thing a phone can
-   be asked to do, so the glass pane and the Scroll pill get a plain tint. */
+   be asked to do, so the glass pane gets a plain tint. */
 #hero.lite #glassPane {
   -webkit-backdrop-filter: none; backdrop-filter: none;
   background: linear-gradient(160deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .05) 55%, rgba(142, 124, 255, .10));
 }
-#hero.lite #scrollHint { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(12, 13, 32, .82); }
 
 /* ---------- placeholder section (06 until it is built) ---------- */
 .section { position: relative; min-height: 90vh; padding: 20vh 8vw; border-top: 1px solid var(--line); }

@@ -9,7 +9,7 @@
 <!-- font preload only on a real web address; opened from disk (file://) Chrome refuses it with a CORS error -->
 <script>if(location.protocol!=='file:'){var l=document.createElement('link');l.rel='preload';l.as='font';l.type='font/woff2';l.crossOrigin='anonymous';l.href='fonts/fraunces-opsz-normal.woff2';document.head.appendChild(l);}</script>
 <link rel="stylesheet" href="css/site.css">
-<noscript><style>html.intro-lock,html.intro-lock body{overflow:auto;height:auto}#intro{display:none}#nav{opacity:1}#navMark{visibility:visible}#statement{opacity:1;visibility:visible}</style></noscript>
+<noscript><style>html.intro-lock,html.intro-lock body{overflow:auto;height:auto}#intro{display:none}#nav{opacity:1}#navMark{visibility:visible}#statement{opacity:1;visibility:visible}#welcome{display:none}</style></noscript>
 </head>
 <body>
 
@@ -27,6 +27,29 @@
   <section id="hero" aria-label="Introduction">
     <div id="heroStage">
       <canvas id="frames" aria-hidden="true"></canvas>
+      <!-- the welcome: the first screen after the intro. Its words rise in as the 0400 lands in
+           the nav; scrolling lifts them away and the picture dissolves into the first frame.
+           Written in sentence case, shown in capitals (CSS). -->
+      <div id="welcome">
+        <div class="wl-scene" aria-hidden="true">
+          <div class="wl-pic">
+            <picture>
+              <source media="(orientation: portrait)" srcset="images/welcome-mobile.webp" width="940" height="1672">
+              <img src="images/welcome-desktop.webp" width="1672" height="940" alt="" decoding="async" fetchpriority="high">
+            </picture>
+          </div>
+          <div class="wl-stars">
+            <div class="wl-layer wl-far"><canvas></canvas></div>
+            <div class="wl-layer wl-near"><canvas></canvas></div>
+          </div>
+        </div>
+        <div class="wl-words">
+          <p class="wl-row wl-kicker"><span class="wl-in">You have arrived at</span></p>
+          <p class="wl-row wl-title"><span class="wl-in">Webessy</span></p>
+          <p class="wl-row wl-sub"><span class="wl-in">The studio behind the businesses people choose.</span></p>
+          <p class="wl-row wl-cue" aria-hidden="true"><span class="wl-in">Scroll to enter<span class="wl-arrow"></span></span></p>
+        </div>
+      </div>
       <div id="heroDim" aria-hidden="true"></div>
       <div id="heroMark" aria-hidden="true">
         <div id="glassPane"></div>
@@ -46,7 +69,6 @@
         </div>
       </div>
       <svg id="statementPath" aria-hidden="true" focusable="false"><path d=""/><circle r="2.4" cx="-10" cy="-10"/></svg>
-      <div id="scrollHint" class="glass" aria-hidden="true">Scroll</div>
     </div>
   </section>
 

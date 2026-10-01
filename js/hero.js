@@ -1,9 +1,11 @@
 /* ==========================================================================
-   HERO — Veo frames scrubbed by scroll, the chrome 0400 inside the window,
-   then the statement "Make people choose you."
+   HERO — the welcome, then Veo frames scrubbed by scroll, the chrome 0400
+   inside the window, then the statement "Make people choose you."
    Scroll map, in vh of scrolling. The hero scrolls 312vh: its 412vh height
    (css/site.css) minus the 100vh stage. Change the two together.
-       0 - 180   frames 1 → 80 (pull back from the light to the portal)
+       0 -  14   the welcome's words rise and fade, line by line
+       3 -  24   the welcome's picture dissolves into frame 1, pushing in a little
+      20 - 180   frames 1 → 80 (pull back from the light to the portal)
      162 - 224   chrome 0400 revealed by light, glass pane frosts behind it
      180 - 224   slow push in towards the window
      240 - 262   the room dims
@@ -24,6 +26,12 @@
      - No live blur in the hero (see #hero.lite in css/site.css).
      - The 3D canvas covers only a box around the 0400, at 1.5x, and is
        redrawn only when the scroll moves it (no idle sway).
+     - The welcome's slow drift and its stars are CSS animations, which run
+       off the main thread. Its stars are drawn once per screen size.
+
+   The welcome appears as the intro's 0400 lands in the nav (html.nav-done,
+   css/site.css). On desktop its picture and stars drift against the cursor
+   (the nearer stars further) and the letters of "Webessy" lean towards it.
    ========================================================================== */
 (function () {
   'use strict';
@@ -38,7 +46,7 @@
   var D2R = Math.PI / 180;
 
   var hero = $('hero'), stage = $('heroStage'), fcv = $('frames'), gcv = $('chrome'), pane = $('glassPane'),
-      dim = $('heroDim'), mark = $('heroMark'), st = $('statement'), hint = $('scrollHint'), hud = $('hud');
+      dim = $('heroDim'), mark = $('heroMark'), st = $('statement'), welcome = $('welcome'), hud = $('hud');
   if (!hero || !stage || !fcv) { console.error('[hero] page structure missing'); return; }
   var fctx = fcv.getContext('2d');
   if (hud && DEBUG) hud.style.display = 'block';
@@ -208,6 +216,8 @@
       if (pickSet() !== set) loadFrames();
       layoutMaps();
       measureStatement();
+      drawStars();
+      measureWelcome();
     }
     readScroll(); wake();
   }
@@ -241,16 +251,21 @@
   /* ---------------- scroll → scene ---------------- */
   var SPAN_VH = 312;
   var T = {
-    frames: [0, 180], chrome: [162, 180], pane: [166, 196], env: [162, 212], sweep: [162, 224],
+    wKicker: [0.5, 9], wTitle: [1, 11], wSub: [2, 12.5], wCue: [0, 5], wPic: [3, 24], wPush: [0, 24],
+    frames: [20, 180], chrome: [162, 180], pane: [166, 196], env: [162, 212], sweep: [162, 224],
     turn: [169, 224], pushIn: [180, 224], dim: [240, 262], back: [242, 270],
-    line1: [257, 277], line2: [263, 283], line3: [269, 289], draw: [262, 302], foot: [282, 296],
-    hint: [1.5, 9.5]
+    line1: [257, 277], line2: [263, 283], line3: [269, 289], draw: [262, 302], foot: [282, 296]
   };
   function at(name, p) { var r = T[name]; return sm(r[0] / SPAN_VH, r[1] / SPAN_VH, p); }
+  function frameAt(p) { return cl((p * SPAN_VH - T.frames[0]) / (T.frames[1] - T.frames[0])) * (FRAME_COUNT - 1); }
   function params(p) {
     var back = at('back', p);
     return {
-      frame: cl(p * SPAN_VH / T.frames[1]) * (FRAME_COUNT - 1),
+      /* the welcome's lines in page order: kicker, title, small line, scroll cue */
+      wRows: [at('wKicker', p), at('wTitle', p), at('wSub', p), at('wCue', p)],
+      wPic: at('wPic', p),
+      wPush: at('wPush', p),
+      frame: frameAt(p),
       zoom: 1 + (ZMAX - 1) * at('pushIn', p) * (1 - back),
       chromeIn: at('chrome', p),
       env: 0.02 + 0.98 * at('env', p),
@@ -262,13 +277,13 @@
       back: back,
       lines: [at('line1', p), at('line2', p), at('line3', p)],
       draw: at('draw', p),
-      foot: at('foot', p),
-      hint: 1 - at('hint', p)
+      foot: at('foot', p)
     };
   }
   function phaseName(p) {
     var v = p * SPAN_VH;
-    if (v < T.frames[1]) return 'frames ' + (Math.round(cl(v / T.frames[1]) * 79) + 1) + ' / 80';
+    if (v < T.wPic[1]) return 'welcome';
+    if (v < T.frames[1]) return 'frames ' + (Math.round(frameAt(p)) + 1) + ' / 80';
     if (v < T.pushIn[1]) return '0400 revealed by light';
     if (v < T.dim[0]) return 'hero frame';
     if (v < T.line1[0]) return 'room dims, 0400 steps back';
@@ -426,9 +441,29 @@
   var stReady = false, split = false, pathLen = 0, letters = [];
   var cursor = { on: false, x: 0, y: 0 };
 
-  /* Desktop: each letter gets its own span so it can lean. Screen readers get
-     the sentence from a hidden copy (the visible lines are aria-hidden), and
-     each letter is nudged back to where the font's kerning had put it. */
+  /* Desktop: each letter gets its own span so it can lean, and is nudged back
+     to where the font's kerning had put it. Used by the statement and the
+     welcome's "Webessy". */
+  function splitChars(el, cls, into) {
+    var node = el.firstChild, text = node.nodeValue, range = document.createRange(), was = [], spans = [], k;
+    for (k = 0; k < text.length; k++) { range.setStart(node, k); range.setEnd(node, k + 1); was.push(range.getBoundingClientRect().left); }
+    el.textContent = '';
+    for (k = 0; k < text.length; k++) {
+      var ch = text.charAt(k);
+      if (ch === ' ') { el.appendChild(document.createTextNode(' ')); spans.push(null); continue; }
+      var s = document.createElement('span');
+      s.className = cls; s.textContent = ch;
+      el.appendChild(s); spans.push(s);
+    }
+    var fs = parseFloat(getComputedStyle(el).fontSize) || 1;
+    for (k = 0; k < spans.length - 1; k++) {
+      if (!spans[k] || !spans[k + 1]) continue;
+      var gap = (was[k + 1] - was[k]) - (spans[k + 1].getBoundingClientRect().left - spans[k].getBoundingClientRect().left);
+      if (Math.abs(gap) > 0.05) spans[k].style.marginRight = (gap / fs).toFixed(4) + 'em';
+    }
+    spans.forEach(function (s) { if (s) into.push({ el: s, cx: 0, cy: 0, fs: fs, x: 0, y: 0, r: 0 }); });
+  }
+  /* Screen readers get the sentence from a hidden copy (the visible lines are aria-hidden). */
   function splitLetters() {
     if (split || !title || words.length !== 3) return;
     split = true;
@@ -437,25 +472,7 @@
     sr.textContent = title.textContent.replace(/\s+/g, ' ').trim();
     title.insertBefore(sr, title.firstChild);
     lines.forEach(function (l) { l.setAttribute('aria-hidden', 'true'); });
-    words.forEach(function (el) {
-      var node = el.firstChild, text = node.nodeValue, range = document.createRange(), was = [], spans = [], k;
-      for (k = 0; k < text.length; k++) { range.setStart(node, k); range.setEnd(node, k + 1); was.push(range.getBoundingClientRect().left); }
-      el.textContent = '';
-      for (k = 0; k < text.length; k++) {
-        var ch = text.charAt(k);
-        if (ch === ' ') { el.appendChild(document.createTextNode(' ')); spans.push(null); continue; }
-        var s = document.createElement('span');
-        s.className = 'st-ch'; s.textContent = ch;
-        el.appendChild(s); spans.push(s);
-      }
-      var fs = parseFloat(getComputedStyle(el).fontSize) || 1;
-      for (k = 0; k < spans.length - 1; k++) {
-        if (!spans[k] || !spans[k + 1]) continue;
-        var gap = (was[k + 1] - was[k]) - (spans[k + 1].getBoundingClientRect().left - spans[k].getBoundingClientRect().left);
-        if (Math.abs(gap) > 0.05) spans[k].style.marginRight = (gap / fs).toFixed(4) + 'em';
-      }
-      spans.forEach(function (s) { if (s) letters.push({ el: s, cx: 0, cy: 0, fs: fs, x: 0, y: 0, r: 0 }); });
-    });
+    words.forEach(function (el) { splitChars(el, 'st-ch', letters); });
   }
 
   /* Measure where the words sit (with the rise and lean switched off; the next
@@ -547,16 +564,23 @@
     path.__hero = null;
   }
 
-  /* desktop: letters near the cursor lean away a little and turn a few degrees */
-  function lean(dt) {
-    var k = 1 - Math.exp(-9 * dt), moving = false;
+  /* desktop: letters near the cursor move a little and turn a few degrees.
+     The statement's lean away from it; the welcome's lean towards it, slower,
+     from their baseline (css/site.css), over a wider reach. */
+  var AWAY = { k: 9, reach: 1.15, min: 150, amp: 0.045, deg: 3, dir: 1 };
+  var TOWARD = { k: 6, reach: 2.4, min: 320, amp: 0.02, deg: 5, dir: -1 };
+  function lean(list, o, dt) {
+    var k = 1 - Math.exp(-o.k * dt), moving = false;
     var stageTop = Math.min(0, heroTop + heroH - H - (window.pageYOffset || 0));
     var px = cursor.x, py = cursor.y - stageTop;
-    for (var i = 0; i < letters.length; i++) {
-      var L = letters[i], tx = 0, ty = 0, tr = 0;
+    for (var i = 0; i < list.length; i++) {
+      var L = list[i], tx = 0, ty = 0, tr = 0;
       if (cursor.on) {
-        var dx = L.cx - px, dy = L.cy - py, d = Math.sqrt(dx * dx + dy * dy) || 1, R = Math.max(150, L.fs * 1.15);
-        if (d < R) { var f = 1 - d / R; f *= f; var amp = L.fs * 0.045 * f; tx = dx / d * amp; ty = dy / d * amp; tr = dx / d * 3 * f; }
+        var dx = L.cx - px, dy = L.cy - py, d = Math.sqrt(dx * dx + dy * dy) || 1, R = Math.max(o.min, L.fs * o.reach);
+        if (d < R) {
+          var f = 1 - d / R; f *= f; var amp = L.fs * o.amp * f;
+          tx = o.dir * dx / d * amp; ty = o.dir * dy / d * amp; tr = o.dir * dx / d * o.deg * f;
+        }
       }
       L.x += (tx - L.x) * k; L.y += (ty - L.y) * k; L.r += (tr - L.r) * k;
       if (Math.abs(tx - L.x) + Math.abs(ty - L.y) + Math.abs(tr - L.r) > 0.02) moving = true;
@@ -593,7 +617,114 @@
       }
       css(tip, 'opacity', tipOn ? cl(Math.min(dr, 1 - dr) * 30).toFixed(3) : '0');
     }
-    return CURSOR && on && letters.length ? lean(dt) : false;
+    return CURSOR && on && letters.length ? lean(letters, AWAY, dt) : false;
+  }
+
+  /* ---------------- the welcome ----------------
+     The first screen after the intro (css/site.css has the layout and the
+     entrance). Here: its stars, the cursor depth on desktop, and the exit as
+     you scroll. */
+  var wImg = welcome && welcome.querySelector('.wl-pic img');
+  var wScene = welcome && welcome.querySelector('.wl-scene');
+  var wStars = welcome && welcome.querySelector('.wl-stars');
+  var wLayers = welcome ? Array.prototype.slice.call(welcome.querySelectorAll('.wl-layer')) : [];
+  var wRows = welcome ? ['.wl-kicker', '.wl-title', '.wl-sub', '.wl-cue'].map(function (s) { return welcome.querySelector(s); }) : [];
+  var wTitle = wRows[1], wTitleIn = wTitle && wTitle.querySelector('.wl-in');
+  var wLetters = [], wOff = false, wd = { x: 0, y: 0 };
+  var DEPTH = [1.9, 3.1]; /* how far each star layer moves against the cursor, against the picture's 1 */
+  if (welcome) welcome.classList.add('wl-wait'); /* the words wait for Bodoni Moda (see whenFontsReady) */
+
+  /* Fine stars, drawn once per screen size: many faint far ones, fewer and
+     brighter near ones. They thin out above the horizon and none sit over
+     the planet, so none reach the bottom-right corner either. */
+  function drawStars() {
+    wLayers.forEach(function (layer, li) {
+      var cv = layer.querySelector('canvas');
+      var lw = layer.offsetWidth, lh = layer.offsetHeight;
+      if (!cv || !lw || !lh) return;
+      var s = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4e6 / (lw * lh))); /* at most 4M pixels a layer */
+      cv.width = Math.round(lw * s); cv.height = Math.round(lh * s);
+      var g = cv.getContext('2d');
+      g.setTransform(s, 0, 0, s, 0, 0);
+      g.clearRect(0, 0, lw, lh);
+      var near = li === 1, top = (lh - H) / 2;
+      var n = Math.round(lw * lh / (near ? 9000 : 1900));
+      var tints = ['255,255,255', '220,214,255', '206,222,255'];
+      for (var i = 0; i < n; i++) {
+        var x = Math.random() * lw, y = Math.random() * lh;
+        var fade = 1 - sm(0.5, 0.78, (y - top) / H);
+        if (fade < 0.01) continue;
+        var r = near ? 0.5 + Math.random() * 0.55 : 0.3 + Math.random() * 0.35;
+        var a = (near ? 0.45 + Math.random() * 0.5 : 0.15 + Math.random() * 0.45) * fade;
+        var c = tints[(Math.random() * 3) | 0];
+        if (near && Math.random() < 0.12) { /* a soft halo round a few of the near ones */
+          var halo = g.createRadialGradient(x, y, 0, x, y, r * 5);
+          halo.addColorStop(0, 'rgba(' + c + ',' + (a * 0.32).toFixed(3) + ')');
+          halo.addColorStop(1, 'rgba(' + c + ',0)');
+          g.fillStyle = halo;
+          g.fillRect(x - r * 5, y - r * 5, r * 10, r * 10);
+        }
+        g.fillStyle = 'rgba(' + c + ',' + a.toFixed(3) + ')';
+        g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+      }
+    });
+  }
+
+  /* desktop: "Webessy" gets a span per letter, so the letters can lean */
+  function splitWelcome() {
+    if (!wTitleIn || wLetters.length) return;
+    var sr = document.createElement('span');
+    sr.className = 'rv-sr';
+    sr.textContent = wTitleIn.textContent.trim();
+    wTitle.insertBefore(sr, wTitleIn);
+    wTitleIn.setAttribute('aria-hidden', 'true');
+    splitChars(wTitleIn, 'wl-ch', wLetters);
+  }
+  /* where each letter sits on the stage, from the layout (offsets ignore the
+     entrance and exit transforms, so this works at any moment) */
+  function measureWelcome() {
+    for (var i = 0; i < wLetters.length; i++) {
+      var L = wLetters[i], x = L.el.offsetWidth / 2, y = L.el.offsetHeight / 2, n = L.el;
+      while (n && n !== stage) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      L.cx = x; L.cy = y;
+      L.fs = parseFloat(getComputedStyle(L.el).fontSize) || L.fs;
+    }
+  }
+
+  /* the welcome for this frame; returns true while something is still settling */
+  function welcomeFrame(P, dt, visible) {
+    if (!welcome) return false;
+    var off = !visible || P.wPic > 0.999;
+    css(welcome, 'visibility', off ? 'hidden' : 'visible');
+    if (off !== wOff) { wOff = off; welcome.classList.toggle('wl-off', off); } /* pauses its CSS animations */
+    if (off) return false;
+    /* the words rise and fade, the earlier lines first */
+    for (var i = 0; i < wRows.length; i++) {
+      var q = P.wRows[i];
+      css(wRows[i], 'opacity', (1 - q).toFixed(3));
+      css(wRows[i], 'transform', REDUCE ? 'none' : 'translate3d(0,' + (-q * H * 0.09).toFixed(1) + 'px,0)');
+    }
+    /* the picture and its stars dissolve into frame 1, pushing in a little */
+    var o = (1 - P.wPic).toFixed(3);
+    css(wImg, 'opacity', o);
+    css(wStars, 'opacity', o);
+    css(wScene, 'transform', REDUCE ? 'none' : 'scale(' + (1 + 0.06 * P.wPush).toFixed(4) + ')');
+    if (!CURSOR) return false;
+    /* desktop: the picture drifts against the cursor, the stars further, and
+       the letters lean towards it */
+    var tx = 0, ty = 0;
+    if (cursor.on) { tx = cl(cursor.x / W) * 2 - 1; ty = cl(cursor.y / H) * 2 - 1; }
+    var k = 1 - Math.exp(-2.4 * dt), moving = false;
+    wd.x += (tx - wd.x) * k; wd.y += (ty - wd.y) * k;
+    if (Math.abs(tx - wd.x) + Math.abs(ty - wd.y) > 0.0008) moving = true;
+    else { wd.x = tx; wd.y = ty; }
+    var ax = -wd.x * W * 0.012, ay = -wd.y * H * 0.012;
+    css(wImg, 'transform', 'translate3d(' + ax.toFixed(2) + 'px,' + ay.toFixed(2) + 'px,0)');
+    for (var j = 0; j < wLayers.length; j++) {
+      css(wLayers[j], 'transform', 'translate3d(' + (ax * DEPTH[j]).toFixed(2) + 'px,' + (ay * DEPTH[j]).toFixed(2) + 'px,0)');
+    }
+    if (wLetters.length && lean(wLetters, TOWARD, dt)) moving = true;
+    return moving;
   }
 
   if (CURSOR) {
@@ -619,16 +750,22 @@
     if (!document.fonts || !document.fonts.load) { fn(); return; }
     document.fonts.load('400 100px "Bodoni Moda"').then(function () { return document.fonts.ready; }).then(fn, fn);
   }
+  /* the welcome's words rise in with the real font, or after 1.5 s without it */
+  function welcomeGo() { if (welcome) welcome.classList.remove('wl-wait'); }
+  setTimeout(welcomeGo, 1500);
   whenFontsReady(function () {
     stReady = true;
-    if (CURSOR) splitLetters();
+    if (CURSOR) { splitLetters(); splitWelcome(); }
     measureStatement();
+    measureWelcome();
+    welcomeGo();
     wake();
   });
 
   /* ---------------- main loop ----------------
      Runs only while something is changing: scrolling, frames arriving, letters
-     settling, or (desktop) the 0400's idle sway. At rest a phone does nothing. */
+     settling, the welcome following the cursor, or (desktop) the 0400's idle
+     sway. At rest a phone does nothing (the welcome's drift is CSS). */
   var raf = 0, last = 0, resting = true, lastWant = 0, draws = 0, renders = 0, hudLast = '';
   function wake() { if (!raf) raf = requestAnimationFrame(tick); }
 
@@ -662,9 +799,6 @@
       css(gcv, 'opacity', (P.chromeIn * (1 - 0.9 * P.back)).toFixed(3));
       if (chrome.render(P, map, dt)) renders++;
     } else css(gcv, 'opacity', '0');
-    var ho = window.__introDone ? P.hint : 0;
-    css(hint, 'opacity', ho.toFixed(3));
-    css(hint, 'visibility', ho > 0.001 ? 'visible' : 'hidden');
   }
 
   function tick(now) {
@@ -684,6 +818,7 @@
       var want = Math.round(fS);
       if (want !== lastWant) { dir = want > lastWant ? 1 : -1; lastWant = want; }
       if (set) schedule(want, visible);
+      if (welcomeFrame(P, dt, visible)) again = true;
       if (visible) {
         drawScene(P, want, dt);
         if (statementFrame(P, dt)) again = true;

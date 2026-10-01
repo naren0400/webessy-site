@@ -25,8 +25,10 @@ the latin subsets into `fonts/`, and write the `@font-face` rules at the top of 
 `font-display: swap`. Preload only the Fraunces file used above the fold.
 
 Add a `--font-display`, `--font-body` and `--font-mono` variable and apply `--font-body` to `body`.
-Also set the existing hero headline (`#headline`) to these fonts — that is a font change only, not
-a layout change, and is the one allowed edit to hero styles.
+The hero has its own title face, Bodoni Moda (`--font-hero`), for its two title cards only: the end
+statement (`#statement`) — "MAKE PEOPLE / CHOOSE / YOU." in capitals filling the width, the page's
+one `<h1>`, with the line under it in Bodoni's real small caps — and the welcome's giant "WEBESSY"
+(`#welcome`). The old `#headline` box is gone. Never use Bodoni Moda for section headings.
 
 ## 2. Type scale
 
