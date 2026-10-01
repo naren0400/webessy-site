@@ -9,7 +9,7 @@
 <!-- font preload only on a real web address; opened from disk (file://) Chrome refuses it with a CORS error -->
 <script>if(location.protocol!=='file:'){var l=document.createElement('link');l.rel='preload';l.as='font';l.type='font/woff2';l.crossOrigin='anonymous';l.href='fonts/fraunces-opsz-normal.woff2';document.head.appendChild(l);}</script>
 <link rel="stylesheet" href="css/site.css">
-<noscript><style>html.intro-lock,html.intro-lock body{overflow:auto;height:auto}#intro{display:none}#nav{opacity:1}#navMark{visibility:visible}#headline{opacity:1}</style></noscript>
+<noscript><style>html.intro-lock,html.intro-lock body{overflow:auto;height:auto}#intro{display:none}#nav{opacity:1}#navMark{visibility:visible}#statement{opacity:1;visibility:visible}</style></noscript>
 </head>
 <body>
 
@@ -27,13 +27,25 @@
   <section id="hero" aria-label="Introduction">
     <div id="heroStage">
       <canvas id="frames" aria-hidden="true"></canvas>
-      <div id="glassPane" aria-hidden="true"></div>
-      <canvas id="chrome" aria-hidden="true"></canvas>
-      <div class="grain" aria-hidden="true"></div>
-      <div id="headline" class="glass">
-        <h1>Make people choose you.</h1>
-        <p>Give your business an <b>unfair advantage</b> online.</p>
+      <div id="heroDim" aria-hidden="true"></div>
+      <div id="heroMark" aria-hidden="true">
+        <div id="glassPane"></div>
+        <canvas id="chrome"></canvas>
       </div>
+      <div class="grain" aria-hidden="true"></div>
+      <!-- the statement: written in sentence case, shown in capitals (CSS), so it reads as a normal sentence -->
+      <div id="statement">
+        <h1 class="st-title">
+          <span class="st-line st-1"><span class="st-in">Make people</span></span>
+          <span class="st-line st-2"><span class="st-in">choose</span></span>
+          <span class="st-line st-3"><span class="st-in">you.</span></span>
+        </h1>
+        <div class="st-foot">
+          <p class="st-sub">Give your business an <b>unfair advantage</b> online.</p>
+          <a class="st-explore" href="#work">Explore</a>
+        </div>
+      </div>
+      <svg id="statementPath" aria-hidden="true" focusable="false"><path d=""/><circle r="2.4" cx="-10" cy="-10"/></svg>
       <div id="scrollHint" class="glass" aria-hidden="true">Scroll</div>
     </div>
   </section>

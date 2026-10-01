@@ -57,9 +57,10 @@ Explain everything to me in simple, plain English. Short sentences.
 - **Footer** — Webessy Studios · Bengaluru, India · WhatsApp · Email · © 2026.
 
 ## Design rules
-- **Fonts:** Fraunces for headings (max one italic accent word per heading), Instrument Sans
-  for body and UI, JetBrains Mono for small labels such as `02 / WORK`.
-  Self-host woff2 files in `fonts/` (all three are OFL licensed). No Google Fonts `<link>`.
+- **Fonts:** Fraunces for section headings (max one italic accent word per heading), Instrument
+  Sans for body and UI, JetBrains Mono for small labels such as `02 / WORK`. Bodoni Moda is for
+  the hero's big title cards only (the end statement); never use it for section headings.
+  Self-host woff2 files in `fonts/` (all four are OFL licensed). No Google Fonts `<link>`.
 - **Accent word:** the one italic accent word in a heading may be orange. On bone use `#E84A12`
   (`--orange-deep`) instead of `#FF561D`, and only in large headings (24px and up), because it
   only reaches 3:1 there. On the orange Contact section the accent word stays ink.

@@ -48,10 +48,27 @@ kept out of this repo.
 
 ## The one line
 
-The first thing anyone reads.
+The first thing anyone reads. It closes the hero: the chrome 0400 appears in
+the window, the scene dims, the 0400 steps back, and the statement rises over
+the full frame.
 
-> # Make people choose you.
-> Give your business an unfair advantage online.
+> # MAKE PEOPLE
+> # CHOOSE
+> # YOU.
+>
+> Give your business an **unfair advantage** online.
+>
+> [Explore]
+
+**How it is set**
+
+- The headline is the page's one `<h1>`: "Make people choose you." It is
+  written in sentence case and shown in capitals, so screen readers and
+  search engines read an ordinary sentence.
+- Three lines (MAKE PEOPLE / CHOOSE / YOU.) in Bodoni Moda capitals, filling
+  the width. No box behind it.
+- The line under it is in small caps, with "unfair advantage" in orange.
+- The round button reads "Explore" and scrolls to Work.
 
 **Rules behind it**
 

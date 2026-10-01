@@ -45,6 +45,13 @@
   font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap;
   src: url("../fonts/jetbrains-mono-400.woff2") format("woff2");
 }
+/* Bodoni Moda: the hero's big title cards only. Built from the full font (not
+   Google's copy, which drops them) so the small caps are real small caps. */
+@font-face {
+  font-family: "Bodoni Moda"; font-style: normal; font-weight: 400 900; font-display: swap;
+  src: url("../fonts/bodoni-moda-opsz-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 :root {
   --bg: #05060F;
@@ -69,6 +76,7 @@
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-hero: "Bodoni Moda", "Bodoni 72", Didot, Georgia, serif;
 
   --t-display: clamp(44px, 6.2vw, 96px);
   --t-h3: clamp(24px, 2.4vw, 34px);
@@ -172,11 +180,25 @@ html.nav-done #navMark { visibility: visible; }
   #nav .links a:not(.cta) { display: none; }
 }
 
-/* ---------- hero ---------- */
-#hero { position: relative; height: 620vh; }
+/* ---------- hero ----------
+   The hero scrolls 312vh: its 412vh height minus the 100vh stage. hero.js keeps
+   its scroll map in the same units, so change the two together. */
+#hero { position: relative; height: 412vh; }
 #heroStage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
-#frames, #chrome { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-#chrome { opacity: 0; pointer-events: none; }
+#frames { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transform-origin: 0 0; }
+/* the dark layer the room dims to before the statement. Darkest along the bottom,
+   where the small-caps line sits over the floor's reflections (the orange words
+   need 4.5:1 there). It never covers the bottom-right corner, where the Veo
+   watermark is. */
+#heroDim {
+  position: absolute; inset: 0; opacity: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(5, 6, 15, .93), rgba(5, 6, 15, .9) 28%, rgba(5, 6, 15, .62) 52%, rgba(5, 6, 15, .55));
+  -webkit-mask-image: radial-gradient(circle at 100% 100%, transparent 72px, #000 200px);
+  mask-image: radial-gradient(circle at 100% 100%, transparent 72px, #000 200px);
+}
+/* the 0400 and its glass pane. hero.js scales this group to step the 0400 back. */
+#heroMark { position: absolute; inset: 0; pointer-events: none; }
+#chrome { position: absolute; left: 0; top: 0; display: block; opacity: 0; } /* hero.js sizes it to a box around the 0400 */
 #glassPane {
   position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;
   background: linear-gradient(160deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02) 55%, rgba(142, 124, 255, .06));
@@ -188,21 +210,80 @@ html.nav-done #navMark { visibility: visible; }
   background-image: radial-gradient(rgba(236, 234, 251, .08) 1px, transparent 0);
   background-size: 3px 3px;
 }
-#headline {
-  position: absolute; left: 50%; bottom: 9vh; width: min(760px, 92vw);
-  padding: 26px 30px 24px; border-radius: 28px; text-align: center;
-  opacity: 0; transform: translate(-50%, 24px);
-}
-#headline h1 { font-family: var(--font-display); font-size: clamp(26px, 4.2vw, 50px); font-weight: 500; letter-spacing: -.022em; line-height: 1.06; text-wrap: balance; }
-#headline.side { text-align: left; padding: 26px 28px 24px; }
-#headline.side h1 { font-size: clamp(26px, 2.7vw, 42px); }
-#headline p { margin-top: 12px; color: var(--muted); font-size: clamp(14px, 1.4vw, 17px); }
-#headline p b { color: var(--orange); font-weight: 500; }
 #scrollHint {
   position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%);
   padding: 10px 18px; border-radius: 999px; opacity: 0;
   font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--muted);
 }
+
+/* The statement that ends the hero: three lines of Bodoni Moda capitals, no box.
+   Each line's size is the width divided by that line's own length in Bodoni Moda
+   (6.76em, 3.99em and 2.32em, measured, plus 1% to spare), so every line fills
+   the width. On wide screens that would be too tall, so lines 2 and 3 are capped
+   to the height that's left after line 1, the nav and the line under them.
+   hero.js fades it in; without JavaScript the <noscript> style shows it. */
+#statement {
+  --st-top: 96px; /* room for the nav */
+  --st-bottom: calc(max(6svh, 40px) + env(safe-area-inset-bottom, 0px));
+  --st-foot: 132px; /* the small-caps line and the button, with the gap above them */
+  --st-avail: calc(100svh - var(--st-top) - var(--st-bottom) - var(--st-foot));
+  position: absolute; left: var(--gutter); right: var(--gutter); bottom: var(--st-bottom);
+  container-type: inline-size; color: var(--ink);
+  opacity: 0; visibility: hidden; pointer-events: none;
+}
+/* a flex column, so the lines' negative margins cancel their padding instead of collapsing */
+.st-title {
+  display: flex; flex-direction: column; align-items: flex-start;
+  font-family: var(--font-hero); font-weight: 400; text-transform: uppercase;
+  --l1: min(calc(100cqi / 6.86), calc(var(--st-avail) / 2.76));
+  --cap: calc((var(--st-avail) / .92 - var(--l1)) / 2);
+}
+/* each line is a mask the words rise through; the padding (cancelled by the
+   negative margin) gives the letters room to move without being clipped */
+.st-line {
+  display: block; white-space: nowrap; line-height: .92;
+  overflow: hidden; overflow: clip; padding: .12em .2em .14em; margin: -.12em -.2em -.14em;
+}
+.st-in, .st-ch { display: inline-block; }
+.st-1 { font-size: var(--l1); }
+.st-2 { font-size: min(calc(100cqi / 4.05), var(--cap)); }
+.st-3 { font-size: min(calc(100cqi / 2.36), var(--cap)); }
+
+.st-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; margin-top: clamp(20px, 3.4svh, 36px); }
+/* true small caps: the font's own smcp glyphs, not shrunken capitals */
+.st-sub {
+  max-width: 32ch; font-family: var(--font-hero); font-size: clamp(17px, 1.3vw, 20px);
+  font-variant-caps: small-caps; letter-spacing: .04em; line-height: 1.35; text-wrap: balance;
+}
+.st-sub b { font-weight: inherit; color: var(--orange); }
+.st-explore {
+  flex: none; display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%;
+  border: 1px solid rgba(236, 234, 251, .6); color: var(--ink);
+  font: 500 15px/1 var(--font-body); letter-spacing: .02em;
+  pointer-events: auto; transition: background-color .25s ease, border-color .25s ease, color .25s ease;
+}
+.st-explore:hover { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.st-explore:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+/* the thin line that draws itself through the statement (path built by hero.js) */
+#statementPath { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; visibility: hidden; }
+#statementPath path { fill: none; stroke: var(--lavender); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+#statementPath circle { fill: var(--ink); }
+html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button scrolls to Work */
+
+@media (max-width: 719.98px) {
+  #statement { --st-foot: 176px; }
+  .st-explore { width: 84px; height: 84px; }
+}
+@media (prefers-reduced-motion: reduce) { .st-explore { transition: none; } }
+
+/* Phones and tablets (hero.js adds .lite): no live blur anywhere in the hero.
+   Blurring footage that changes every frame is the costliest thing a phone can
+   be asked to do, so the glass pane and the Scroll pill get a plain tint. */
+#hero.lite #glassPane {
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .05) 55%, rgba(142, 124, 255, .10));
+}
+#hero.lite #scrollHint { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(12, 13, 32, .82); }
 
 /* ---------- placeholder section (06 until it is built) ---------- */
 .section { position: relative; min-height: 90vh; padding: 20vh 8vw; border-top: 1px solid var(--line); }
@@ -549,8 +630,8 @@ html.nav-done #navMark { visibility: visible; }
 }
 
 /* ---------- dev readout ---------- */
-#hud {
-  position: fixed; left: 14px; bottom: 14px; z-index: 50; pointer-events: none;
+#hud { /* hidden unless the address ends in ?debug (hero.js) */
+  display: none; position: fixed; left: 14px; bottom: 14px; z-index: 50; pointer-events: none;
   font: 11px/1.4 ui-monospace, Menlo, Consolas, monospace; color: #9d99c4;
   background: rgba(5, 6, 15, .75); border: 1px solid rgba(142, 124, 255, .2); border-radius: 8px; padding: 7px 10px;
 }
