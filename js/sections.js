@@ -3,9 +3,10 @@
    sticky WhatsApp button, the contact form, and the footer logo drawing
    itself in. The intro, hero and nav live in their own files and are not
    touched here.
-   Only transform and opacity are animated, except in the footer logo, which,
-   like Ignition, also draws its outlines and wipes its letters in (a small
-   area, for about 2 seconds). With reduced motion nothing moves: text is
+   Only transform and opacity are animated, with two exceptions: the footer
+   logo, which, like Ignition, also draws its outlines and wipes its letters
+   in (a small area, for about 2 seconds), and the 03 orbit, which blurs the
+   text of the cards at the back. With reduced motion nothing moves: text is
    simply visible, and the section colours still change, as a plain fade.
    ========================================================================== */
 (function () {
@@ -218,13 +219,15 @@
   /* ---------------- rise and fade for things that aren't text ----------------
      Glass cards and the table: 16px rise and fade, once, as they come into view.
      Opacity only, never visibility: hidden, so buttons and links can still be
-     reached with the Tab key and read by screen readers before they fade in. */
-  gsap.utils.toArray('.reveal').forEach(function (el) {
+     reached with the Tab key and read by screen readers before they fade in.
+     The pricing cards are left to "03 What we do: the orbit" below. */
+  function riseIn(el) {
     gsap.from(el, {
       y: 16, opacity: 0, duration: 0.8, ease: 'power3.out',
       scrollTrigger: { trigger: el, start: 'top 85%', once: true }
     });
-  });
+  }
+  gsap.utils.toArray('.reveal').forEach(function (el) { if (!el.closest('.plans')) riseIn(el); });
 
   /* ---------------- 02 Work screenshots ----------------
      Each one slides in from the right and grows to full size as it reaches
@@ -277,6 +280,118 @@
       scrollTrigger: { trigger: line, start: 'top bottom', end: 'center 65%', scrub: true, invalidateOnRefresh: true }
     });
   });
+
+  /* ---------------- 03 What we do: the orbit ----------------
+     Computers only (a screen at least 1200 x 650, with a mouse or trackpad).
+     The three cards sit on a ring seen from slightly above. The ring pins
+     between the nav and the bottom of the screen and turns clockwise as you
+     scroll down: the front card swings left and back, the next one comes in
+     from the right. Price, then 45 days, then Care: two-thirds of a turn over
+     about two screen-heights. Tied to the scroll only, with no snapping, so
+     when you stop it stops. Each card holds at the front for a while and the
+     turn slows right down as it gets there, so wherever you stop, one card is
+     almost always square at the front.
+     The front card is full size with nothing on it, so its text is sharp. The
+     cards behind are smaller, dimmed and slightly out of focus (their text
+     only; the glass and the neon edge stay crisp). The dimming also keeps the
+     front card's text AA: at full strength, the orange button of a card behind
+     would show through the front card's glass. Two cards only pass each other
+     at the sides, where they don't overlap, so swapping which one is on top
+     never shows.
+     Tab into a card at the back and the page scrolls until it's at the front.
+     Phones, tablets and smaller screens keep the cards as laid out in the
+     HTML, and they simply rise and fade in. */
+  (function orbit() {
+    var stage = document.querySelector('.plans');
+    var cards = stage ? gsap.utils.toArray(stage.querySelectorAll('.price, .plan-card')) : [];
+    var nav = document.getElementById('nav');
+    if (cards.length !== 3 || !nav) return;
+    var bodies = cards.map(function (card) { return card.querySelector('.card-body'); });
+
+    var START = [0, 240, 120];    /* each card's place on the ring, degrees clockwise from the front: price in front, 45 days next (right), Care left */
+    var FRONT = [0, 120, 240];    /* how far the ring has turned when each card is at the front */
+    var HOLD = [0.04, 0.5, 0.96]; /* the middle of each card's stay at the front, as a share of the pinned scroll */
+    /* straight behind: 76% size. From 120 degrees round: the card at 45% opacity, and its
+       text 3px out of focus and at 60% of that, so the orange button of a card behind
+       barely shows through the front card's glass */
+    var SHRINK = 0.24, DIM = 0.55, BLUR = 3, FADE = 0.4;
+    var COMPUTER = '(min-width: 1200px) and (min-height: 650px) and (hover: hover) and (pointer: fine)';
+
+    function smoother(t) { return t * t * t * (t * (t * 6 - 15) + 10); } /* eases in and out, flat at both ends */
+    /* the pinned scroll (0 to 1) to how far the ring has turned. It holds at 0, 120 and 240 degrees. */
+    function turned(p) {
+      if (p < 0.08) return 0;
+      if (p < 0.42) return 120 * smoother((p - 0.08) / 0.34);
+      if (p < 0.58) return 120;
+      if (p < 0.92) return 120 + 120 * smoother((p - 0.58) / 0.34);
+      return 240;
+    }
+
+    gsap.matchMedia().add({ orbit: COMPUTER, still: 'not all and ' + COMPUTER }, function (ctx) {
+      if (!ctx.conditions.orbit) { cards.forEach(function (card) { riseIn(card); }); return; }
+
+      stage.classList.add('is-orbit');
+      var w = 0, h = 0, dpr = 1, progress = 0, intro = { k: 0 };
+      var css = cards.map(function (card) { return gsap.quickSetter(card, 'css'); });
+      var z = [-1, -1, -1], blurs = [-1, -1, -1];
+      function measure() { w = cards[0].offsetWidth; h = cards[0].offsetHeight; dpr = window.devicePixelRatio || 1; }
+      function snap(v) { return Math.round(v * dpr) / dpr; } /* whole screen pixels, so the front card's text is never resampled */
+
+      function render() {
+        var turn = turned(progress), depth = [];
+        cards.forEach(function (card, i) {
+          var deg = START[i] + turn, rad = deg * Math.PI / 180;
+          var back = (1 - Math.cos(rad)) / 2;                     /* 0 at the front, 1 straight behind */
+          var away = Math.abs((((deg % 360) + 540) % 360) - 180); /* degrees from the front, 0 to 180 */
+          var soft = away <= 60 ? 0 : away >= 120 ? 1 : smoother((away - 60) / 60);
+          css[i]({
+            x: snap(-0.56 * w * Math.sin(rad)),
+            y: snap(-0.16 * h * back + 16 * (1 - intro.k)), /* plus the 16px rise as the ring first comes into view */
+            scale: back < 0.001 ? 1 : 1 - SHRINK * back,
+            opacity: (1 - DIM * soft) * intro.k
+          });
+          var blur = Math.round(BLUR * soft * 10) / 10;
+          if (blur !== blurs[i]) {
+            blurs[i] = blur;
+            bodies[i].style.filter = blur ? 'blur(' + blur + 'px)' : '';
+            bodies[i].style.opacity = blur ? 1 - FADE * soft : '';
+          }
+          depth.push([Math.cos(rad), i]);
+        });
+        depth.sort(function (a, b) { return a[0] - b[0]; }); /* furthest first */
+        depth.forEach(function (d, rank) { if (z[d[1]] !== rank) { z[d[1]] = rank; cards[d[1]].style.zIndex = rank + 1; } });
+      }
+
+      var st = ScrollTrigger.create({
+        trigger: stage, pin: true, anticipatePin: 1, invalidateOnRefresh: true,
+        refreshPriority: 0.5, /* measured after the pinned cards in Work (1), before everything further down (0) */
+        /* centred between the nav and the bottom of the screen, plus a little room for the cards
+           behind, which reach slightly above the front one */
+        start: function () { measure(); return 'center center+=' + Math.round(nav.getBoundingClientRect().bottom / 2 + 0.03 * h); },
+        end: function () { return '+=' + Math.round(window.innerHeight * 1.75); },
+        onUpdate: function (self) { progress = self.progress; render(); },
+        onRefresh: function (self) { progress = self.progress; render(); }
+      });
+      /* the first time the ring comes into view it rises and fades in, like the other cards on the page */
+      gsap.to(intro, {
+        k: 1, duration: 0.8, ease: 'power3.out', onUpdate: render,
+        scrollTrigger: { trigger: stage, start: 'top 85%', once: true }
+      });
+
+      function bringForward(e) {
+        var i = cards.indexOf(e.currentTarget);
+        if (Math.abs(turned(progress) - FRONT[i]) > 1) window.scrollTo(0, Math.round(st.start + HOLD[i] * (st.end - st.start)));
+      }
+      cards.forEach(function (card) { card.addEventListener('focusin', bringForward); });
+
+      return function () {
+        cards.forEach(function (card) { card.removeEventListener('focusin', bringForward); });
+        stage.classList.remove('is-orbit');
+        gsap.set(cards, { clearProps: 'all' });
+        bodies.forEach(function (body) { body.style.filter = body.style.opacity = ''; });
+      };
+    });
+  })();
 
   /* ---------------- Footer: the logo draws itself in ----------------
      A short Ignition (js/intro.js), so the site ends the way it began: points

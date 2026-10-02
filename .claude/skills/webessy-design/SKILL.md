@@ -5,7 +5,8 @@ description: Design system for the Webessy Studios site — type scale, spacing,
 
 # Webessy design system
 
-The hero, intro and nav are finished and frozen (the nav has one approved change, see §3).
+The hero, intro and nav are finished and frozen (the nav has two approved changes: its contrast
+fix in §3 and the neon edge in §6).
 Everything here is for sections 02 to 06 and the footer. Match what already exists in
 `css/site.css` — reuse its variables, section themes and `.glass` class.
 
@@ -92,6 +93,7 @@ and up, 3:1 for form borders and focus rings. Checked values:
 | `#FF561D` on bone — **fails**, even for large text | 2.6 |
 | ink on the orange button · bone on the ink button | 6.2 · 15.9 |
 | bone on the 03 glass cards · bone 66% (worst spot, over the orange glow) | 9.9 · 5.3 |
+| bone 66% on the front card of the 03 orbit (worst, measured across the whole turn) | 5.4 |
 
 For any new pair, work the ratio out before shipping. Don't judge it by eye.
 
@@ -105,21 +107,23 @@ frame or two. Switching at exactly half-way would dip to 2.3:1 between ultramari
 It's timed, not scrubbed: half-way between bone and black, ink gets 4.4:1 and bone 3.6:1. Both
 fail, so the page must never be able to rest there.
 
-**The nav** (the one approved nav change): over bone and orange sections its links are
-full-strength `--ink`, and over bone its glass tint is .75 instead of .52. That gives 5.8:1 or
-better. Nothing else in the nav changes.
+**The nav** (approved change 1): over bone and orange sections its links are full-strength
+`--ink`, and over bone its glass tint is .75 instead of .52. That gives 5.8:1 or better. Its neon
+edge (approved change 2, §6) keeps its line there but drops the outer glow. Nothing else in the
+nav changes.
 
 **Where each colour may appear:** orange — buttons, "unfair advantage", the accent word, the
-Contact background, one 04 panel. Violet — one 04 panel, and the glow behind glass. Blue — the
-hero only. Never as gradient text.
+Contact background, one 04 panel, the neon edge. Violet — one 04 panel, the glow behind glass, the
+neon edge (as `#8E7CFF`). Blue — the hero and the neon edge only. Never as gradient text.
 
 ## 4. Space and layout
 
 - Container: `max-width: 1240px`, side gutter `clamp(20px, 5vw, 64px)`
 - Section padding: `clamp(96px, 14vh, 180px)` top and bottom
 - Base grid: 12 columns, gap `clamp(16px, 2vw, 28px)`
-- Vary composition: 02 is left-pinned/right-scrolling, 03 is a 7/5 split, 04 is full-width stacked,
-  05 is a 5/7 split mirrored, 06 is a 7/5 split. No two neighbours use the same layout.
+- Vary composition: 02 is left-pinned/right-scrolling, 03 is a 7/5 split (on computers, a ring of
+  three cards, §8), 04 is full-width stacked, 05 is a 5/7 split mirrored, 06 is a 7/5 split. No two
+  neighbours use the same layout.
 
 ## 5. Corners — a deliberate scale, not one radius everywhere
 
@@ -147,12 +151,40 @@ add one **static** glow layer behind the cards:
 }
 ```
 
-Never animate the glow. Never stack glass on glass.
+Never animate the glow. Never stack glass on glass — except in the 03 orbit (§8), where the front
+card sits over the two behind. They're dimmed to 45% there, or the orange button of a card behind
+would show through the front card's glass and drop its soft text to 3.6:1.
 
 Glass takes on the colour behind it. On ultramarine (03) the dark smoked glass works with bone
 text. On bone (the 05 reviews) it turns grey, and bone text on it fails AA (3.3:1). Glass on
 bone gets a light tint instead: a bone-white tint inside the blur, with ink text. Work out the
 pairs before shipping it.
+
+### Neon edge
+
+Only on the nav and the three 03 pricing cards, on top of `.glass` (which stays unchanged). Each
+host gets one empty `<span class="neon" aria-hidden="true"></span>`. The CSS sits right after
+`.glass` in `css/site.css`; a host sets `--neon-r` (its corner radius), `--neon-o` (glow outside)
+and `--neon-i` (glow inside).
+
+- **Look:** a 1px line of light exactly on the glass border, with a soft glow either side that
+  fades quadratically. Cards: 8px out, 6px in. Nav: 5px out, 4px in.
+- **Colour:** one colour around the whole edge at a time, and every edge on the page changes
+  together. One round is 20s, eased: violet → electric blue → violet → orange → violet. Never blue
+  straight to orange: half-way is a muddy mauve. Violet to orange passes a warm pink, which is fine.
+- **The violet is `#8E7CFF`** (the hero's lavender), not `#5B3FD9`. On ultramarine the line
+  colours reach `#8E7CFF` 4.6 · `#3D7BFF` 3.9 · `#FF561D` 4.7, but `#5B3FD9` only 2.25, which
+  looks dim beside the others. These ratios are for even brightness; the edge isn't text.
+- **How it's built:** the shape is a mask, drawn once: four radial gradients for the corners and
+  four linear ones for the straight edges. Inside it are three flat colours: violet underneath,
+  blue and orange above it, fading in and out. Only opacity animates, so the graphics chip mixes
+  them: no repaint, no re-blur. Never animate a gradient, box-shadow, filter or border colour for
+  this. They redraw every frame and stutter on phones.
+- **Text stays calm:** nothing on the text glows, and the glow stays inside the card padding
+  (24px or more), so it never sits under words. Text contrast doesn't change.
+- **Over bone and orange** the nav's edge keeps its line and inner glow, and drops the outer glow
+  (`--neon-o: 0px`): on a light background a glow looks like a smudge.
+- **Reduced motion:** the colour layers stop, and the edge stays violet.
 
 ## 7. Components
 
@@ -164,6 +196,9 @@ Secondary: transparent, 1px `var(--line)` border, text `var(--fg)`. Both: visibl
 
 **Price card (glass)** — label, `--t-price` numeral, one line of copy, the "Every build includes"
 list as plain lines separated by `--line` rules (no bullets, no icons), primary button at the bottom.
+In the 03 orbit it lies sideways so it fits a laptop screen (about 450px tall instead of 830): the
+price, the line and the button on the left; the label and the list on the right. The two smaller
+cards take its size: label at the top, the lead line (34–48px) and their copy at the bottom.
 
 **Comparison table** — full width, no card, no radius. Header row in `--t-label`. Rows separated
 by `--line`. The "Us" row: text in `--fg`, others in `--fg-soft`. On mobile, each row becomes a
@@ -219,11 +254,30 @@ never red, which fails on orange.
   phones too, one card at a time. Screens under 500px tall, reduced motion and no JavaScript get a
   plain numbered list. "What it proves": its two closing lines slide in from opposite sides,
   scrubbed, transform only — no fade, so the text never rests faint.
+- **03 What we do — the orbit.** Computers only: at least 1200×650, with
+  `(hover: hover) and (pointer: fine)`. The three cards share one grid cell, so they get one size,
+  and sit on a ring seen from slightly above. `.plans` pins between the nav and the bottom of the
+  screen for 1.75 screen-heights. The ring turns clockwise as you scroll: the front card swings
+  left and back, and the next one comes in from the right.
+  - Order: price → 45 days → Care, 240° in all. It holds at 0–8%, 42–58% and 92–100% of the pin,
+    with eased turns between (smootherstep), so wherever you stop, one card is almost always
+    square at the front. Scroll only, no snapping.
+  - Place on the ring: x = −0.56·width·sin θ, y = −0.16·height·(1 − cos θ)/2,
+    scale = 1 − 0.24·(1 − cos θ)/2.
+  - From 60° to 120° away from the front, a card dims to 45%, and its text (`.card-body`, not the
+    glass or the edge) blurs to 3px and fades to 60%.
+  - The front card sits at exactly scale 1, on whole pixels, so its text is sharp. Two cards only
+    cross at the sides, where they don't overlap, so swapping which one is on top never shows.
+  - Measured: the front card's soft text never drops below 5.4:1 through the whole turn.
+  - Tab into a card at the back and the page scrolls to where it's at the front.
+  - Phones, tablets, smaller screens, reduced motion and no JavaScript: the cards stay as laid
+    out (stacked on phones) and simply rise and fade in. No swipe carousel.
 - **04 How it works:** panels are `position: sticky` with `top: calc(12vh + index * 18px)`.
   As the next panel arrives, the previous scales to 0.95 and dims to 60% opacity.
 - **prefers-reduced-motion:** no transforms, no scrubbing; everything simply visible. Text is not
-  split. Section colours still change, as a plain fade.
-- Keep the frame rate: animate only `transform` and `opacity`.
+  split. Section colours still change, as a plain fade. The neon edge stays violet.
+- Keep the frame rate: animate only `transform` and `opacity`. One exception: the 03 orbit blurs
+  the text of the cards at the back (computers only).
 
 ## 9. Placeholders for missing assets
 
@@ -237,11 +291,13 @@ a visible label, for example `[TODO: Yauvana screenshot — desktop hero]`. Curr
 - [ ] Is this section's layout different from its neighbours?
 - [ ] Anything centred that doesn't need to be?
 - [ ] Any glass outside nav, hero, pricing, reviews? Remove it.
+- [ ] Neon edge only on the nav and the three pricing cards? Only its opacity animating? Nothing
+      glowing on or under text?
 - [ ] Does the section have its `data-theme`? Are all colours theme tokens, not fixed values?
 - [ ] Does every text/background pair pass WCAG AA — soft text, labels, buttons, focus rings,
       form borders included? Work the ratios out; don't eyeball them.
-- [ ] Violet only as a 04 panel or glow? Blue only in the hero? Orange accent `#E84A12` on bone,
-      and only at 24px and up?
+- [ ] Violet only as a 04 panel, the glow or the neon edge? Blue only in the hero and the neon
+      edge? Orange accent `#E84A12` on bone, and only at 24px and up?
 - [ ] More than one italic word in a heading? More than one primary button?
 - [ ] Right reveal: headings `words`, paragraphs and lists `lines`, one big statement `chars`,
       cards and tables `reveal`? Nothing split inside a card?

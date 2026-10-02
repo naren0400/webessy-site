@@ -17,16 +17,18 @@ Explain everything to me in simple, plain English. Short sentences.
 ## Status
 - **DONE — FROZEN:** Ignition intro (`js/intro.js`), hero (`js/hero.js`, `js/logo3d.js`, `frames/`),
   nav. Only change these to fix a bug I report. Never refactor, restyle or "improve" them.
-  One approved nav change exists: over bone and orange sections its links show at full strength,
-  and over bone its glass is darker, so the links pass AA. It lives in the "section colours"
-  block of `css/site.css`. Nothing else in the nav changes.
+  Two approved nav changes exist, and nothing else in the nav changes:
+  1. Over bone and orange sections its links show at full strength, and over bone its glass is
+     darker, so the links pass AA. It lives in the "section colours" block of `css/site.css`.
+  2. The neon edge (see "Neon edge" under Design rules). Over bone and orange it drops its outer
+     glow; that rule is in the same "section colours" block.
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
   Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
 ## Files
 - `index.html` — the page. Placeholder sections `#work`, `#services`, `#contact` exist; replace them.
-- `css/site.css` — all styles. Palette variables, the section colour themes and `.glass` are at
-  the top. Reuse them.
+- `css/site.css` — all styles. Palette variables, the section colour themes, `.glass` and
+  `.neon` are at the top. Reuse them.
 - `js/gsap.min.js` (3.12.5), `js/three.min.js`, `js/logo3d.js`, `js/intro.js`, `js/hero.js`
 - `js/ScrollTrigger.min.js` (3.12.5) — scroll-linked motion
 - `js/reveal.js` — the text reveal and its splitter (see Motion below)
@@ -46,6 +48,9 @@ Explain everything to me in simple, plain English. Short sentences.
   of them". Then "We are early. That is the offer." as one big line of type — no box.
 - **03 What we do** — price card in glass: "Websites from ₹6,499", "Every build includes" list,
   quote button. Beside it two glass cards: "45 days, included" and "Care ₹699 a month".
+  All three have the neon edge. On computers (screen at least 1200×650, mouse or trackpad) the
+  three cards sit on a ring instead: it pins and turns clockwise as you scroll, price → 45 days →
+  Care, driven by scroll only, no snapping. Phones and tablets keep the cards stacked — no swiping.
   Below: "What we build" as a plain text list in 4 groups — no prices, no cards, no icons.
   Then the comparison table "What a website usually costs".
 - **04 How it works** — the 8 steps grouped into 4 stacked sticky panels (2 steps each) that
@@ -89,17 +94,33 @@ Explain everything to me in simple, plain English. Short sentences.
 - **Contrast: every text/background pair must pass WCAG AA** — 4.5:1 for normal text, 3:1 for
   text 24px and up, 3:1 for form borders and focus rings. Work the number out; don't guess.
 - **Orange** is for buttons, the words "unfair advantage", the italic accent word, the Contact
-  background and one 04 panel. **Violet** is one 04 panel and the glow behind glass. **Blue**
-  stays in the hero. No purple gradients. No gradient text.
+  background, one 04 panel and the neon edge. **Violet** is one 04 panel, the glow behind glass
+  and the neon edge (as the lighter `#8E7CFF`). **Blue** stays in the hero and the neon edge.
+  No purple gradients. No gradient text.
 - **Glass (`.glass`) is allowed only in:** nav, hero (built), pricing cards, review cards.
   Nowhere else. The pricing section gets a soft static glow behind it so the glass has
   something to refract. On bone (the 05 reviews), glass gets a light tint with ink text:
-  the dark glass turns grey on bone and fails AA.
+  the dark glass turns grey on bone and fails AA. Glass never overlaps glass, except in the 03
+  orbit, where the front card sits over the two behind (they're dimmed, so its text stays AA).
+- **Neon edge (`.neon`) is allowed only on:** the nav and the three 03 pricing cards. Nowhere
+  else — not the review cards. It sits on top of `.glass`, which stays unchanged.
+  - A 1px line of light on the glass edge, with a soft glow either side (cards: 8px out, 6px in;
+    nav: 5px out, 4px in).
+  - One colour at a time, with every edge changing together. One round takes 20 seconds:
+    violet `#8E7CFF` → blue `#3D7BFF` → violet → orange `#FF561D` → violet. Never blue straight
+    to orange: half-way between them is a muddy mauve. The darker violet `#5B3FD9` is too dim on
+    ultramarine (2.25:1, against 3.9 and 4.7 for the blue and orange).
+  - Only the edge glows. Never text, and never under text: the glow stays inside the card padding.
+    Text contrast must not change.
+  - Only opacity animates (three flat colour layers inside a mask drawn once). Never animate a
+    gradient, shadow, filter or border colour for it: they redraw every frame and stutter on phones.
+  - Over bone and orange the nav keeps the line but drops the outer glow, which looks like a
+    smudge on a light background. With reduced motion the edge stays violet.
 - **Avoid the AI look:** don't centre every section; vary the layout from section to section;
   no emoji; no icon-card grids; no identical rounded corners on everything; no words
   "unlock", "seamless", "elevate", "empower", "leverage", "cutting-edge".
-- **Motion:** subtle, scroll-driven, never decorative for its own sake.
-  Always respect `prefers-reduced-motion`.
+- **Motion:** subtle, scroll-driven, never decorative for its own sake. The neon edge's slow
+  colour drift is the one exception that runs on time. Always respect `prefers-reduced-motion`.
 - **Text reveal:** mark text in the HTML with `data-reveal`:
   `"words"` for headings (the mono labels too), `"lines"` for paragraphs and lists,
   `"chars"` only for a single big statement line. Things that aren't text (cards, tables) use

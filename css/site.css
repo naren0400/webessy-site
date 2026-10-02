@@ -142,6 +142,10 @@ html[data-theme="bone"] #nav.glass {
 }
 html[data-theme="bone"] #nav .links,
 html[data-theme="orange"] #nav .links { color: var(--ink); }
+/* and the nav's neon edge keeps its line and inner glow there, but drops the
+   outer glow: on a light background a glow looks like a smudge */
+html[data-theme="bone"] #nav .neon,
+html[data-theme="orange"] #nav .neon { --neon-o: 0px; }
 
 /* ---------- liquid glass ---------- */
 .glass {
@@ -157,6 +161,75 @@ html[data-theme="orange"] #nav .links { color: var(--ink); }
     inset 0 -1px 0 rgba(255, 255, 255, .06),
     0 18px 50px rgba(3, 4, 12, .45);
 }
+
+/* ---------- neon edge ----------
+   A thin line of light on the glass edge, with a soft glow either side. Only on
+   the nav and the three pricing cards: each has one empty <span class="neon">.
+   The shape is a mask, drawn once: four rounded corners and four straight edges,
+   each a gradient that fades away from the line. Inside it are three flat
+   colours: violet underneath, blue and orange fading in and out above it. Only
+   their opacity changes, so the graphics chip mixes them and nothing is redrawn
+   or re-blurred while it runs.
+   One round takes 20s: violet, blue, violet, orange, violet. Never blue straight
+   to orange: half way between those two is a muddy mauve. Every edge on the page
+   changes together.
+   The violet is the lighter #8E7CFF: #5B3FD9 only reaches 2.25:1 on ultramarine,
+   dim beside the blue (3.9:1) and the orange (4.7:1). #8E7CFF is 4.6:1.
+   The glow reaches 6px inside, and the card padding is at least 24px, so it never
+   sits under text. Hosts set --neon-r (their corner radius), --neon-o (glow
+   outside) and --neon-i (glow inside). With reduced motion it stays violet. */
+.neon {
+  --neon-r: 16px; --neon-o: 8px; --neon-i: 6px;
+  --neon-c: calc(var(--neon-r) + var(--neon-o));          /* a corner piece is this square */
+  --neon-w: calc(var(--neon-o) + 1px + var(--neon-i));    /* an edge piece is this thick */
+  /* the fade across an edge, from the outside in: glow, the 1px line (on the glass border), glow */
+  --neon-edge:
+    rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .03) calc(var(--neon-o) * .25), rgba(0, 0, 0, .12) calc(var(--neon-o) * .5),
+    rgba(0, 0, 0, .28) calc(var(--neon-o) * .75), rgba(0, 0, 0, .5) calc(var(--neon-o) - .4px),
+    #000 calc(var(--neon-o) + .2px), #000 calc(var(--neon-o) + .8px), rgba(0, 0, 0, .42) calc(var(--neon-o) + 1.4px),
+    rgba(0, 0, 0, .24) calc(var(--neon-o) + 1px + var(--neon-i) * .25), rgba(0, 0, 0, .1) calc(var(--neon-o) + 1px + var(--neon-i) * .5),
+    rgba(0, 0, 0, .025) calc(var(--neon-o) + 1px + var(--neon-i) * .75), rgba(0, 0, 0, 0) var(--neon-w);
+  /* the same fade around a corner, measured out from the corner's centre */
+  --neon-arc:
+    rgba(0, 0, 0, 0) calc(var(--neon-r) - 1px - var(--neon-i)), rgba(0, 0, 0, .025) calc(var(--neon-r) - 1px - var(--neon-i) * .75),
+    rgba(0, 0, 0, .1) calc(var(--neon-r) - 1px - var(--neon-i) * .5), rgba(0, 0, 0, .24) calc(var(--neon-r) - 1px - var(--neon-i) * .25),
+    rgba(0, 0, 0, .42) calc(var(--neon-r) - 1.4px), #000 calc(var(--neon-r) - .8px), #000 calc(var(--neon-r) - .2px),
+    rgba(0, 0, 0, .5) calc(var(--neon-r) + .4px), rgba(0, 0, 0, .28) calc(var(--neon-r) + var(--neon-o) * .25),
+    rgba(0, 0, 0, .12) calc(var(--neon-r) + var(--neon-o) * .5), rgba(0, 0, 0, .03) calc(var(--neon-r) + var(--neon-o) * .75),
+    rgba(0, 0, 0, 0) var(--neon-c);
+  /* behind the host's text (z-index -1 inside its stacking context), covering its edge plus the outside glow */
+  position: absolute; inset: calc(-1px - var(--neon-o)); z-index: -1; pointer-events: none;
+  background: var(--lavender);
+  -webkit-mask-image:
+    radial-gradient(circle at 100% 100%, var(--neon-arc)), radial-gradient(circle at 0 100%, var(--neon-arc)),
+    radial-gradient(circle at 100% 0, var(--neon-arc)), radial-gradient(circle at 0 0, var(--neon-arc)),
+    linear-gradient(to bottom, var(--neon-edge)), linear-gradient(to top, var(--neon-edge)),
+    linear-gradient(to right, var(--neon-edge)), linear-gradient(to left, var(--neon-edge));
+  mask-image:
+    radial-gradient(circle at 100% 100%, var(--neon-arc)), radial-gradient(circle at 0 100%, var(--neon-arc)),
+    radial-gradient(circle at 100% 0, var(--neon-arc)), radial-gradient(circle at 0 0, var(--neon-arc)),
+    linear-gradient(to bottom, var(--neon-edge)), linear-gradient(to top, var(--neon-edge)),
+    linear-gradient(to right, var(--neon-edge)), linear-gradient(to left, var(--neon-edge));
+  -webkit-mask-position: 0 0, 100% 0, 0 100%, 100% 100%, var(--neon-c) 0, var(--neon-c) 100%, 0 var(--neon-c), 100% var(--neon-c);
+  mask-position: 0 0, 100% 0, 0 100%, 100% 100%, var(--neon-c) 0, var(--neon-c) 100%, 0 var(--neon-c), 100% var(--neon-c);
+  -webkit-mask-size:
+    var(--neon-c) var(--neon-c), var(--neon-c) var(--neon-c), var(--neon-c) var(--neon-c), var(--neon-c) var(--neon-c),
+    calc(100% - 2 * var(--neon-c)) var(--neon-w), calc(100% - 2 * var(--neon-c)) var(--neon-w),
+    var(--neon-w) calc(100% - 2 * var(--neon-c)), var(--neon-w) calc(100% - 2 * var(--neon-c));
+  mask-size:
+    var(--neon-c) var(--neon-c), var(--neon-c) var(--neon-c), var(--neon-c) var(--neon-c), var(--neon-c) var(--neon-c),
+    calc(100% - 2 * var(--neon-c)) var(--neon-w), calc(100% - 2 * var(--neon-c)) var(--neon-w),
+    var(--neon-w) calc(100% - 2 * var(--neon-c)), var(--neon-w) calc(100% - 2 * var(--neon-c));
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.neon::before, .neon::after { content: ""; position: absolute; inset: 0; opacity: 0; }
+.neon::before { background: var(--blue); animation: neon-blue 20s ease-in-out infinite; }
+.neon::after { background: var(--orange); animation: neon-orange 20s ease-in-out infinite; }
+@keyframes neon-blue { 0%, 40%, 100% { opacity: 0; } 15%, 25% { opacity: 1; } }
+@keyframes neon-orange { 0%, 50%, 90%, 100% { opacity: 0; } 65%, 75% { opacity: 1; } }
+#nav .neon { --neon-r: 28px; --neon-o: 5px; --neon-i: 4px; } /* the pill: 56px tall, so its corners are 28px */
+@media (prefers-reduced-motion: reduce) { .neon::before, .neon::after { animation: none; } }
 
 /* ---------- nav ---------- */
 #nav {
@@ -599,7 +672,7 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 }
 
 .plans { display: grid; gap: var(--gap); margin-top: clamp(48px, 8vh, 96px); }
-.price, .plan-card { border-radius: 16px; padding: var(--card-pad); }
+.price, .plan-card { position: relative; isolation: isolate; border-radius: 16px; padding: var(--card-pad); } /* isolation keeps the neon edge inside the card */
 .price__head { font-family: var(--font-display); font-weight: 400; }
 .price__from { display: block; font-size: var(--t-h3); line-height: 1.15; letter-spacing: -.015em; }
 .price__from em { font-style: italic; color: var(--accent); }
@@ -689,6 +762,35 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 @media (min-width: 1100px) {
   .build__groups { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+/* The orbit — computers only. sections.js adds .is-orbit to .plans (screens at least
+   1200 x 650 with a mouse or trackpad, no reduced motion), pins it and turns the three
+   cards on a ring as you scroll. All three share one grid cell, so they get one size:
+   the price card's. The price card lies sideways (price, line and button on the left,
+   the list on the right) so it fits a laptop screen. The cards' text sits in .card-body,
+   so the cards at the back can blur their text and keep the glass and the edge sharp. */
+.plans.is-orbit { display: grid; grid-template-columns: min(56%, 700px); justify-content: center; }
+.plans.is-orbit .plans__side { display: contents; }
+.plans.is-orbit .price, .plans.is-orbit .plan-card { grid-area: 1 / 1; display: flex; flex-direction: column; will-change: transform; }
+.plans.is-orbit .card-body { flex: 1; will-change: filter; }
+
+.plans.is-orbit .price .card-body {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr;
+  column-gap: clamp(28px, 3vw, 48px);
+}
+.plans.is-orbit .price__head { grid-area: 1 / 1; container-type: inline-size; }
+.plans.is-orbit .price__num { font-size: min(var(--t-price), 30cqi); } /* "₹6,499" is about 3.05em wide: it fills the column */
+.plans.is-orbit .price__lede { grid-area: 2 / 1; margin-top: clamp(14px, 2.4vh, 24px); }
+.plans.is-orbit .price__cta { grid-area: 3 / 1; align-self: end; justify-self: start; margin-top: clamp(20px, 3.4vh, 32px); }
+/* the label and the list share the right column; the list starts under the label */
+.plans.is-orbit .price__label { grid-area: 1 / 2; align-self: start; margin-top: 0; }
+.plans.is-orbit .includes { grid-row: 1 / 4; grid-column: 2; margin-top: calc(var(--t-label) * 1.2 + 14px); }
+.plans.is-orbit .includes li { padding-block: clamp(8px, 1.4vh, 13px); }
+
+/* the two smaller cards: the label at the top, the rest at the bottom, the lead line larger */
+.plans.is-orbit .plan-card .card-body { display: flex; flex-direction: column; }
+.plans.is-orbit .plan-card .label { margin-bottom: auto; }
+.plans.is-orbit .plan-card .plan-card__lead { margin: 24px 0 16px; font-size: clamp(34px, 3.2vw, 48px); line-height: 1.08; max-width: 15em; }
 
 /* ---------- 06 Contact ----------
    7/5 split: "Let's talk", the copy and the three steps on the left, the form lower on
