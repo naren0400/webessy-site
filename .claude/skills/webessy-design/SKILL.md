@@ -5,8 +5,8 @@ description: Design system for the Webessy Studios site — type scale, spacing,
 
 # Webessy design system
 
-The hero, intro and nav are finished and frozen (the nav has two approved changes: its contrast
-fix in §3 and the neon edge in §6).
+The hero, intro and nav are finished and frozen (the nav has three approved changes: its contrast
+fix in §3, the neon edge in §6, and its look over the 04 panels in §3).
 Everything here is for sections 02 to 06 and the footer. Match what already exists in
 `css/site.css` — reuse its variables, section themes and `.glass` class.
 
@@ -109,8 +109,11 @@ fail, so the page must never be able to rest there.
 
 **The nav** (approved change 1): over bone and orange sections its links are full-strength
 `--ink`, and over bone its glass tint is .75 instead of .52. That gives 5.8:1 or better. Its neon
-edge (approved change 2, §6) keeps its line there but drops the outer glow. Nothing else in the
-nav changes.
+edge (approved change 2, §6) keeps its line there but drops the outer glow. Approved change 3:
+04 is black, but while one of its panels is behind the nav, `js/sections.js` sets
+`data-nav="panel"` on `<html>` and the nav takes that same look over bone. Measured from pixels:
+6.7:1 over bone, 8.9 over green, 10 over orange and violet (the grey links would get 2.3 to 4.4).
+Nothing else in the nav changes.
 
 **Where each colour may appear:** orange — buttons, "unfair advantage", the accent word, the
 Contact background, one 04 panel, the neon edge. Violet — one 04 panel, the glow behind glass, the
@@ -272,8 +275,17 @@ never red, which fails on orange.
   - Tab into a card at the back and the page scrolls to where it's at the front.
   - Phones, tablets, smaller screens, reduced motion and no JavaScript: the cards stay as laid
     out (stacked on phones) and simply rise and fade in. No swipe carousel.
-- **04 How it works:** panels are `position: sticky` with `top: calc(12vh + index * 18px)`.
-  As the next panel arrives, the previous scales to 0.95 and dims to 60% opacity.
+- **04 How it works:** the browser holds the panels (CSS sticky); `js/sections.js` picks how they
+  stack and only sets scale and opacity. Each panel has its own layout inside.
+  - Computers and tablets (`.is-stack`): panels stick at `max(12vh, 86px) + index * 18px`, sized
+    so all four bottoms line up near the bottom of the screen (the front one 820px at most). As the
+    next panel arrives, the previous scales to 0.95. It dims to 60% only once the next one covers
+    all its text: dimmed, the text on orange, violet and green fails AA (2.8, 3.5, 3.1 at 60%).
+  - Phones, and any screen too short for the stack (`.is-flow`): a panel is taller than the
+    screen, so it scrolls up normally and stops with its bottom edge just above the WhatsApp
+    button; the next one slides over it. It scales to 0.95 and never dims.
+  - The panels don't fade in (a fade would show the panel underneath). Reduced motion and no
+    JavaScript: the panels simply follow each other.
 - **prefers-reduced-motion:** no transforms, no scrubbing; everything simply visible. Text is not
   split. Section colours still change, as a plain fade. The neon edge stays violet.
 - Keep the frame rate: animate only `transform` and `opacity`. One exception: the 03 orbit blurs

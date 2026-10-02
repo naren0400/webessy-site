@@ -306,6 +306,115 @@
       </div>
     </div>
   </section>
+  <!-- 04 HOW IT WORKS — the 8 steps, two to a panel, in four coloured panels that slide over each
+       other as you scroll (js/sections.js). Each panel names its colour in data-theme and has its
+       own layout inside. The big numbers are decoration: screen readers hear the number at the
+       start of each step's heading instead ("1. We talk — free"). -->
+  <section id="how-it-works" class="how" data-theme="black" aria-labelledby="how-title">
+    <div class="container">
+      <div class="how__head">
+        <p class="label" data-reveal="words">04 / How it works</p>
+        <h2 id="how-title" class="display how__title" data-reveal="words">How it works</h2>
+        <p class="how__intro" data-reveal="lines">No surprises. You know the price, the plan and the date before any money changes hands.</p>
+      </div>
+
+      <div class="how__stack">
+        <!-- 1–2, bone: two equal columns, the two "Costs you nothing." lines level at the bottom -->
+        <div class="how__slot">
+          <div class="how__panel how__panel--columns" data-theme="bone">
+            <div class="step">
+              <span class="step__num" aria-hidden="true">01</span>
+              <h3 class="step__title"><span class="step__sr">1. </span>We talk — free</h3>
+              <div class="step__text">
+                <p>A call or a WhatsApp conversation. Twenty minutes, usually less.</p>
+                <p>We ask what your business does, who your customers are, and what you want this site to actually achieve. No pitch, no pressure.</p>
+              </div>
+              <p class="step__free"><strong>Costs you nothing.</strong></p>
+            </div>
+            <div class="step">
+              <span class="step__num" aria-hidden="true">02</span>
+              <h3 class="step__title"><span class="step__sr">2. </span>You get a written quote — free</h3>
+              <div class="step__text">
+                <p>Within two days you get one message with everything in it: what we are building, what is included, anything extra you chose, one final number, and the date it will be finished.</p>
+                <p>That number does not change later.</p>
+              </div>
+              <p class="step__free"><strong>Costs you nothing.</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3–4, orange: staggered, step 3 top left and step 4 lower right, the numbers hanging beside the titles -->
+        <div class="how__slot">
+          <div class="how__panel how__panel--stagger" data-theme="orange">
+            <div class="step">
+              <span class="step__num" aria-hidden="true">03</span>
+              <h3 class="step__title"><span class="step__sr">3. </span>You pay 25% — we start</h3>
+              <div class="step__text">
+                <p>Once you are happy with the quote, 25% up front and the work begins. UPI, bank transfer, or PayPal if you are outside India.</p>
+                <p>A quarter to start, so you are not handing over much before you have seen anything. The rest is spread across the build.</p>
+                <p>This is the point where planning, design and writing start properly.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step__num" aria-hidden="true">04</span>
+              <h3 class="step__title"><span class="step__sr">4. </span>You send your content — we plan around it</h3>
+              <div class="step__text">
+                <p>Photos, logo, menu, prices, anything you already have. Send it while we plan, not after, because what you have decides how the site is built.</p>
+                <p>Do not worry about quality. We will tell you what is usable, what needs reshooting, and what we can fix ourselves.</p>
+                <p class="step__note"><strong>Your date starts when your content arrives.</strong> This is the one thing that delays projects, and it is almost never the developer.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5–6, violet: two rows like a ledger, number, title and text side by side -->
+        <div class="how__slot">
+          <div class="how__panel how__panel--ledger" data-theme="violet">
+            <div class="step">
+              <span class="step__num" aria-hidden="true">05</span>
+              <h3 class="step__title"><span class="step__sr">5. </span>You see it before anyone else</h3>
+              <div class="step__text">
+                <p>You get a private link to the real site, working, on your phone and your laptop. Not a picture of a website. The actual thing.</p>
+                <p>Tell us what to change. Your plan includes rounds of changes, and we use them properly — one clear list at a time, not fifty messages.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step__num" aria-hidden="true">06</span>
+              <h3 class="step__title"><span class="step__sr">6. </span>Your own name</h3>
+              <div class="step__text">
+                <p>Not a free subdomain. Not someone else’s address with your name tacked on. <span class="step__domain">yourbusiness.com</span>, and it belongs to you.</p>
+                <p>We handle the whole setup. You pay for the domain directly, in your own name, and we get your first year at a discount.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7–8, green: step 7 small in a narrow column, step 8 large beside it -->
+        <div class="how__slot">
+          <div class="how__panel how__panel--finale" data-theme="green">
+            <div class="step">
+              <span class="step__num" aria-hidden="true">07</span>
+              <h3 class="step__title"><span class="step__sr">7. </span>Final payment, then it goes live</h3>
+              <div class="step__text">
+                <p>The remaining balance, and your site is live on your domain the same day.</p>
+                <p>You get everything: the files, the accounts, the logins. All in your name. If you ever want to work with someone else, nothing is locked and nothing is held.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step__num" aria-hidden="true">08</span>
+              <h3 class="step__title"><span class="step__sr">8. </span>45 days of free changes</h3>
+              <div class="step__text">
+                <p>Launch day is not the finish line. For 45 days we change whatever you want — text, photos, prices, hours. No invoice.</p>
+                <p class="step__last">Anything broken stays free forever.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="how__close" data-reveal="lines">Most sites take two to five weeks from advance to launch, depending on size and how fast your content arrives. Your exact date is in your quote.</p>
+    </div>
+  </section>
   <!-- 06 CONTACT — "Let's talk" is the heading and the WhatsApp link in one. The copy and the
        three steps on the left, the form lower on the right. -->
   <section id="contact" class="contact" data-theme="orange" aria-labelledby="contact-title">

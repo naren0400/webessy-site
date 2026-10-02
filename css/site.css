@@ -134,18 +134,24 @@ html.theme-live body { background: transparent; }
 
 /* The nav over bone and orange sections: links at full strength, and over bone
    a darker glass, so the links pass AA. Nothing else in the nav changes, and
-   over the hero, 03 and black sections it looks exactly as before. */
-html[data-theme="bone"] #nav.glass {
+   over the hero, 03 and black sections it looks exactly as before.
+   The 04 panels too: 04 is black, but its panels are bone, orange, violet and
+   green. While one is behind the nav, sections.js sets data-nav="panel" on
+   <html> and the nav takes its look over bone, which passes on all four. */
+html[data-theme="bone"] #nav.glass,
+html[data-nav="panel"] #nav.glass {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .02)),
     rgba(12, 13, 32, .75);
 }
 html[data-theme="bone"] #nav .links,
-html[data-theme="orange"] #nav .links { color: var(--ink); }
+html[data-theme="orange"] #nav .links,
+html[data-nav="panel"] #nav .links { color: var(--ink); }
 /* and the nav's neon edge keeps its line and inner glow there, but drops the
    outer glow: on a light background a glow looks like a smudge */
 html[data-theme="bone"] #nav .neon,
-html[data-theme="orange"] #nav .neon { --neon-o: 0px; }
+html[data-theme="orange"] #nav .neon,
+html[data-nav="panel"] #nav .neon { --neon-o: 0px; }
 
 /* ---------- liquid glass ---------- */
 .glass {
@@ -791,6 +797,187 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 .plans.is-orbit .plan-card .card-body { display: flex; flex-direction: column; }
 .plans.is-orbit .plan-card .label { margin-bottom: auto; }
 .plans.is-orbit .plan-card .plan-card__lead { margin: 24px 0 16px; font-size: clamp(34px, 3.2vw, 48px); line-height: 1.08; max-width: 15em; }
+
+/* ---------- 04 How it works ----------
+   A black section. The 8 steps sit two to a panel in four solid panels: bone, orange,
+   violet, green. Each panel names its colour in data-theme: bone and orange are the
+   section themes, violet and green exist only here. Soft text on each passes AA: ink 66%
+   on bone (5.9:1), ink 80% on orange (4.9), bone 92% on violet (4.8), ink 82% on green
+   (5.4). The big numbers are 70% of the text colour: 3.4:1 or better, and they're large.
+   Each panel has its own layout inside, so no two look alike.
+   Without JavaScript, and with reduced motion, the panels simply follow each other.
+   Otherwise sections.js picks how they stack, with a class on .how__stack:
+     .is-stack  computers and tablets. Each panel sticks near the top, 18px below the one
+                before, and all four are sized so their bottoms line up near the bottom of
+                the screen: they leave together at the end.
+     .is-flow   phones, and any screen too short for the stack. A panel is taller than the
+                screen there, so it scrolls up normally and stops when its bottom edge is
+                just above the WhatsApp button. The next one then slides up over it.
+   The slot is what sticks; the panel inside it is what shrinks and dims. */
+.how { padding-block: var(--section-pad); }
+.how__title { margin-top: 18px; }
+.how__intro {
+  margin-top: clamp(20px, 3vh, 28px); max-width: 24ch;
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(22px, 2.1vw, 30px);
+  line-height: 1.25; letter-spacing: -.015em; text-wrap: pretty;
+}
+
+.how__stack { --stack-gap: 16px; margin-top: clamp(56px, 10vh, 112px); }
+.how__slot + .how__slot { margin-top: var(--stack-gap); }
+.how__slot:nth-child(2) { --i: 1; }
+.how__slot:nth-child(3) { --i: 2; }
+.how__slot:nth-child(4) { --i: 3; }
+.how__panel {
+  --pad-x: clamp(22px, 3.6vw, 52px); --pad-y: clamp(26px, 5vh, 52px);
+  position: relative; border-radius: 16px; padding: var(--pad-y) var(--pad-x);
+}
+.how__panel[data-theme="violet"] {
+  --page: var(--violet); --fg: var(--bone); --fg-soft: rgba(236, 231, 218, .92); --line: rgba(236, 231, 218, .26);
+}
+.how__panel[data-theme="green"] {
+  --page: var(--green); --fg: var(--ink-dark); --fg-soft: rgba(12, 12, 10, .82); --line: rgba(12, 12, 10, .22);
+}
+
+/* a step: the big number, the title, the text */
+.step__num {
+  display: block; font-family: var(--font-display); font-weight: 400; font-variation-settings: "opsz" 144;
+  font-variant-numeric: lining-nums; line-height: 1; letter-spacing: -.04em;
+  color: var(--fg-soft); color: color-mix(in srgb, var(--fg) 70%, transparent);
+}
+.step__title {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-h3);
+  line-height: 1.15; letter-spacing: -.015em; text-wrap: balance;
+}
+.step__sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.step__text { margin-top: 14px; }
+.step__text p { font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 62ch; }
+.step__text p + p { margin-top: .7em; }
+.step strong { font-weight: 500; color: var(--fg); }
+
+/* 1–2, bone: big numbers on top. From tablets up, two equal columns with a hairline
+   between, and both "Costs you nothing." lines level at the bottom. */
+.how__panel--columns .step__num { font-size: clamp(64px, min(9vw, 15vh), 136px); line-height: .9; margin-bottom: clamp(12px, 2.4vh, 24px); }
+.how__panel--columns .step + .step { margin-top: 44px; }
+.step__free { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); font-size: var(--t-body); line-height: 1.4; }
+
+/* 3–4, orange: each number hangs beside its title. On computers step 3 sits top left
+   and step 4 lower right. The line about your date gets a thick rule beside it. */
+.how__panel--stagger .step {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(12px, 1.4vw, 20px); align-items: baseline;
+}
+.how__panel--stagger .step__num { font-size: calc(var(--t-h3) * 1.7); }
+.how__panel--stagger .step > :not(.step__num) { grid-column: 2; }
+.how__panel--stagger .step + .step { margin-top: 44px; }
+.step__text .step__note { margin-top: 22px; padding-left: 18px; border-left: 3px solid var(--fg); }
+.step__note strong {
+  display: block; margin-bottom: 6px; font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(21px, 1.9vw, 27px); line-height: 1.2; letter-spacing: -.015em;
+}
+
+/* 5–6, violet: a ledger. On phones each number sits at the end of its title's line; from
+   tablets up each step is a row (number, title, text) and a hairline splits the panel in two. */
+.how__panel--ledger .step { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: baseline; }
+.how__panel--ledger .step__num { grid-column: 2; grid-row: 1; font-size: calc(var(--t-h3) * 1.5); }
+.how__panel--ledger .step__title { grid-column: 1; grid-row: 1; }
+.how__panel--ledger .step__text { grid-column: 1 / -1; }
+.how__panel--ledger .step + .step { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+.step__domain { font-family: var(--font-mono); font-size: .92em; color: var(--fg); }
+
+/* 7–8, green: step 7 small, step 8 big. From tablets up step 7 takes a narrow column on
+   the left, and step 8 ends on its last line at the bottom of the panel. */
+.how__panel--finale .step__num { font-size: calc(var(--t-h3) * 1.5); margin-bottom: 8px; }
+.how__panel--finale .step + .step { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
+.how__panel--finale .step + .step .step__title {
+  font-size: clamp(40px, 5.4vw, 80px); line-height: 1; letter-spacing: -.025em; font-variation-settings: "opsz" 144;
+}
+.step__text .step__last {
+  margin-top: 20px; font-family: var(--font-display); font-size: var(--t-h3);
+  line-height: 1.2; letter-spacing: -.015em; color: var(--fg);
+}
+
+.how__close {
+  margin-top: clamp(64px, 12vh, 140px); max-width: 32ch;
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(24px, 2.8vw, 40px);
+  line-height: 1.22; letter-spacing: -.015em; text-wrap: pretty;
+}
+
+@media (min-width: 720px) {
+  .how__stack { --stack-gap: 24px; }
+
+  .how__panel--columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: calc(2 * var(--pad-x)); }
+  .how__panel--columns .step { display: flex; flex-direction: column; }
+  .how__panel--columns .step + .step { position: relative; margin-top: 0; }
+  .how__panel--columns .step + .step::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(-1 * var(--pad-x)); width: 1px; background: var(--line); }
+  .how__panel--columns .step__text { margin-bottom: 28px; }
+  .how__panel--columns .step__free { margin-top: auto; }
+
+  .how__panel--stagger { display: flex; flex-direction: column; }
+  .how__panel--stagger .step + .step { margin: auto 0 0 16%; padding-top: 44px; }
+
+  .how__panel--ledger { display: flex; flex-direction: column; }
+  .how__panel--ledger .step { flex: 1 1 0; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+  .how__panel--ledger .step__num { grid-column: 1 / span 2; font-size: clamp(52px, min(6vw, 11vh), 96px); line-height: .9; }
+  .how__panel--ledger .step__title { grid-column: 3 / span 4; font-size: clamp(26px, 2.6vw, 38px); }
+  .how__panel--ledger .step__text { grid-column: 7 / -1; grid-row: 1; margin-top: 0; }
+  .how__panel--ledger .step + .step { margin-top: clamp(20px, 3vh, 32px); padding-top: clamp(20px, 3vh, 32px); }
+
+  .how__panel--finale { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+  .how__panel--finale .step:first-child { grid-column: 1 / span 5; }
+  .how__panel--finale .step + .step { grid-column: 7 / -1; display: flex; flex-direction: column; margin-top: 0; padding-top: 0; border-top: 0; }
+  .how__panel--finale .step + .step .step__text { flex: 1; display: flex; flex-direction: column; }
+  .how__panel--finale .step + .step .step__last { margin-top: auto; padding-top: 24px; }
+}
+@media (min-width: 960px) {
+  .how__head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: end; }
+  .how__head .label { grid-column: 1 / -1; }
+  .how__title { grid-column: 1 / span 7; }
+  .how__intro { grid-column: 8 / -1; margin-top: 0; }
+
+  .how__panel--stagger { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
+  .how__panel--stagger .step:first-child { grid-column: 1 / span 5; align-self: start; }
+  .how__panel--stagger .step + .step { grid-column: 7 / -1; align-self: end; margin: 0; padding-top: 0; }
+
+  .how__panel--finale .step:first-child { grid-column: 1 / span 4; }
+  .how__panel--finale .step + .step { grid-column: 6 / -1; }
+
+  .how__close { margin-left: calc((100% + var(--gap)) / 12 * 5); }
+}
+
+/* the two ways of stacking (sections.js picks one) */
+.how__stack.is-stack .how__slot,
+.how__stack.is-flow .how__slot { position: sticky; }
+.how__stack.is-stack .how__panel,
+.how__stack.is-flow .how__panel { will-change: transform; }
+/* .is-stack: the first panel sticks below the nav (on a very tall screen the stack is
+   centred instead), each next one 18px lower. --front is the front panel's height: what
+   is left of the screen under the stack, 820px at most. The panels behind are 18px taller
+   each, so all four bottoms line up and the stack leaves as one. */
+.how__stack.is-stack {
+  --cap: 820px;
+  --top: max(12vh, 86px, (100vh - var(--cap) - 54px - var(--stack-gap)) / 2);
+  --front: min(100vh - var(--top) - 54px - var(--stack-gap), var(--cap));
+}
+.how__stack.is-stack .how__slot { top: calc(var(--top) + var(--i, 0) * 18px); }
+.how__stack.is-stack .how__panel { height: calc(var(--front) + (3 - var(--i, 0)) * 18px); }
+/* .is-flow: a panel stops with its bottom edge --dock above the bottom of the screen.
+   sections.js sets --h, the slot's height. Every panel is at least that tall, so the
+   next one covers the last one completely. On phones it stops above the WhatsApp
+   button: 16px from the edge, plus the button's 48px, plus 12px clear. */
+.how__stack.is-flow { --dock: var(--stack-gap); }
+.how__stack.is-flow .how__slot { top: calc(100vh - var(--dock) - var(--h, 100vh)); }
+.how__stack.is-flow .how__panel { min-height: calc(100vh - var(--dock)); }
+@media (max-width: 719.98px) {
+  .how__stack.is-flow { --dock: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+/* svh: the screen with the browser's bars showing, which doesn't change as they slide away */
+@supports (height: 100svh) {
+  .how__stack.is-stack {
+    --top: max(12svh, 86px, (100svh - var(--cap) - 54px - var(--stack-gap)) / 2);
+    --front: min(100svh - var(--top) - 54px - var(--stack-gap), var(--cap));
+  }
+  .how__stack.is-flow .how__slot { top: calc(100svh - var(--dock) - var(--h, 100svh)); }
+  .how__stack.is-flow .how__panel { min-height: calc(100svh - var(--dock)); }
+}
 
 /* ---------- 06 Contact ----------
    7/5 split: "Let's talk", the copy and the three steps on the left, the form lower on

@@ -40,6 +40,35 @@
     }
   })();
 
+  /* ---------------- the nav over the 04 panels ----------------
+     The nav takes its look from the section in the middle of the screen. 04 is
+     black, but its panels are bone, orange, violet and green, and they pass
+     under the nav: on phones all the time, on computers as the stack leaves.
+     While any panel is behind the nav, <html> gets data-nav="panel" and the nav
+     takes its look over bone (css/site.css, "section colours"), which passes AA
+     on all four. Watched through a strip exactly where the nav is, so it costs
+     nothing while you scroll. Needs no GSAP: it works with reduced motion too. */
+  (function navOverPanels() {
+    var nav = document.getElementById('nav');
+    var panels = Array.prototype.slice.call(document.querySelectorAll('.how__panel'));
+    if (!nav || !panels.length || !('IntersectionObserver' in window)) return;
+    var behind = [], io = null, timer = 0;
+    function watch() {
+      if (io) io.disconnect();
+      behind = panels.map(function () { return false; });
+      var r = nav.getBoundingClientRect();
+      io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { behind[panels.indexOf(e.target)] = e.isIntersecting; });
+        if (behind.indexOf(true) !== -1) root.setAttribute('data-nav', 'panel');
+        else root.removeAttribute('data-nav');
+      }, { rootMargin: -Math.round(r.top) + 'px 0px ' + -Math.round(window.innerHeight - r.bottom) + 'px 0px' });
+      panels.forEach(function (p) { io.observe(p); });
+    }
+    watch();
+    /* the strip is measured from the bottom of the screen too, so measure it again when that moves */
+    window.addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(watch, 200); });
+  })();
+
   /* ---------------- 06 Contact: the form ----------------
      Sends through Web3Forms to the studio's inbox without leaving the page.
      Only the name and the number are required. A problem gets a plain line
@@ -390,6 +419,119 @@
         gsap.set(cards, { clearProps: 'all' });
         bodies.forEach(function (body) { body.style.filter = body.style.opacity = ''; });
       };
+    });
+  })();
+
+  /* ---------------- 04 How it works: the stack ----------------
+     The four panels slide over each other. The browser holds them in place
+     (position: sticky, in css/site.css), which stays smooth on phones. Here we
+     only pick how they stack, measure where everything is (on load and resize,
+     never while you scroll), and shrink and dim the panel behind.
+     - The stack (computers and tablets): each panel sticks near the top, 18px
+       below the one before. As the next one slides up, the one behind shrinks
+       to 0.95. It dims to 60% only once the next one has covered all its text,
+       when just its empty top edge still shows: dimmed text on these colours
+       would fail AA.
+     - Phones, and any screen too short for the stack: a panel taller than the
+       screen couldn't be read if it stuck at the top, so it scrolls up normally
+       and stops when its bottom edge is just above the WhatsApp button. The
+       next one slides up over it and covers it completely. On the way it
+       shrinks towards the middle of the screen; it doesn't dim, because by the
+       time it could, it's out of sight.
+     With reduced motion none of this runs: the panels simply follow each other. */
+  (function howStack() {
+    var stack = document.querySelector('.how__stack');
+    var slots = stack ? Array.prototype.slice.call(stack.children) : [];
+    if (slots.length < 2) return;
+    var panels = slots.map(function (slot) { return slot.firstElementChild; });
+    var SHRINK = 0.05, DIM = 0.4; /* to 0.95 size, and to 60% */
+    var mode = '', parts = [], shown = [];
+
+    function reset() {
+      panels.forEach(function (p) { p.style.transform = p.style.opacity = ''; });
+      shown = [];
+    }
+
+    /* The stack, if every panel's text fits in it. Phones always take the other
+       way: their panels are taller than the screen, and the WhatsApp button
+       sits at the bottom there. */
+    function pick() {
+      reset();
+      stack.classList.remove('is-flow');
+      stack.classList.add('is-stack');
+      var fits = window.innerWidth >= 720 && panels.every(function (p) { return p.scrollHeight <= p.clientHeight + 1; });
+      mode = fits ? 'stack' : 'flow';
+      if (fits) return;
+      stack.classList.remove('is-stack');
+      stack.classList.add('is-flow');
+      slots.forEach(function (slot) { slot.style.setProperty('--h', slot.offsetHeight + 'px'); });
+    }
+
+    /* How far below a panel's top its first text begins: the top of the first box that
+       holds text. Every line height here leaves room for the letters inside the line,
+       so no ink sits above it. */
+    function textTop(panel) {
+      var box = panel.getBoundingClientRect(), top = Infinity;
+      var walker = document.createTreeWalker(panel, NodeFilter.SHOW_TEXT, null);
+      while (walker.nextNode()) {
+        if (!walker.currentNode.nodeValue.trim()) continue;
+        var el = walker.currentNode.parentElement;
+        while (el !== panel && getComputedStyle(el).display === 'inline') el = el.parentElement;
+        var r = el.getBoundingClientRect();
+        if (r.width > 1) top = Math.min(top, r.top); /* skips the 1px hidden "1. " for screen readers */
+      }
+      return top - box.top;
+    }
+
+    /* For each panel but the last: the scroll positions where it starts and stops
+       shrinking, and where it starts to dim. Measured from where each panel would
+       sit without sticking (the stack's top plus the heights before it), because a
+       panel that's stuck right now reports where it's stuck. */
+    function measure() {
+      reset();
+      var y = stack.getBoundingClientRect().top + window.pageYOffset;
+      var gap = parseFloat(getComputedStyle(slots[1]).marginTop) || 0;
+      var at = [], stick = [], h = [];
+      slots.forEach(function (slot) {
+        at.push(y);
+        h.push(slot.offsetHeight);
+        stick.push(parseFloat(getComputedStyle(slot).top) || 0);
+        y += slot.offsetHeight + gap;
+      });
+      parts = [];
+      for (var i = 0; i < slots.length - 1; i++) {
+        var part = { from: at[i] - stick[i], to: at[i + 1] - stick[i + 1], dim: Infinity }; /* this one stops, the next one stops */
+        if (mode === 'stack') {
+          /* covered once the next panel's top passes this one's first text (at 0.95 size) */
+          part.dim = part.to + (stick[i + 1] - stick[i]) - 0.95 * textTop(panels[i]);
+          panels[i].style.transformOrigin = '50% 0';
+        } else {
+          part.to = at[i + 1]; /* the next one's top reaches the top of the screen */
+          panels[i].style.transformOrigin = '50% ' + Math.round((h[i] - stick[i]) / 2) + 'px'; /* the middle of what's on screen */
+        }
+        parts.push(part);
+      }
+    }
+
+    function render(scroll) {
+      parts.forEach(function (part, i) {
+        var k = Math.min(1, Math.max(0, (scroll - part.from) / (part.to - part.from)));
+        var d = part.dim < part.to ? Math.min(1, Math.max(0, (scroll - part.dim) / (part.to - part.dim))) : 0;
+        var s = Math.round((1 - SHRINK * k) * 1e4) / 1e4, o = Math.round((1 - DIM * d) * 1e3) / 1e3;
+        if (shown[i] === s + '/' + o) return;
+        shown[i] = s + '/' + o;
+        panels[i].style.transform = s < 1 ? 'scale(' + s + ')' : '';
+        panels[i].style.opacity = o < 1 ? o : '';
+      });
+    }
+
+    /* picked again at the start of every refresh, before anything on the page is measured */
+    pick();
+    ScrollTrigger.addEventListener('refreshInit', pick);
+    ScrollTrigger.create({
+      trigger: stack, start: 'top bottom', end: 'bottom top',
+      onRefresh: function (self) { measure(); render(self.scroll()); },
+      onUpdate: function (self) { render(self.scroll()); }
     });
   })();
 

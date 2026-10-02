@@ -17,11 +17,14 @@ Explain everything to me in simple, plain English. Short sentences.
 ## Status
 - **DONE — FROZEN:** Ignition intro (`js/intro.js`), hero (`js/hero.js`, `js/logo3d.js`, `frames/`),
   nav. Only change these to fix a bug I report. Never refactor, restyle or "improve" them.
-  Two approved nav changes exist, and nothing else in the nav changes:
+  Three approved nav changes exist, and nothing else in the nav changes:
   1. Over bone and orange sections its links show at full strength, and over bone its glass is
      darker, so the links pass AA. It lives in the "section colours" block of `css/site.css`.
   2. The neon edge (see "Neon edge" under Design rules). Over bone and orange it drops its outer
      glow; that rule is in the same "section colours" block.
+  3. While one of the 04 panels is behind it, the nav takes its look over bone (change 1, and
+     no outer glow). `js/sections.js` sets `data-nav="panel"` on `<html>`; the rules are in the
+     same "section colours" block.
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
   Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
