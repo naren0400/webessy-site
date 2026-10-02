@@ -23,7 +23,7 @@ kept out of this repo.
 ## Still to do before launch
 
 - [ ] Buy the domain
-- [ ] Choose a reply time for the contact section
+- [x] Choose a reply time for the contact section
 - [ ] Yauvana screenshots — 5, desktop and phone
 - [ ] Photo of Naren for About
 - [ ] Testimonials
@@ -670,7 +670,7 @@ Draft copy. Written to be used as-is, changed freely.
 **Number:** +91 80500 82158 (phone and WhatsApp)
 **Email:** 0400webessy@gmail.com
 
-One blank left: **[REPLY TIME]**.
+**Reply time:** one working day (chosen 1 October 2026).
 
 ---
 
@@ -696,7 +696,7 @@ So this section does one thing: make messaging feel small.
 >
 > Or fill this in and we will come to you.
 >
-> *We reply within [REPLY TIME].*
+> *We reply within one working day.*
 
 ---
 
@@ -730,6 +730,26 @@ or anything with an asterisk. You can ask all of that in the conversation.
 
 **Budget field:** leave it out. It filters people out before you have had a
 chance to show them why you are worth it. Ask on the call instead.
+
+**Required:** name and number only. The other two help, but never stop anyone
+sending. No asterisks.
+
+**Where it goes:** Web3Forms, to 0400webessy@gmail.com.
+
+**The words on the form** (added 1 October 2026):
+
+| Where | Words |
+|---|---|
+| Button | Send |
+| While it sends | Sending… |
+| Name left empty | Add your name. |
+| Number left empty | Add a WhatsApp or phone number. |
+| Number too short | That number looks too short. |
+| Sent | **Sent.** We reply within one working day. |
+| Did not send | That did not send. *Message on WhatsApp* (a link) |
+
+The email you receive has the subject "New enquiry from the website", from
+"Webessy Studios website". Visitors never see these two.
 
 ---
 

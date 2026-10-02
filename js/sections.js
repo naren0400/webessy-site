@@ -1,10 +1,12 @@
 /* ==========================================================================
-   SECTIONS — section colours, text reveal and motion for 02 to 06, and the
-   sticky WhatsApp button. The intro, hero and nav live in their own files
-   and are not touched here.
-   Only transform and opacity are animated. With reduced motion nothing
-   moves: text is simply visible, and the section colours still change, as a
-   plain fade.
+   SECTIONS — section colours, text reveal and motion for 02 to 06, the
+   sticky WhatsApp button, the contact form, and the footer logo drawing
+   itself in. The intro, hero and nav live in their own files and are not
+   touched here.
+   Only transform and opacity are animated, except in the footer logo, which,
+   like Ignition, also draws its outlines and wipes its letters in (a small
+   area, for about 2 seconds). With reduced motion nothing moves: text is
+   simply visible, and the section colours still change, as a plain fade.
    ========================================================================== */
 (function () {
   'use strict';
@@ -13,15 +15,16 @@
   var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   /* ---------------- sticky WhatsApp button (phones) ----------------
-     Shows once the hero has scrolled away, hides again when Contact is on screen,
-     where the real WhatsApp button is. CSS keeps it hidden on wider screens. */
+     Shows once the hero has scrolled away, and hides again from Contact to the
+     end of the page: Contact has the real WhatsApp link, and in the footer the
+     button would cover the logo. CSS keeps it hidden on wider screens. */
   (function waFloat() {
     var btn = document.getElementById('waFloat');
     var hero = document.getElementById('hero');
     var contact = document.getElementById('contact');
     if (!btn || !hero || !('IntersectionObserver' in window)) return;
-    var pastHero = false, atContact = false;
-    function update() { btn.classList.toggle('is-on', pastHero && !atContact); }
+    var pastHero = false, fromContact = false;
+    function update() { btn.classList.toggle('is-on', pastHero && !fromContact); }
     new IntersectionObserver(function (entries) {
       var e = entries[0];
       pastHero = !e.isIntersecting && e.boundingClientRect.top < 0;
@@ -29,10 +32,78 @@
     }).observe(hero);
     if (contact) {
       new IntersectionObserver(function (entries) {
-        atContact = entries[0].isIntersecting;
+        var e = entries[0];
+        fromContact = e.isIntersecting || e.boundingClientRect.top < 0; /* on screen, or already above it */
         update();
       }).observe(contact);
     }
+  })();
+
+  /* ---------------- 06 Contact: the form ----------------
+     Sends through Web3Forms to the studio's inbox without leaving the page.
+     Only the name and the number are required. A problem gets a plain line
+     under its field (the words are in the HTML: data-empty, data-short) and
+     the first field with one gets the focus. Once sent, the form makes way
+     for "Sent."; if it can't send, a line offers WhatsApp instead. Without
+     JavaScript the browser checks the two required fields and posts the
+     form itself. Needs no GSAP, so it works with reduced motion too. */
+  (function contactForm() {
+    var form = document.querySelector('.cform');
+    if (!form || !window.fetch || !window.FormData) return;
+    var done = document.querySelector('.cform__done');
+    var fail = form.querySelector('.cform__fail');
+    var send = form.querySelector('.cform__send');
+    var label = send.textContent, busy = false;
+    var required = Array.prototype.slice.call(form.querySelectorAll('[required]'));
+    form.noValidate = true; /* our messages from here on, not the browser's bubbles */
+
+    function problem(input) {
+      var v = input.value.trim();
+      if (!v) return input.getAttribute('data-empty');
+      if (input.type === 'tel' && v.replace(/\D/g, '').length < 10) return input.getAttribute('data-short');
+      return '';
+    }
+    function mark(input, msg) {
+      document.getElementById(input.getAttribute('aria-describedby')).textContent = msg;
+      if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    }
+    /* once a field has a message, it updates as you type and goes when the field is fixed */
+    required.forEach(function (input) {
+      input.addEventListener('input', function () { if (input.hasAttribute('aria-invalid')) mark(input, problem(input)); });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (busy) return;
+      var first = null;
+      required.forEach(function (input) {
+        var msg = problem(input);
+        mark(input, msg);
+        if (msg && !first) first = input;
+      });
+      if (first) { first.focus(); return; }
+
+      busy = true;
+      fail.hidden = true;
+      send.textContent = send.getAttribute('data-sending');
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
+      fetch(form.action, {
+        method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' },
+        signal: ctrl ? ctrl.signal : undefined
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { if (!res.ok || !data.success) throw new Error(data.message || 'not sent'); });
+        })
+        .then(function () {
+          form.hidden = true;
+          done.hidden = false;
+          done.focus();
+        }, function () {
+          fail.hidden = false;
+        })
+        .then(function () { clearTimeout(timer); busy = false; send.textContent = label; });
+    });
   })();
 
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
@@ -206,4 +277,94 @@
       scrollTrigger: { trigger: line, start: 'top bottom', end: 'center 65%', scrub: true, invalidateOnRefresh: true }
     });
   });
+
+  /* ---------------- Footer: the logo draws itself in ----------------
+     A short Ignition (js/intro.js), so the site ends the way it began: points
+     of light trace the 0400, ink rises into the digits, a ring spreads out,
+     the rule and the arrows draw, and a bar of light sweeps the name as it
+     appears. About 2.2 seconds, once, when the whole logo is on screen; the
+     clamp() makes sure that happens even at the very bottom of the page.
+     No flash: the logo keeps its own colours throughout. The lights, the
+     ring and the bar are added here and removed at the end, so what stays
+     is the logo exactly as it is in the HTML. */
+  (function lockupDraw() {
+    var svg = document.querySelector('.foot .lockup');
+    if (!svg) return;
+    var NS = 'http://www.w3.org/2000/svg', BONE = '#DFD9C9'; /* the 0400's own colour, as in Ignition */
+    function add(tag, attrs, parent) {
+      var el = document.createElementNS(NS, tag);
+      Object.keys(attrs).forEach(function (k) { el.setAttribute(k, attrs[k]); });
+      parent.appendChild(el);
+      return el;
+    }
+    var digits = gsap.utils.toArray(svg.querySelectorAll('.lk-digit'));
+    var words = gsap.utils.toArray(svg.querySelectorAll('.lk-word'));
+    var rule = svg.querySelector('.lk-rule');
+    var arrows = gsap.utils.toArray(svg.querySelectorAll('.lk-arrow path'));
+    if (digits.length !== 4 || !words.length || !rule) return;
+
+    /* the drawing aids: a glow, a light trace and a bright head per digit, the ring, the bar */
+    var fx = add('g', {}, svg), defs = add('defs', {}, fx);
+    function glowFilter(id, region) {
+      var f = add('filter', Object.assign({ id: id }, region), defs);
+      add('feGaussianBlur', { stdDeviation: '5', result: 'b' }, f);
+      var m = add('feMerge', {}, f);
+      ['b', 'b', 'SourceGraphic'].forEach(function (src) { add('feMergeNode', { in: src }, m); });
+    }
+    glowFilter('lockupGlow', { x: '-70%', y: '-70%', width: '240%', height: '240%' });
+    glowFilter('lockupBarGlow', { x: '-1000%', y: '-20%', width: '2100%', height: '140%' }); /* the bar is thin: room for its glow */
+    var traceLayer = add('g', { filter: 'url(#lockupGlow)', fill: 'none', stroke: BONE, 'stroke-width': '1.3' }, fx);
+    var traces = digits.map(function (d) { return add('path', { d: d.getAttribute('d') }, traceLayer); });
+    var lengths = traces.map(function (t) { return t.getTotalLength(); });
+    var headLayer = add('g', { filter: 'url(#lockupGlow)' }, fx);
+    var heads = traces.map(function (t) {
+      var p = t.getPointAtLength(0);
+      return add('circle', { r: '3.4', cx: p.x, cy: p.y, fill: '#fff', opacity: '0' }, headLayer);
+    });
+    var ring = add('circle', { cx: '607.5', cy: '361.7', r: '30', fill: 'none', stroke: BONE, 'stroke-opacity': '.55', 'vector-effect': 'non-scaling-stroke', opacity: '0' }, fx);
+    var bar = add('rect', { x: '545.6', y: '417.5', width: '2', height: '106', fill: BONE, filter: 'url(#lockupBarGlow)', opacity: '0' }, fx);
+
+    /* everything waits, hidden, until it plays */
+    traces.forEach(function (t, i) { t.style.strokeDasharray = lengths[i]; t.style.strokeDashoffset = lengths[i]; });
+    arrows.forEach(function (p) { var L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; });
+    gsap.set(digits, { clipPath: 'inset(100% 0% 0% 0%)' });
+    gsap.set(words, { clipPath: 'inset(0% 100% 0% 0%)' });
+    gsap.set(rule, { scaleX: 0, transformOrigin: '0% 50%' });
+
+    /* each bright head rides the tip of its trace */
+    function follow() {
+      traces.forEach(function (t, i) {
+        var drawn = lengths[i] - (parseFloat(t.style.strokeDashoffset) || 0);
+        if (drawn > 0.5) { var p = t.getPointAtLength(drawn); heads[i].setAttribute('cx', p.x); heads[i].setAttribute('cy', p.y); }
+      });
+    }
+    /* back to the logo as it is in the HTML: no inline styles, no transform (none of these had any) */
+    function finish() {
+      svg.removeChild(fx);
+      digits.concat(words, arrows, [rule]).forEach(function (el) { el.removeAttribute('style'); });
+      rule.removeAttribute('transform');
+      rule.removeAttribute('data-svg-origin');
+    }
+
+    /* the beats of Ignition, shortened: trace, ink, ring, rule and arrows, then the name */
+    var tl = gsap.timeline({ paused: true, onComplete: finish })
+      .to(heads, { opacity: 1, duration: 0.15, stagger: 0.12 }, 0)
+      .to(traces, { strokeDashoffset: 0, duration: 0.9, stagger: 0.12, ease: 'power2.inOut', onUpdate: follow }, 0)
+      .to(heads, { opacity: 0, duration: 0.2, stagger: 0.12 }, 0.75)
+      .to(digits, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.5, stagger: 0.12, ease: 'power2.out' }, 0.45)
+      .to(traceLayer, { opacity: 0, duration: 0.3 }, 1.25)
+      .set(ring, { opacity: 1 }, 1.25)
+      .to(ring, { opacity: 0, scale: 10, transformOrigin: '50% 50%', duration: 0.9, ease: 'power2.out' }, 1.25)
+      .to(rule, { scaleX: 1, duration: 0.5, ease: 'power3.inOut' }, 1.3)
+      .to(arrows, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out' }, 1.38)
+      .set(bar, { opacity: 1 }, 1.45)
+      .to(bar, { x: 259.6, duration: 0.6, ease: 'power2.inOut' }, 1.45) /* across WEBESSY and STUDIOS */
+      .to(bar, { opacity: 0, duration: 0.2 }, 1.95)
+      .to(words, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.55, stagger: 0.09, ease: 'power3.out' }, 1.47);
+
+    ScrollTrigger.create({
+      trigger: svg, start: 'clamp(center 75%)', once: true,
+      onEnter: function () { tl.play(); }
+    });
+  })();
 })();
