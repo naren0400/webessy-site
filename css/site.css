@@ -979,6 +979,105 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
   .how__stack.is-flow .how__panel { min-height: calc(100svh - var(--dock)); }
 }
 
+/* ---------- 05 About ----------
+   A 5/7 split, mirrored: the photo on the left, the words on the right. The name under
+   the photo and the last line ("Based in Bengaluru…") share a row at the bottom, and the
+   hairline above that last line starts exactly where the photo ends: the name and the
+   line both sit 15px below it (the line's 14px padding plus its 1px rule). The one-line
+   paragraph is set larger: it's the turn in the story. Phones and tablets stack it all:
+   label, heading, photo, name, text.
+   Nothing here pins, scrubs or sticks. The words, the photo and any review cards come in
+   once, as they reach the screen (js/reveal.js, js/sections.js), and only transform and
+   opacity move, which keeps it smooth on phones. */
+.about { padding-block: var(--section-pad); }
+.about__title { margin-top: 18px; }
+.about__photo { margin-top: clamp(40px, 7vh, 72px); max-width: 440px; }
+.about__photo img { display: block; width: 100%; height: auto; }
+/* stand-in until the photo arrives: the same shape, visibly marked, tinted from the text colour */
+.about__ph {
+  display: grid; place-items: center; aspect-ratio: 4 / 5; padding: 20px;
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--fg) 30%, transparent);
+  text-align: center; text-transform: none; letter-spacing: .04em;
+}
+.about__name { margin-top: 15px; color: var(--fg); }
+.about__copy { margin-top: clamp(48px, 8vh, 80px); container-type: inline-size; }
+.about__copy p { text-wrap: pretty; }
+/* the turn: a line for each half. "Meanwhile the competition down the road" is 18.5 to
+   18.8em wide in Fraunces (measured; it varies a little with the optical size), so at
+   100cqi / 19 it fits on one line in any column 460px or wider. In a narrower column
+   (phones, and 960 to 1024px) it can't fit even at 24px, so it breaks before "down the
+   road", which stays together: plain wrapping fills the first line, where balance or
+   pretty could break after "Meanwhile the". */
+.prose .about__turn {
+  margin-top: clamp(28px, 4.5vh, 44px); max-width: none;
+  font-family: var(--font-display); line-height: 1.16; letter-spacing: -.018em;
+  font-size: clamp(24px, 2.4vw, 34px); font-size: clamp(24px, 100cqi / 19, 34px);
+  color: var(--fg); text-wrap: wrap;
+}
+.about__turn-line { display: block; }
+.about__keep { white-space: nowrap; }
+.prose .about__turn + p { margin-top: clamp(28px, 4.5vh, 44px); }
+.about__where {
+  margin-top: clamp(40px, 6vh, 64px); padding-top: 14px; border-top: 1px solid var(--line);
+  container-type: inline-size;
+}
+/* one line where it fits (53 characters of the label face: 451px); otherwise a line for each sentence */
+@container (max-width: 455px) {
+  .about__where-line { display: block; }
+  .about__where-line + .about__where-line { margin-top: 5px; }
+}
+
+/* Reviews: js/sections.js builds this row from its REVIEWS list, and only when the list
+   has reviews in it. Side by side where they fit (340px or wider each, three to a row at
+   most), stacked on phones. No carousel. The row is only as wide as its cards (--n, set by
+   sections.js), so the glow behind it (.glow-field, as in 03) sits behind the glass.
+   Light glass: the smoked .glass turns grey on bone, and bone text on it fails AA (3.3:1),
+   so here the tint inside the same blur is bone-white, with ink text, a white rim and a
+   softer shadow. Like .glass, the glass's own whites are fixed; the text uses the tokens. */
+.reviews {
+  list-style: none; display: grid; gap: var(--gap);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  width: min(100%, var(--n, 3) * 400px + (var(--n, 3) - 1) * var(--gap));
+  margin-top: clamp(80px, 13vh, 144px);
+}
+.review { position: relative; border-radius: 16px; padding: clamp(24px, 2.6vw, 36px); }
+.review.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 255, 255, .34));
+  border-color: rgba(255, 255, 255, .72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 18px 50px rgba(12, 12, 10, .1);
+}
+.review__fig { display: flex; flex-direction: column; height: 100%; }
+.review__quote { quotes: "\201C" "\201D"; }
+.review__quote p {
+  font-family: var(--font-display); font-style: italic; font-size: 22px; line-height: 1.35;
+  letter-spacing: -.01em; color: var(--fg); text-wrap: pretty;
+}
+.review__quote p::before { content: open-quote; }
+.review__quote p::after { content: close-quote; }
+.review__by { display: grid; gap: 6px; margin-top: auto; padding-top: 28px; }
+.review__name { color: var(--fg); }
+
+@media (min-width: 960px) {
+  /* Three rows. On the right: the heading at the top, the text at the bottom of the middle
+     row, then the last line. On the left the figure shares those rows (subgrid): the photo
+     fills the first two and ends where the middle row ends, and the name sits in the third,
+     level with the last line however many lines that takes. */
+  .about__grid {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: auto 1fr auto;
+    column-gap: var(--gap);
+  }
+  .about__head { grid-column: 7 / -1; grid-row: 1; }
+  .about__photo {
+    grid-column: 1 / span 5; grid-row: 1 / span 3; display: grid; grid-template-rows: subgrid;
+    max-width: none; margin-top: 0;
+  }
+  .about__ph, .about__photo img { grid-row: 1 / span 2; align-self: end; }
+  .about__name { grid-row: 3; }
+  .about__copy { grid-column: 7 / -1; grid-row: 2; align-self: end; margin-block: clamp(40px, 6vh, 64px); }
+  .about__where { grid-column: 7 / -1; grid-row: 3; margin-top: 0; }
+}
+
 /* ---------- 06 Contact ----------
    7/5 split: "Let's talk", the copy and the three steps on the left, the form lower on
    the right. "Let's talk" is the section heading and the WhatsApp link in one. */

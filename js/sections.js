@@ -1,8 +1,8 @@
 /* ==========================================================================
    SECTIONS — section colours, text reveal and motion for 02 to 06, the
-   sticky WhatsApp button, the contact form, and the footer logo drawing
-   itself in. The intro, hero and nav live in their own files and are not
-   touched here.
+   sticky WhatsApp button, the reviews under About, the contact form, and
+   the footer logo drawing itself in. The intro, hero and nav live in their
+   own files and are not touched here.
    Only transform and opacity are animated, with two exceptions: the footer
    logo, which, like Ignition, also draws its outlines and wipes its letters
    in (a small area, for about 2 seconds), and the 03 orbit, which blurs the
@@ -67,6 +67,48 @@
     watch();
     /* the strip is measured from the bottom of the screen too, so measure it again when that moves */
     window.addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(watch, 200); });
+  })();
+
+  /* ---------------- 05 About: reviews ----------------
+     Real reviews only: a client's own words, with their name and their business.
+     While this list is empty, the page gets nothing at all: no row, no glass, no
+     glow, no gap. Add each review on its own line, like this (double quotes, so an
+     apostrophe inside is fine; leave out the quote marks, the page adds them):
+       { quote: "Two sentences in their own words.", name: "Their name", business: "Their business" },
+     They become light glass cards in a row at the end of About, in this order
+     (css/site.css, "05 About"). Needs no GSAP, so with reduced motion they're
+     simply there. */
+  var REVIEWS = [
+  ];
+
+  (function reviews() {
+    var about = document.querySelector('#about .container');
+    if (!about || !REVIEWS.length) return;
+    function make(tag, cls, text) {
+      var el = document.createElement(tag);
+      if (cls) el.className = cls;
+      if (text) el.textContent = text;
+      return el;
+    }
+    var row = make('ul', 'reviews glow-field');
+    row.setAttribute('role', 'list'); /* Safari drops list semantics from a list with no bullets */
+    REVIEWS.forEach(function (r) {
+      var quote = String(r.quote || '').replace(/^[\s"“”]+|[\s"“”]+$/g, ''); /* the page adds the quote marks */
+      var name = String(r.name || '').trim();
+      if (!quote || !name) return;
+      var card = make('li', 'review glass reveal'), fig = make('figure', 'review__fig');
+      var said = make('blockquote', 'review__quote'), by = make('figcaption', 'review__by');
+      said.appendChild(make('p', '', quote));
+      by.appendChild(make('span', 'label review__name', name));
+      if (r.business) by.appendChild(make('span', 'label', String(r.business).trim()));
+      fig.appendChild(said);
+      fig.appendChild(by);
+      card.appendChild(fig);
+      row.appendChild(card);
+    });
+    if (!row.children.length) return;
+    row.style.setProperty('--n', Math.min(3, row.children.length)); /* as wide as its cards, three to a row at most */
+    about.appendChild(row);
   })();
 
   /* ---------------- 06 Contact: the form ----------------
