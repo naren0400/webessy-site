@@ -128,17 +128,96 @@
           </div>
         </div>
 
-        <!-- What was built: pins, and the five cards slide sideways as you scroll (js/sections.js).
-             Without motion it stays a plain numbered list. The numbers are decoration: screen readers skip them. -->
+        <!-- What was built: a build sheet, like an architect's drawing. Four views of the Yauvana site, a title
+             block in the bottom-right corner, and five numbered pins. Each pin's leader line ends on the thing
+             its note talks about. Each view comes with its note (.sheet__part), so phones can show them in turn.
+             With motion, js/sections.js adds .is-steps on computers (the sheet stays in the middle of the screen
+             and the pins light up one at a time as you scroll) or .is-stack on phones and tablets (each view
+             stays under the nav while its note scrolls up below it). Without motion it is the finished sheet:
+             every pin drawn, every note shown.
+             A pin's place is a share of its picture: --x/--y is the circle, --tx/--ty the dot, and the line
+             runs --len (a share of the picture's width) at --ang. If a picture changes, work these out again.
+             Pins and number discs are decoration: screen readers hear each picture, its label, then its note.
+             Pictures and "sizes": see the screenshots above; alt text is in WEBSITE-CONTENT.md §7. -->
         <div class="case__block built">
           <h4 class="label case__label" data-reveal="words">What was built</h4>
-          <ol class="built__track" role="list">
-            <li class="built__card"><span class="built__num" aria-hidden="true">01</span><p class="built__text">A scroll-driven image sequence that moves through the estate as you read, so the land reveals itself instead of sitting in a gallery</p></li>
-            <li class="built__card"><span class="built__num" aria-hidden="true">02</span><p class="built__text">An interactive 3D layout model — buyers can turn the layout and look at it from any angle, instead of squinting at a flat PDF</p></li>
-            <li class="built__card"><span class="built__num" aria-hidden="true">03</span><p class="built__text">An enquiry form wired to deliver straight to the seller, no dashboard, no middleman</p></li>
-            <li class="built__card"><span class="built__num" aria-hidden="true">04</span><p class="built__text">Motion built with GSAP and Lenis, so scrolling feels considered rather than mechanical</p></li>
-            <li class="built__card"><span class="built__num" aria-hidden="true">05</span><p class="built__text">Built, deployed and hosted end to end</p></li>
-          </ol>
+          <div class="sheet-run">
+            <div class="sheet">
+              <div class="sheet__in">
+                <div class="sheet__part sheet__part--a">
+                  <figure class="sheet__view">
+                    <div class="sheet__pic" style="--ar: 1.77778">
+                      <img src="images/work/yauvana-entrance-1080.webp" srcset="images/work/yauvana-entrance-720.webp 720w, images/work/yauvana-entrance-1080.webp 1080w, images/work/yauvana-entrance-1440.webp 1440w" sizes="(min-width: 1368px) 638px, (min-width: 960px) 46vw, calc(100vw - 60px)" width="1440" height="810" alt="Frame from the Yauvana scroll sequence: a render of the main entrance arch and gatehouse" loading="lazy" decoding="async">
+                      <span class="pin" style="--x: 40%; --y: 16%; --tx: 52.5%; --ty: 35.8%; --len: 16.74%; --ang: 41.7deg" aria-hidden="true"><span class="pin__line"></span><span class="pin__dot"></span><span class="pin__num">1</span></span>
+                    </div>
+                    <figcaption class="label sheet__name"><span class="sheet__id">View A</span><span class="sheet__dash"> — </span><span class="sheet__kind">Desktop / Scroll</span></figcaption>
+                  </figure>
+                  <div class="sheet__note">
+                    <span class="sheet__no" aria-hidden="true">1</span>
+                    <h5 class="h3 sheet__title">Land that <em>reveals</em> itself</h5>
+                    <p class="sheet__text">A scroll-driven image sequence that moves through the estate as you read, instead of sitting in a gallery.</p>
+                  </div>
+                </div>
+                <div class="sheet__part sheet__part--b">
+                  <figure class="sheet__view">
+                    <div class="sheet__pic" style="--ar: 1.84098">
+                      <img src="images/work/yauvana-3d-model-1080.webp" srcset="images/work/yauvana-3d-model-720.webp 720w, images/work/yauvana-3d-model-1080.webp 1080w, images/work/yauvana-3d-model-1440.webp 1440w" sizes="(min-width: 1368px) 301px, (min-width: 960px) 22vw, calc(100vw - 60px)" width="1440" height="782" alt="Interactive 3D layout model of the estate, turned at an angle: plots, tree-lined avenues and the clubhouse" loading="lazy" decoding="async">
+                      <span class="pin" style="--x: 82%; --y: 48%; --tx: 55.6%; --ty: 67.3%; --len: 28.41%; --ang: 158.34deg" aria-hidden="true"><span class="pin__line"></span><span class="pin__dot"></span><span class="pin__num">2</span></span>
+                    </div>
+                    <figcaption class="label sheet__name"><span class="sheet__id">View B</span><span class="sheet__dash"> — </span><span class="sheet__kind">Desktop / 3D model</span></figcaption>
+                  </figure>
+                  <div class="sheet__note">
+                    <span class="sheet__no" aria-hidden="true">2</span>
+                    <h5 class="h3 sheet__title">A layout you can <em>turn</em></h5>
+                    <p class="sheet__text">An interactive 3D layout model — buyers look at it from any angle, instead of squinting at a flat PDF.</p>
+                  </div>
+                </div>
+                <div class="sheet__part sheet__part--c">
+                  <figure class="sheet__view">
+                    <div class="sheet__pic" style="--ar: 2.1521">
+                      <img src="images/work/yauvana-enquiry-1080.webp" srcset="images/work/yauvana-enquiry-720.webp 720w, images/work/yauvana-enquiry-1080.webp 1080w, images/work/yauvana-enquiry-1440.webp 1440w" sizes="(min-width: 1368px) 301px, (min-width: 960px) 22vw, calc(100vw - 60px)" width="1440" height="669" alt="Yauvana Estate enquiry section on a computer: the heading “Ask us anything.”, the site office’s contact details, and a form for name, phone, where you live and site size, with a “Send enquiry” button" loading="lazy" decoding="async">
+                      <span class="pin" style="--x: 40%; --y: 76%; --tx: 60%; --ty: 61.1%; --len: 21.16%; --ang: -19.09deg" aria-hidden="true"><span class="pin__line"></span><span class="pin__dot"></span><span class="pin__num">3</span></span>
+                    </div>
+                    <figcaption class="label sheet__name"><span class="sheet__id">View C</span><span class="sheet__dash"> — </span><span class="sheet__kind">Desktop / Enquiry</span></figcaption>
+                  </figure>
+                  <div class="sheet__note">
+                    <span class="sheet__no" aria-hidden="true">3</span>
+                    <h5 class="h3 sheet__title">Enquiries, <em>straight</em> to the seller</h5>
+                    <p class="sheet__text">An enquiry form wired to the seller. No dashboard, no middleman.</p>
+                  </div>
+                </div>
+                <div class="sheet__part sheet__part--d">
+                  <figure class="sheet__view">
+                    <div class="sheet__pic" style="--ar: 0.46209">
+                      <img src="images/work/yauvana-phone-540.webp" srcset="images/work/yauvana-phone-540.webp 540w, images/work/yauvana-phone-780.webp 780w" sizes="(min-width: 1368px) 166px, (min-width: 960px) 12vw, 16vh" width="780" height="1688" alt="Yauvana Estate site on a mobile phone, showing the headline “Breathe young.”" loading="lazy" decoding="async">
+                      <span class="pin" style="--x: 80%; --y: 19%; --tx: 56%; --ty: 37%; --len: 45.75%; --ang: 121.64deg" aria-hidden="true"><span class="pin__line"></span><span class="pin__dot"></span><span class="pin__num">4</span></span>
+                    </div>
+                    <figcaption class="label sheet__name"><span class="sheet__id">View D</span><span class="sheet__dash"> — </span><span class="sheet__kind">Phone / Home</span></figcaption>
+                  </figure>
+                  <div class="sheet__note">
+                    <span class="sheet__no" aria-hidden="true">4</span>
+                    <h5 class="h3 sheet__title">Motion that feels <em>considered</em></h5>
+                    <p class="sheet__text">Built with GSAP and Lenis, so scrolling never feels mechanical.</p>
+                  </div>
+                </div>
+                <!-- the title block: pin 5 points at "Live", and its circle links to the live site (for mouse
+                     and touch; keyboards and screen readers get the same link in note 5) -->
+                <div class="sheet__part sheet__part--t">
+                  <dl class="titleblock">
+                    <div class="titleblock__row"><dt class="label">Project</dt><dd>Yauvana</dd></div>
+                    <div class="titleblock__row"><dt class="label">Type</dt><dd>Concept</dd></div>
+                    <div class="titleblock__row"><dt class="label">Status</dt><dd>Live<span class="pin pin--live" aria-hidden="true"><span class="pin__dot"></span><span class="pin__line"></span><a class="pin__num" href="https://naren0400.github.io/yauvana-site/" target="_blank" rel="noopener" tabindex="-1">5</a></span></dd></div>
+                  </dl>
+                  <div class="sheet__note">
+                    <span class="sheet__no" aria-hidden="true">5</span>
+                    <h5 class="h3 sheet__title">Built, shipped, <em>live</em></h5>
+                    <p class="sheet__text">Deployed and hosted end to end.</p>
+                    <p class="sheet__link"><a href="https://naren0400.github.io/yauvana-site/" target="_blank" rel="noopener">naren0400.github.io/yauvana-site</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- What it proves: the paragraph, then two lines that slide in from opposite sides (js/sections.js) -->

@@ -252,11 +252,24 @@ never red, which fails on orange.
 - **02 Work screenshots:** each image starts `translateX(24%) scale(0.86)` at 40% opacity and
   reaches `translateX(0) scale(1)` full opacity as it crosses the middle of the viewport. Scrubbed
   to scroll, not time-based. Left column is `position: sticky; top: 14vh`.
-- **02 Work case study:** "What was built" pins mid-screen and its five cards (square corners,
-  hairline, big JetBrains Mono numbers) slide left, scrubbed, until card 05 meets the right edge —
-  phones too, one card at a time. Screens under 500px tall, reduced motion and no JavaScript get a
-  plain numbered list. "What it proves": its two closing lines slide in from opposite sides,
-  scrubbed, transform only — no fade, so the text never rests faint.
+- **02 Work case study:** "What was built" is a build sheet, like an architect's drawing: four
+  views of the Yauvana site inside a thin double-line frame with tick marks, a title block in the
+  bottom-right corner, and five numbered pins. Each pin's leader line ends on a dot at the exact
+  thing its note describes. Pins, lines and dots are ink with a thin bone edge, so they read on
+  the dark screenshots and on the paper. No glass, no glow, square corners.
+  - Computers (at least 960×600, `.is-steps`): the sheet sticks in the middle of the screen (CSS
+    sticky) for 1.75 screen-heights; its width follows the screen height so it always fits. The
+    pins light up one at a time (dimmed → full, the line grows from the pin, the dot lands, a ring
+    marks the current pin), and only the current note shows, in the strip beside the title block.
+  - Phones, tablets and shorter screens (`.is-stack`): views and notes follow each other; each view
+    sticks under the nav while its note rises below it, and the next view pushes it away.
+  - A step only switches classes; CSS transitions (transform and opacity) do the motion, timed,
+    never scrubbed. Scrolling back undoes the steps. Tab to the live-site link and the page
+    scrolls to step 5.
+  - Screens under 500px tall, reduced motion and no JavaScript get the finished sheet: every pin
+    drawn, every note shown.
+  "What it proves": its two closing lines slide in from opposite sides, scrubbed, transform
+  only — no fade, so the text never rests faint.
 - **03 What we do — the orbit.** Computers only: at least 1200×650, with
   `(hover: hover) and (pointer: fine)`. The three cards share one grid cell, so they get one size,
   and sit on a ring seen from slightly above. `.plans` pins between the nav and the bottom of the

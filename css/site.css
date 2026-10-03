@@ -549,8 +549,7 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 .shot--phone { width: 62%; }
 
 /* the case study: four blocks, each with its own voice. Every block opens with its
-   mono label under a hairline. :not(:first-child), not a + b: the pinned block gets
-   wrapped in a spacer by ScrollTrigger, and a + b would stop matching after it. */
+   mono label under a hairline. */
 .case { margin-top: clamp(96px, 16vh, 200px); }
 .case__block:not(:first-child) { margin-top: clamp(112px, 18vh, 208px); }
 .case__label { padding-top: 20px; border-top: 1px solid var(--line); }
@@ -576,31 +575,205 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 .decision__line em { font-style: italic; color: var(--accent); }
 .decision__body { margin-top: clamp(28px, 5vh, 48px); }
 
-/* What was built. Without motion it's a plain numbered list. With motion, sections.js
-   adds .is-sideways: the block pins in the middle of the screen and the cards slide left.
-   Cards: square corners and a hairline, no glass. The card height follows the screen
-   height, so label and cards always fit between the nav and the bottom edge. */
-.built { --card-w: min(82vw, 400px); }
-.built__track { list-style: none; margin-top: clamp(24px, 4vh, 40px); }
-.built__card {
-  display: grid; grid-template-columns: minmax(64px, 12%) minmax(0, 1fr); column-gap: var(--gap);
-  align-items: baseline; padding-block: 18px; border-top: 1px solid var(--line);
+/* What was built: a build sheet, like an architect's drawing (see the comment in index.html).
+   Ink on bone, square corners: an outer line, a fainter inner line just inside it with tick
+   marks between the two, and the title block in the bottom-right corner. No glass, no glow.
+   Phones and tablets (the base rules): views and notes follow each other in one column.
+   Computers (960px and up): the views sit side by side, the notes and the title block in a
+   strip along the bottom.
+   sections.js turns the steps on with .is-live, plus .is-steps (computers) or .is-stack
+   (phones, tablets, shorter screens). Without those classes everything is drawn and shown.
+   Only transform and opacity change: CSS transitions, switched by classes. */
+.sheet-run { margin-top: clamp(24px, 4vh, 40px); }
+.sheet {
+  --trim: 6px;  /* from the outer line to the inner one: the tick marks sit here */
+  --pad: 12px;  /* from the inner line to the content */
+  --rule: color-mix(in srgb, var(--fg) 45%, transparent);
+  position: relative; border: 1px solid var(--fg); padding: calc(var(--trim) + 1px + var(--pad));
+  margin-inline: calc(var(--gutter) / -2); /* phones: half into the gutter, so the views stay big */
+  background:
+    repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 25%) 0 0 / 100% var(--trim) no-repeat,
+    repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 25%) 0 100% / 100% var(--trim) no-repeat,
+    repeating-linear-gradient(180deg, var(--rule) 0 1px, transparent 1px 120px) 0 0 / var(--trim) 100% no-repeat,
+    repeating-linear-gradient(180deg, var(--rule) 0 1px, transparent 1px 120px) 100% 0 / var(--trim) 100% no-repeat;
 }
-.built__card:last-child { border-bottom: 1px solid var(--line); }
-.built__num { font-family: var(--font-mono); font-size: clamp(34px, 4vw, 56px); line-height: 1; letter-spacing: -.04em; }
-.built__text { font-size: var(--t-body); line-height: 1.5; max-width: 52ch; text-wrap: pretty; }
+.sheet::after { content: ""; position: absolute; inset: var(--trim); border: 1px solid var(--rule); pointer-events: none; }
 
-.is-sideways .built__track { display: flex; gap: var(--gap); }
-.is-sideways .built__card {
-  flex: 0 0 var(--card-w); min-height: clamp(260px, 54vh, 540px); min-height: clamp(260px, 54svh, 540px);
-  display: flex; flex-direction: column; justify-content: space-between; gap: 24px;
-  padding: clamp(20px, 2.4vw, 34px); border: 1px solid var(--line);
+.sheet__part + .sheet__part { margin-top: 44px; }
+.sheet__view { margin: 0; }
+/* the picture's box keeps the picture's shape (--ar), so the pins on it stay in place.
+   In one column a view is never taller than 44% of the screen, so a held view leaves
+   room for its note below it. */
+.sheet__pic {
+  position: relative; aspect-ratio: var(--ar);
+  width: min(100%, calc(44vh * var(--ar))); width: min(100%, calc(44svh * var(--ar)));
+  background: color-mix(in srgb, var(--fg) 8%, transparent); /* holds the space until the file arrives */
 }
-.is-sideways .built__num {
-  font-size: clamp(60px, min(8.6vw, 16vh), 124px); font-size: clamp(60px, min(8.6vw, 16svh), 124px);
-  line-height: .8;
+.sheet__pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* the phone picture is tall: at 34% it leaves note 4 room to be read below it */
+.sheet__part--d .sheet__pic { width: min(100%, calc(34vh * var(--ar))); width: min(100%, calc(34svh * var(--ar))); }
+/* screens under 600px tall: smaller views, or a held view leaves its note too little room */
+@media (max-height: 599.98px) {
+  .sheet__pic { width: min(100%, calc(34vh * var(--ar))); width: min(100%, calc(34svh * var(--ar))); }
+  .sheet__part--d .sheet__pic { width: min(100%, calc(28vh * var(--ar))); width: min(100%, calc(28svh * var(--ar))); }
 }
-.is-sideways .built__text { font-size: clamp(17px, 1.45vw, 21px); line-height: 1.45; max-width: none; }
+.sheet__name { margin-top: 10px; line-height: 14px; white-space: nowrap; } /* "Phone / Home" just fits D at its narrowest (102px) */
+
+/* A note: its number disc, a title (24px and up, so the accent word may be orange), one line */
+.sheet__note { display: grid; grid-template-columns: 22px minmax(0, 1fr); align-content: start; column-gap: 14px; margin-top: 22px; }
+.sheet__no {
+  grid-column: 1; grid-row: 1; width: 22px; height: 22px; margin-top: calc((var(--t-h3) * 1.15 - 22px) / 2);
+  border-radius: 50%; background: var(--fg); color: var(--page);
+  font: 400 11px/22px var(--font-mono); text-align: center;
+}
+.sheet__title { grid-column: 2; grid-row: 1; text-wrap: balance; }
+.sheet__title em { color: var(--accent); }
+.sheet__text { grid-column: 2; margin-top: 8px; max-width: 52ch; font-size: var(--t-body); line-height: 1.5; color: var(--fg-soft); text-wrap: pretty; }
+.sheet__link { grid-column: 2; margin-top: 10px; font: 400 13px/1.4 var(--font-mono); }
+.sheet__link a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.sheet__link a:hover { text-decoration-thickness: 2px; }
+.sheet__link a:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+/* The title block. On phones it closes the sheet: note 5 comes first, and the block sits
+   in the bottom-right corner against the inner line. */
+.sheet__part--t { display: flex; flex-direction: column; }
+.sheet__part--t .sheet__note { margin-top: 0; }
+.titleblock {
+  order: 1; align-self: flex-end; width: min(100% + var(--pad), 300px);
+  margin: 36px calc(-1 * var(--pad)) calc(-1 * var(--pad)) 0;
+  border: solid var(--rule); border-width: 1px 0 0 1px;
+}
+.titleblock__row { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; column-gap: 12px; min-height: 38px; padding: 0 12px; }
+.titleblock__row + .titleblock__row { border-top: 1px solid var(--rule); }
+.titleblock dt { line-height: 14px; }
+.titleblock dd { display: flex; align-items: center; font: 400 13px/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+
+/* Pins: an ink circle with a bone edge, a line drawn in ink between two bone hairlines, and
+   an ink dot. The bone keeps them clear on the dark screenshots, the ink on the paper. */
+.pin { position: absolute; inset: 0; pointer-events: none; }
+.pin__line {
+  position: absolute; left: var(--x); top: var(--y); width: var(--len); height: 3px; margin-top: -1.5px;
+  background: linear-gradient(var(--page) 0 1px, var(--fg) 1px 2px, var(--page) 2px);
+  transform-origin: 0 50%; transform: rotate(var(--ang));
+}
+.pin__dot {
+  position: absolute; left: var(--tx); top: var(--ty); width: 8px; height: 8px; margin: -4px 0 0 -4px;
+  border-radius: 50%; background: var(--fg); box-shadow: 0 0 0 1.5px var(--page);
+}
+.pin__num {
+  position: absolute; left: var(--x); top: var(--y); width: 24px; height: 24px; margin: -12px 0 0 -12px;
+  border-radius: 50%; background: var(--fg); color: var(--page); box-shadow: 0 0 0 1.5px var(--page);
+  font: 400 11px/24px var(--font-mono); letter-spacing: 0; text-align: center;
+}
+/* the ring around the pin of the current step */
+.pin__num::after {
+  content: ""; position: absolute; inset: -6px; border-radius: 50%; opacity: 0;
+  border: 1px solid var(--fg); box-shadow: 0 0 0 1px var(--page), inset 0 0 0 1px var(--page);
+}
+a.pin__num { pointer-events: auto; }
+a.pin__num:hover::after { opacity: 1; }
+/* pin 5 sits in the title block, after "Live": the dot, the line, then its circle */
+.pin--live { --ang: 0deg; position: relative; inset: auto; flex: 1; display: flex; align-items: center; min-width: 72px; height: 24px; margin-left: 10px; }
+.pin--live .pin__dot, .pin--live .pin__line, .pin--live .pin__num { position: relative; left: auto; top: auto; flex: none; margin: 0; }
+.pin--live .pin__line { flex: 1; width: auto; margin-inline: -1px; transform-origin: 100% 50%; }
+
+/* The steps (sections.js). A pin waits dimmed; on its step the circle lights up, the line
+   draws from the circle to the spot (it grows: scaleX) and the dot lands on it. */
+.built.is-live .pin__num { opacity: .3; transform: scale(.8); transition: opacity .3s ease, transform .3s ease; }
+.built.is-live .pin.is-on .pin__num { opacity: 1; transform: none; transition: opacity .3s ease, transform .55s cubic-bezier(.34, 1.56, .64, 1); }
+.built.is-live .pin:not(.is-on) .pin__num { pointer-events: none; }
+.built.is-live .pin__line { transform: rotate(var(--ang)) scaleX(0); transition: transform .25s ease-in; }
+.built.is-live .pin.is-on .pin__line { transform: rotate(var(--ang)) scaleX(1); transition: transform .55s cubic-bezier(.65, 0, .35, 1) .12s; }
+.built.is-live .pin__dot { transform: scale(0); transition: transform .2s ease-in; }
+.built.is-live .pin.is-on .pin__dot { transform: none; transition: transform .4s cubic-bezier(.34, 1.56, .64, 1) .6s; }
+.built.is-live .pin__num::after { transition: opacity .3s ease; }
+.built.is-live .pin.is-current .pin__num::after { opacity: 1; transition-delay: .25s; }
+.built.is-setting * { transition: none !important; } /* while a mode starts: jump straight to the right step */
+
+/* .is-stack: each view (and the title block) stays under the nav while its note rises up
+   below it; the note slides under it, and the next view, right behind the note, pushes it
+   away. The space above each note (26% of the screen) is the scroll the view is held for.
+   The band of bone above and below a held view hides the notes as they slide under.
+   A note fades in when it arrives, and stays. */
+.built.is-stack .sheet__view,
+.built.is-stack .titleblock { position: sticky; top: 82px; z-index: 2; background: var(--page); box-shadow: 0 -12px 0 var(--page); }
+.built.is-stack .sheet__view { padding-bottom: 12px; }
+.built.is-stack .sheet__note {
+  align-content: start; padding-top: 26vh; padding-top: 26svh; padding-bottom: 16px;
+  opacity: 0; transform: translateY(14px); transition: opacity .3s ease, transform .3s ease;
+}
+.built.is-stack .sheet__note.is-on { opacity: 1; transform: none; transition: opacity .5s ease .15s, transform .7s cubic-bezier(.2, .7, .2, 1) .15s; }
+.built.is-stack .sheet__part + .sheet__part { margin-top: 0; }
+.built.is-stack .sheet__part--t .sheet__note { margin-top: 22px; }
+.built.is-stack .titleblock { order: 0; align-self: stretch; width: auto; margin: 0; border-width: 1px; }
+
+@media (min-width: 960px) {
+  /* The views on a grid: A, then B over C, then the phone (D). Their heights are worked out
+     so the bottoms of A, C and D line up: H is A's height, from the sheet's width (100cqi):
+     A = 1.7778 H wide, D = 0.4621 H, and B + C stack to H minus their labels and the gap
+     (56px) at width (H - 56) / 1.00785. Then A + B + D + two gaps = 100cqi.
+     Every label takes two lines (38px), so they all line up too. */
+  .built:not(.is-stack) .sheet {
+    --trim: 7px; --pad: 28px; --tb-w: 300px; container-type: inline-size; margin-inline: 0;
+    background-size: 100% var(--trim), 100% var(--trim), var(--trim) 100%, var(--trim) 100%;
+    background-image:
+      repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 12.5%),
+      repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 12.5%),
+      repeating-linear-gradient(180deg, var(--rule) 0 1px, transparent 1px 25%),
+      repeating-linear-gradient(180deg, var(--rule) 0 1px, transparent 1px 25%);
+  }
+  .built:not(.is-stack) .sheet__in {
+    --g: 30px;
+    --H: calc((100cqi + 55.564px - 2 * var(--g)) / 3.232073);
+    display: grid; column-gap: var(--g); row-gap: 18px;
+    grid-template-columns: minmax(0, 1fr) calc((var(--H) - 56px) / 1.007851) calc(var(--H) * .462085);
+    grid-template-areas: "a b d" "a c d" "n1 n2 n2" "n3 n4 n4" "n5 t t";
+  }
+  /* the line across the sheet above the notes, from inner line to inner line */
+  .built:not(.is-stack) .sheet__in::before {
+    content: ""; grid-row: 3; grid-column: 1 / -1; align-self: start;
+    margin: 6px calc(-1 * var(--pad)) 0; border-top: 1px solid var(--rule);
+  }
+  .built:not(.is-stack) .sheet__part { display: contents; }
+  .built:not(.is-stack) .sheet__pic { width: 100%; }
+  .built:not(.is-stack) .sheet__id,
+  .built:not(.is-stack) .sheet__kind { display: block; }
+  .built:not(.is-stack) .sheet__dash { display: none; }
+  .built:not(.is-stack) .sheet__part--a .sheet__view { grid-area: a; align-self: end; }
+  .built:not(.is-stack) .sheet__part--b .sheet__view { grid-area: b; align-self: start; }
+  .built:not(.is-stack) .sheet__part--c .sheet__view { grid-area: c; align-self: end; }
+  .built:not(.is-stack) .sheet__part--d .sheet__view { grid-area: d; align-self: end; }
+  /* without motion: the five notes two by two, the title block last, in the corner */
+  .built:not(.is-stack) .sheet__part .sheet__note { margin-top: 34px; }
+  .built:not(.is-stack) .sheet__part--a .sheet__note { grid-area: n1; }
+  .built:not(.is-stack) .sheet__part--b .sheet__note { grid-area: n2; }
+  .built:not(.is-stack) .sheet__part--c .sheet__note { grid-area: n3; }
+  .built:not(.is-stack) .sheet__part--d .sheet__note { grid-area: n4; }
+  .built:not(.is-stack) .sheet__part--t .sheet__note { grid-area: n5; }
+  .built:not(.is-stack) .titleblock { grid-area: t; justify-self: end; align-self: end; width: var(--tb-w); margin-top: 34px; }
+
+  /* .is-steps: the sheet stays in the middle of the screen (sections.js sets its top) for
+     1.75 screen-heights of scroll: the space after it in .sheet-run. Its width follows the
+     screen height, so it always fits between the nav and the bottom edge: H may be at most
+     the screen height minus 380px (nav, margins, labels, strip), and the width that gives
+     that H is 323.2 svh - 1148px. Only the current note shows, in the strip on the left;
+     the title block fills the strip's right end. */
+  .built.is-steps .sheet-run::after { content: ""; display: block; height: 175vh; height: 175svh; }
+  .built.is-steps .sheet {
+    position: sticky; top: 86px;
+    width: min(100%, calc(323.2vh - 1148px)); width: min(100%, calc(323.2svh - 1148px));
+  }
+  .built.is-steps .sheet__in { grid-template-areas: "a b d" "a c d" "s s s"; }
+  .built.is-steps .sheet__part .sheet__note {
+    grid-area: s; align-self: start; margin-top: 30px; max-width: calc(100% - var(--tb-w) + var(--pad) - 40px);
+    opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+  }
+  .built.is-steps .sheet__part .sheet__note.is-current {
+    z-index: 1; opacity: 1; transform: none; pointer-events: auto;
+    transition: opacity .45s ease .2s, transform .65s cubic-bezier(.2, .7, .2, 1) .2s;
+  }
+  .built.is-steps .titleblock { grid-area: s; align-self: stretch; display: grid; grid-auto-rows: 1fr; margin-top: 6px; border-top: 0; }
+}
 
 /* What it proves: the paragraph, then two big lines. sections.js slides the first
    in from the left and the second from the right. */
@@ -634,7 +807,6 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
   .problem__cols { width: min(100%, 620px); margin-left: auto; columns: 2; column-gap: var(--gap); }
   .decision__line { white-space: nowrap; font-size: min(7.1vw, 97px); font-size: calc(100cqi / 12.42); }
   .proves__body { width: min(100%, 620px); margin-left: auto; }
-  .built { --card-w: 40vw; }
 }
 @media (min-width: 960px) {
   /* label and title stay pinned on the left while the screenshots scroll past on the right */
@@ -643,7 +815,6 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
   .work__media { grid-column: 6 / -1; }
   /* the decision text starts under "wrong": 64% along the line (measured), x 0.99 */
   .decision__body { margin-left: 63.4%; }
-  .built { --card-w: clamp(300px, 29vw, 430px); }
   .work__live, .work__early { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
   .work__live-title { grid-column: 1 / span 8; }
   .work__live .prose { grid-column: 5 / span 7; }

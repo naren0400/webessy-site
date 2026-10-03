@@ -161,15 +161,35 @@ That one decision shaped the whole build.
 
 **What was built**
 
-- A scroll-driven image sequence that moves through the estate as you read,
-  so the land reveals itself instead of sitting in a gallery
-- An interactive 3D layout model — buyers can turn the layout and look at it
-  from any angle, instead of squinting at a flat PDF
-- An enquiry form wired to deliver straight to the seller, no dashboard,
-  no middleman
-- Motion built with GSAP and Lenis, so scrolling feels considered rather
-  than mechanical
-- Built, deployed and hosted end to end
+*(On the page this is a build sheet, like an architect's drawing: four views of
+the site, a title block, and five numbered pins. Each pin points at what its
+note describes. Changed 3 October 2026 from a plain list: each note's line is
+the old list item, shortened so it doesn't repeat its title. The italic word is
+the heading's one accent word.)*
+
+1. **Land that *reveals* itself**
+   A scroll-driven image sequence that moves through the estate as you read,
+   instead of sitting in a gallery.
+   *(Pin: View A, the entrance arch.)*
+2. **A layout you can *turn***
+   An interactive 3D layout model — buyers look at it from any angle, instead
+   of squinting at a flat PDF.
+   *(Pin: View B, the clubhouse.)*
+3. **Enquiries, *straight* to the seller**
+   An enquiry form wired to the seller. No dashboard, no middleman.
+   *(Pin: View C, the "Send enquiry" button.)*
+4. **Motion that feels *considered***
+   Built with GSAP and Lenis, so scrolling never feels mechanical.
+   *(Pin: View D, the headline "Breathe young.")*
+5. **Built, shipped, *live***
+   Deployed and hosted end to end.
+   Link: naren0400.github.io/yauvana-site → https://naren0400.github.io/yauvana-site/
+   *(Pin: "Live" in the title block. The pin's circle links to the live site too.)*
+
+**View labels:** View A — Desktop / Scroll · View B — Desktop / 3D model ·
+View C — Desktop / Enquiry · View D — Phone / Home
+
+**Title block:** Project: Yauvana · Type: Concept · Status: Live
 
 ---
 
@@ -953,6 +973,7 @@ Every image needs it. Describe what is in the picture, plainly.
 | Scroll sequence — avenue | Frame from the Yauvana scroll sequence: a render of a tree-lined avenue with kerb lighting |
 | Scroll sequence — clubhouse | Frame from the Yauvana scroll sequence: a render of the clubhouse and pool at dusk |
 | Phone screenshot | Yauvana Estate site on a mobile phone, showing the headline “Breathe young.” |
+| Enquiry form | Yauvana Estate enquiry section on a computer: the heading “Ask us anything.”, the site office’s contact details, and a form for name, phone, where you live and site size, with a “Send enquiry” button |
 | Your photo | Naren, founder of Webessy Studios |
 
 *(Yauvana rows updated 3 October 2026 to describe the real screenshots. The hero

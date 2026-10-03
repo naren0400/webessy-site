@@ -315,28 +315,111 @@
     });
   });
 
-  /* ---------------- 02 Work: What was built ----------------
-     The block pins in the middle of the screen, and the five cards slide left
-     as you scroll down, until card 05 reaches the right edge. The cards move
-     only with the scroll. Phones too, one card at a time. A screen under 500px
-     tall (a phone on its side) can't fit a card below the nav, so there it
-     stays a plain numbered list, as it is without motion. */
-  (function builtCards() {
+  /* ---------------- 02 Work: What was built — the build sheet ----------------
+     Five steps, one per pin. A step only switches classes: .is-on on the pins
+     and notes up to it, .is-current on its own. CSS transitions do the rest
+     (transform and opacity), so while you scroll nothing runs here except a
+     check of which step you're on.
+       .is-steps  computers, at least 960x600. The browser holds the sheet in
+                  the middle of the screen (CSS sticky) for 1.75 screen-heights.
+                  Step 1 starts as the sheet arrives, steps 2 to 5 are spread
+                  over the held scroll, and the full sheet stays a moment at
+                  the end.
+       .is-stack  phones, tablets and shorter screens. Each view sticks under
+                  the nav, and a step starts when its note's title reaches 72%
+                  of the screen height (80% on screens under 600px tall).
+     Scrolling back undoes the steps. Under 500px tall nothing runs: the sheet
+     stays finished, as it is with reduced motion and without JavaScript.
+     The live-site link sits in note 5: Tab to it, and the page scrolls to
+     step 5 so you can see it. */
+  (function buildSheet() {
     var block = document.querySelector('.work .built');
-    var track = block && block.querySelector('.built__track');
-    if (!track) return;
-    gsap.matchMedia().add('(min-height: 500px)', function () {
-      block.classList.add('is-sideways');
-      function distance() { return Math.max(0, track.scrollWidth - track.clientWidth); }
-      gsap.to(track, {
-        x: function () { return -distance(); }, ease: 'none',
-        scrollTrigger: {
-          trigger: block, start: 'center center', end: function () { return '+=' + distance(); },
-          pin: true, scrub: true, anticipatePin: 1, invalidateOnRefresh: true,
-          refreshPriority: 1 /* measured first, so everything further down counts the pinned length */
-        }
+    var run = block && block.querySelector('.sheet-run');
+    var sheet = run && run.querySelector('.sheet');
+    if (!sheet) return;
+    var pins = gsap.utils.toArray(sheet.querySelectorAll('.pin'));
+    var notes = gsap.utils.toArray(sheet.querySelectorAll('.sheet__note'));
+    var link = sheet.querySelector('.sheet__link a');
+    var nav = document.getElementById('nav');
+    var AT = [0.08, 0.3, 0.52, 0.74]; /* steps 2 to 5, as shares of the held scroll */
+    var step = 0;
+
+    function setStep(k) {
+      if (k === step) return;
+      step = k;
+      [pins, notes].forEach(function (list) {
+        list.forEach(function (el, i) {
+          el.classList.toggle('is-on', i < k);
+          el.classList.toggle('is-current', i === k - 1);
+        });
       });
-      return function () { block.classList.remove('is-sideways'); };
+    }
+    function navBottom() { return nav ? Math.round(nav.getBoundingClientRect().bottom) : 70; }
+
+    gsap.matchMedia().add({
+      steps: '(min-width: 960px) and (min-height: 600px)',
+      stack: '(max-width: 959.98px) and (min-height: 500px), (min-height: 500px) and (max-height: 599.98px)'
+    }, function (ctx) {
+      var steps = ctx.conditions.steps;
+      var marks = [], tops = [], held = 0, top = 0, st;
+      /* a mode starts at its right step without playing the steps before it */
+      block.classList.add('is-live', steps ? 'is-steps' : 'is-stack', 'is-setting');
+      requestAnimationFrame(function () { requestAnimationFrame(function () { block.classList.remove('is-setting'); }); });
+
+      if (steps) {
+        st = ScrollTrigger.create({
+          trigger: run,
+          start: function () {
+            /* centred between the nav and the bottom edge */
+            var h = sheet.offsetHeight, nb = navBottom();
+            top = Math.max(nb + 16, Math.round((window.innerHeight + nb - h) / 2));
+            sheet.style.top = top + 'px';
+            held = run.offsetHeight - h;
+            var arrive = window.innerHeight * 0.55 - top; /* from the start until the sheet is held */
+            marks = AT.map(function (f) { return arrive + held * f; });
+            return 'top 55%';
+          },
+          end: function () { return 'bottom ' + (top + sheet.offsetHeight) + 'px'; }, /* when it's let go */
+          onUpdate: update, onRefresh: update, onLeaveBack: update
+        });
+      } else {
+        st = ScrollTrigger.create({
+          trigger: run, start: 'top bottom', end: 'bottom top',
+          onRefresh: function (self) {
+            /* where each note's title starts (the space above it is the held scroll) */
+            tops = notes.map(function (n) { return n.querySelector('.sheet__title').getBoundingClientRect().top + window.scrollY; });
+            update(self);
+          },
+          onUpdate: update, onLeave: update, onLeaveBack: update
+        });
+      }
+
+      function update(self) {
+        var y = self.scroll(), k = 0;
+        if (steps) {
+          y -= self.start;
+          if (y >= 0) k = 1;
+          marks.forEach(function (m) { if (y >= m) k++; });
+        } else {
+          y += window.innerHeight * (window.innerHeight < 600 ? 0.8 : 0.72); /* short screens: a little sooner */
+          tops.forEach(function (t) { if (y >= t) k++; });
+        }
+        setStep(k);
+      }
+
+      function showLink() {
+        if (step >= 5) return;
+        var y = steps ? st.start + marks[3] + 2 : tops[4] - window.innerHeight * 0.5;
+        window.scrollTo(0, Math.ceil(y));
+      }
+      if (link) link.addEventListener('focus', showLink);
+
+      return function () {
+        if (link) link.removeEventListener('focus', showLink);
+        block.classList.remove('is-live', 'is-steps', 'is-stack', 'is-setting');
+        sheet.style.top = '';
+        setStep(0);
+      };
     });
   })();
 
