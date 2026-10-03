@@ -249,53 +249,83 @@
       </div>
     </div>
   </section>
-  <!-- 03 WHAT WE DO — price card and two glass cards over one static glow, then plain lists and the cost table.
-       Each card has a neon edge (the empty .neon span) and its text in .card-body. On computers
-       sections.js puts the three cards on a ring that turns as you scroll; elsewhere they stay as laid out here. -->
+  <!-- 03 WHAT WE DO — four plan cards in glass over one static glow, and one line under them.
+       Then the two cards about changes and Care, the two promise lines, plain lists and the
+       cost table. Each glass card has a neon edge (the empty .neon span) and its text in
+       .card-body. A plan card shows only its name, its starting price and one button: no
+       feature lists. Each plan's heading reads as one line ("Starter from ₹6,499"), and its
+       button points to that heading, so a screen reader names the plan with the button.
+       sections.js puts the four plan cards on a ring that turns as you scroll (screens at
+       least 500px tall, without reduced motion); otherwise they stay as laid out here. -->
   <section id="services" class="services" data-theme="ultramarine" aria-labelledby="services-title">
     <div class="container">
       <p class="label" data-reveal="words">03 / What we do</p>
       <h2 id="services-title" class="display services__title" data-reveal="words">What we do</h2>
 
-      <div class="plans glow-field">
-        <div class="price glass reveal">
+      <div class="plans">
+        <div class="plans__stage glow-field">
+          <ul class="plans__ring" role="list">
+            <li class="plan glass reveal">
+              <span class="neon" aria-hidden="true"></span>
+              <div class="card-body">
+                <h3 class="plan__head" id="plan-starter">
+                  <span class="label plan__name">Starter</span>
+                  <span class="plan__price"><em>from</em> <span class="plan__num">₹6,499</span></span>
+                </h3>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-starter">Get your quote</a>
+              </div>
+            </li>
+            <li class="plan glass reveal">
+              <span class="neon" aria-hidden="true"></span>
+              <div class="card-body">
+                <h3 class="plan__head" id="plan-business">
+                  <span class="label plan__name">Business</span>
+                  <span class="plan__price"><em>from</em> <span class="plan__num">₹9,999</span></span>
+                </h3>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-business">Get your quote</a>
+              </div>
+            </li>
+            <li class="plan glass reveal">
+              <span class="neon" aria-hidden="true"></span>
+              <div class="card-body">
+                <h3 class="plan__head" id="plan-advanced">
+                  <span class="label plan__name">Advanced</span>
+                  <span class="plan__price"><em>from</em> <span class="plan__num">₹18,499</span></span>
+                </h3>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-advanced">Get your quote</a>
+              </div>
+            </li>
+            <li class="plan glass reveal">
+              <span class="neon" aria-hidden="true"></span>
+              <div class="card-body">
+                <h3 class="plan__head" id="plan-boss">
+                  <span class="label plan__name">Boss</span>
+                </h3>
+                <p class="plan__talk">Let’s talk scope and ideas directly</p>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-boss">Message on WhatsApp</a>
+              </div>
+            </li>
+          </ul>
+          <p class="plans__note" data-reveal="lines">Special pricing for startups.</p>
+        </div>
+      </div>
+
+      <div class="extras glow-field">
+        <div class="plan-card glass reveal">
           <span class="neon" aria-hidden="true"></span>
           <div class="card-body">
-            <h3 class="price__head">
-              <span class="price__from">Websites <em>from</em></span>
-              <span class="price__num">₹6,499</span>
-            </h3>
-            <p class="price__lede">Every business needs something different, so every quote is built around yours. Tell us what you need and you get one clear number before anything starts.</p>
-            <h4 class="label price__label">Every build includes</h4>
-            <ul class="includes">
-              <li>Designed for phones first, because that is where your customers are</li>
-              <li>Fast to load, on any connection</li>
-              <li>Enquiry form and click-to-call</li>
-              <li>Google Maps, hours and location</li>
-              <li>Set up on your own domain</li>
-              <li>Built so Google can find you</li>
-            </ul>
-            <a class="btn btn--primary price__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Get your quote</a>
+            <h3 class="label">45 days, included</h3>
+            <p class="plan-card__lead">Every build comes with 45 days of free changes after launch.</p>
+            <p>Text, photos, prices, hours — anything that is not quite how you pictured it. No extra invoice.</p>
+            <p>Anything broken stays free forever. If it breaks, it was ours to fix.</p>
           </div>
         </div>
-
-        <div class="plans__side">
-          <div class="plan-card glass reveal">
-            <span class="neon" aria-hidden="true"></span>
-            <div class="card-body">
-              <h3 class="label">45 days, included</h3>
-              <p class="plan-card__lead">Every build comes with 45 days of free changes after launch.</p>
-              <p>Text, photos, prices, hours — anything that is not quite how you pictured it. No extra invoice.</p>
-              <p>Anything broken stays free forever. If it breaks, it was ours to fix.</p>
-            </div>
-          </div>
-          <div class="plan-card glass reveal">
-            <span class="neon" aria-hidden="true"></span>
-            <div class="card-body">
-              <h3 class="label">After that — Care</h3>
-              <p><strong class="plan-card__lead">₹699 per month.</strong> Optional. Cancel anytime.</p>
-              <p>Monthly checks, backups, content updates, small fixes.</p>
-            </div>
+        <div class="plan-card glass reveal">
+          <span class="neon" aria-hidden="true"></span>
+          <div class="card-body">
+            <h3 class="label">After that — Care</h3>
+            <p><strong class="plan-card__lead">₹699 per month.</strong> Optional. Cancel anytime.</p>
+            <p>Monthly checks, backups, content updates, small fixes.</p>
           </div>
         </div>
       </div>

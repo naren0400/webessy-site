@@ -37,7 +37,7 @@ one `<h1>`, with the line under it in Bodoni's real small caps — and the welco
 |---|---|---|---|---|---|
 | `--t-display` | section titles | `clamp(44px, 6.2vw, 96px)` | Fraunces 400 | 1.0 | -0.025em |
 | `--t-h3` | block titles | `clamp(24px, 2.4vw, 34px)` | Fraunces 400 | 1.15 | -0.015em |
-| `--t-price` | the ₹6,499 numeral | `clamp(56px, 8vw, 120px)` | Fraunces 400 | 0.95 | -0.03em |
+| `--t-price` | the plan prices (₹6,499 …) | `clamp(56px, 8vw, 120px)`, at most 26cqi of the card | Fraunces 400 | 0.95 | -0.03em |
 | `--t-body` | paragraphs | `17px` (16px under 720px) | Instrument Sans 400 | 1.6 | 0 |
 | `--t-small` | captions, table cells | `14px` | Instrument Sans 400 | 1.5 | 0 |
 | `--t-label` | `02 / WORK` style labels | `11.5px` | JetBrains Mono 400 | 1.2 | 0.14em, uppercase |
@@ -93,8 +93,8 @@ and up, 3:1 for form borders and focus rings. Checked values:
 | `#E84A12` on bone (24px and up only) | 3.1 |
 | `#FF561D` on bone — **fails**, even for large text | 2.6 |
 | ink on the orange button · bone on the ink button | 6.2 · 15.9 |
-| bone on the 03 glass cards · bone 66% (worst spot, over the orange glow) | 9.9 · 5.3 |
-| bone 66% on the front card of the 03 orbit (worst, measured across the whole turn) | 5.4 |
+| 03 ring, readable cards (worst, measured across the whole turn): plan names · `#FF561D` "from" (24px+) · prices · Boss line · startups line | 10.0 · 4.2 · 10.9 · 10.9 · 11.8 |
+| 45 days and Care cards (own glow): soft label · soft text · lead line · promise lines (bone 66%) | 5.5 · 5.7 · 10.5 · 6.0 |
 
 For any new pair, work the ratio out before shipping. Don't judge it by eye.
 
@@ -125,8 +125,8 @@ neon edge (as `#8E7CFF`). Blue — the hero and the neon edge only. Never as gra
 - Container: `max-width: 1240px`, side gutter `clamp(20px, 5vw, 64px)`
 - Section padding: `clamp(96px, 14vh, 180px)` top and bottom
 - Base grid: 12 columns, gap `clamp(16px, 2vw, 28px)`
-- Vary composition: 02 is left-pinned/right-scrolling, 03 is a 7/5 split (on computers, a ring of
-  three cards, §8), 04 is full-width stacked, 05 is a 5/7 split mirrored, Reviews is full width
+- Vary composition: 02 is left-pinned/right-scrolling, 03 is a centred ring of four plan cards
+  (§8) and then a 7/5 split (45 days, Care), 04 is full-width stacked, 05 is a 5/7 split mirrored, Reviews is full width
   (the heading with its button at the end of the line, then a row of cards), 06 is a 7/5 split.
   No two neighbours use the same layout.
 
@@ -143,7 +143,8 @@ Use the existing `.glass` class unchanged. It is smoked glass: a dark tint insid
 a bright 1px top highlight, and a soft drop shadow.
 
 Glass only reads as glass with colour behind it. For the pricing section, add one **static** glow
-layer behind the cards (the review cards have their own, below):
+layer behind the cards: one behind the ring (on `.plans__stage`), one behind 45 days and Care
+(on `.extras`). The review cards have their own, below.
 
 ```css
 .glow-field { position: relative; isolation: isolate; }
@@ -156,9 +157,11 @@ layer behind the cards (the review cards have their own, below):
 }
 ```
 
-Never animate the glow. Never stack glass on glass — except in the 03 orbit (§8), where the front
-card sits over the two behind. They're dimmed to 45% there, or the orange button of a card behind
-would show through the front card's glass and drop its soft text to 3.6:1.
+Never animate the glow. Never stack glass on glass — except in the 03 ring (§8), where the front
+card sits over the cards behind. They're dimmed to 45% there, or the orange button of a card behind
+would show through the front card's glass and drop its soft text to 3.6:1. A dimmed glass card
+also lets a little of what's behind it through unblurred, so a card only dims once it's 45° from
+the front, where it no longer overlaps the card coming in.
 
 Glass takes on the colour behind it. On ultramarine (03) the dark smoked glass works with bone
 text. On bone (the review cards) it turns grey, and bone text on it fails AA (3.3:1). Glass on
@@ -174,7 +177,8 @@ Contact's orange behind the last cards (the text turns orange's ink and ink 80%)
 
 ### Neon edge
 
-Only on the nav and the three 03 pricing cards, on top of `.glass` (which stays unchanged). Each
+Only on the nav and the 03 pricing cards (the four plans, 45 days and Care), on top of `.glass`
+(which stays unchanged). Each
 host gets one empty `<span class="neon" aria-hidden="true"></span>`. The CSS sits right after
 `.glass` in `css/site.css`; a host sets `--neon-r` (its corner radius), `--neon-o` (glow outside)
 and `--neon-i` (glow inside).
@@ -204,13 +208,26 @@ and `--neon-i` (glow inside).
 Primary: `var(--btn-bg)` fill, `var(--btn-fg)` text — orange with ink text, except on the orange
 Contact section, where it's ink with bone text (an orange button would vanish there).
 Secondary: transparent, 1px `var(--line)` border, text `var(--fg)`. Both: visible
-`:focus-visible` outline 2px `var(--fg)` offset 3px. Only one primary button per section.
+`:focus-visible` outline 2px `var(--fg)` offset 3px. Only one primary button per section — except
+the 03 plan cards, one per card (below).
 
-**Price card (glass)** — label, `--t-price` numeral, one line of copy, the "Every build includes"
-list as plain lines separated by `--line` rules (no bullets, no icons), primary button at the bottom.
-In the 03 orbit it lies sideways so it fits a laptop screen (about 450px tall instead of 830): the
-price, the line and the button on the left; the label and the list on the right. The two smaller
-cards take its size: label at the top, the lead line (34–48px) and their copy at the bottom.
+**Plan cards (glass)** — four: Starter, Business, Advanced, Boss. Each shows only its name, its
+starting price and one button; never a feature list or "what's included". The heading reads as
+one line ("Starter from ₹6,499"): the name as a `--t-label` label in `--fg` at the top, then at
+the bottom "*from*" (Fraunces italic at `--t-h3`, `var(--accent)`: the heading's one accent word)
+and the price at `--t-price`, capped at 26cqi so the widest, ₹18,499 (3.5em), fits; every card's
+price is the same size. Boss has "Let’s talk scope and ideas directly" (Fraunces, 28–38px) where
+the price would be. One primary button per card, on one line ("Get your quote", or "Message on
+WhatsApp" on Boss), pointing to its heading (`aria-describedby`) so a screen reader names the
+plan: four orange buttons in this section, approved 3 October 2026, because the ring shows one
+card at full strength at a time. Without the ring: stacked on phones, two by two from 720px,
+four in a row from 1280px (with a little less padding there). Under them, one line in Fraunces
+at `--t-h3`: "Special pricing for startups." Never the word "negotiable"; no enterprise
+discounts (enterprise clients go to Boss).
+
+**45 days and Care (glass)** — label at the top, the lead line, their copy. Under the plans,
+over their own glow: stacked on phones, side by side from 720px, a 7/5 split from 960px, each
+promise line lined up under its card.
 
 **Comparison table** — full width, no card, no radius. Header row in `--t-label`. Rows separated
 by `--line`. The "Us" row: text in `--fg`, others in `--fg-soft`. On mobile, each row becomes a
@@ -292,24 +309,41 @@ never red, which fails on orange.
     drawn, every note shown.
   "What it proves": its two closing lines slide in from opposite sides, scrubbed, transform
   only — no fade, so the text never rests faint.
-- **03 What we do — the orbit.** Computers only: at least 1200×650, with
-  `(hover: hover) and (pointer: fine)`. The three cards share one grid cell, so they get one size,
-  and sit on a ring seen from slightly above. `.plans` pins between the nav and the bottom of the
-  screen for 1.75 screen-heights. The ring turns clockwise as you scroll: the front card swings
-  left and back, and the next one comes in from the right.
-  - Order: price → 45 days → Care, 240° in all. It holds at 0–8%, 42–58% and 92–100% of the pin,
-    with eased turns between (smootherstep), so wherever you stop, one card is almost always
-    square at the front. Scroll only, no snapping.
-  - Place on the ring: x = −0.56·width·sin θ, y = −0.16·height·(1 − cos θ)/2,
-    scale = 1 − 0.24·(1 − cos θ)/2.
-  - From 60° to 120° away from the front, a card dims to 45%, and its text (`.card-body`, not the
-    glass or the edge) blurs to 3px and fades to 60%.
-  - The front card sits at exactly scale 1, on whole pixels, so its text is sharp. Two cards only
-    cross at the sides, where they don't overlap, so swapping which one is on top never shows.
-  - Measured: the front card's soft text never drops below 5.4:1 through the whole turn.
-  - Tab into a card at the back and the page scrolls to where it's at the front.
-  - Phones, tablets, smaller screens, reduced motion and no JavaScript: the cards stay as laid
-    out (stacked on phones) and simply rise and fade in. No swipe carousel.
+- **03 What we do — the ring** (four plan cards since 3 October 2026). Every screen at least
+  500px tall: phones, tablets and computers. The four cards share one grid cell, so they get one
+  size (`--card-w`: 82vw up to 330px on phones, 52vw up to 420px from 720px, 400–460px from
+  1200px; nearly square), and sit on a ring seen from slightly above. The browser holds the
+  stage (`.plans__stage`: the ring and the startups line) by CSS sticky, never a JS pin, which
+  jumps on iPhones as it locks: it holds in the middle of the screen under the nav, above the
+  WhatsApp button on phones, while 2.6 screen-heights of space after it scroll past (`::after`).
+  The ring turns clockwise as you scroll: the front card swings left and back, and the next one
+  comes in from the right.
+  - Order: Starter → Business → Advanced → Boss, 270° in all. It holds at 0–5%, 28–39%, 61–72%
+    and 95–100% of the held scroll, with eased turns between (smootherstep), so wherever you stop,
+    one card is almost always square at the front. Scroll only, no snapping, no swiping.
+  - Place on the ring: x = −0.7·width·sin θ, y = −0.2·height·(1 − cos θ)/2,
+    scale = 1 − 0.24·(1 − cos θ)/2. With four cards the ring must be at least 1.36 cards wide:
+    two cards change places (which one is on top) when they're equally far round, and at 0.56
+    they'd still overlap in the middle then, so the swap would show.
+  - From 45° to 90° away from the front, a card dims to 45% and its text (`.card-body`, not the
+    glass or the edge) fades to 60% of that; on computers (`(hover: hover) and (pointer: fine)`)
+    the text also blurs to 3px. Phones and tablets don't blur (re-blurring text every frame is
+    what a phone finds hard); their text fades out completely instead, so no half words show at
+    the screen edges. Not before 45°: a dimmed glass card lets what's behind it through unblurred,
+    and before then it overlaps the card coming in.
+  - The front card sits at exactly scale 1, on whole pixels, so its text is sharp. The cards have
+    `will-change: transform`, and their `.card-body` `will-change: opacity`: without it, fading
+    the text makes Chrome rebuild its layers on every frame (1.4ms a frame on a phone, against
+    0.02ms). Styles are written straight to the cards, only when they change.
+  - Measured from pixels across the whole turn: see §3.
+  - Tab into a card that isn't at the front and the page scrolls to where it is.
+  - Smoothness, measured on a 4× slower phone profile (390×844, DPR 3, touch drags), per 1000px
+    scrolled: 330–358 tasks over 16.7ms and 281–307 dropped frames, against Contact 351 / 228 and
+    04 379–398 / 431–525 in the same session. Most of the cost is the browser re-checking the page
+    for every element moved from JS (any moving box costs about 2ms a frame here); the glass blur
+    and the neon edge make no difference.
+  - Shorter screens (a phone on its side): the cards stay as laid out (two by two) and rise and
+    fade in by a CSS transition. Reduced motion and no JavaScript: simply there.
 - **04 How it works:** the browser holds the panels (CSS sticky); `js/sections.js` picks how they
   stack and only sets scale and opacity. Each panel has its own layout inside.
   - Computers and tablets (`.is-stack`): panels stick at `max(12vh, 86px) + index * 18px`, sized
@@ -331,7 +365,7 @@ never red, which fails on orange.
   at once.
 - **prefers-reduced-motion:** no transforms, no scrubbing; everything simply visible. Text is not
   split. Section colours still change, as a plain fade. The neon edge stays violet.
-- Keep the frame rate: animate only `transform` and `opacity`. One exception: the 03 orbit blurs
+- Keep the frame rate: animate only `transform` and `opacity`. One exception: the 03 ring blurs
   the text of the cards at the back (computers only).
 
 ## 9. Placeholders for missing assets
@@ -347,14 +381,14 @@ a review").
 - [ ] Is this section's layout different from its neighbours?
 - [ ] Anything centred that doesn't need to be?
 - [ ] Any glass outside nav, hero, pricing, reviews? Remove it.
-- [ ] Neon edge only on the nav and the three pricing cards? Only its opacity animating? Nothing
+- [ ] Neon edge only on the nav and the 03 pricing cards? Only its opacity animating? Nothing
       glowing on or under text?
 - [ ] Does the section have its `data-theme`? Are all colours theme tokens, not fixed values?
 - [ ] Does every text/background pair pass WCAG AA — soft text, labels, buttons, focus rings,
       form borders included? Work the ratios out; don't eyeball them.
 - [ ] Violet only as a 04 panel, the glow or the neon edge? Blue only in the hero and the neon
       edge? Orange accent `#E84A12` on bone, and only at 24px and up?
-- [ ] More than one italic word in a heading? More than one primary button?
+- [ ] More than one italic word in a heading? More than one primary button (03's plan cards aside)?
 - [ ] Right reveal: headings `words`, paragraphs and lists `lines`, one big statement `chars`,
       cards and tables `reveal`? Nothing split inside a card?
 - [ ] Any icon grid, emoji, gradient text, or banned buzzword?

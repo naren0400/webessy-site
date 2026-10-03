@@ -5,9 +5,9 @@
    intro, hero and nav live in their own files and are not touched here.
    Only transform and opacity are animated, with two exceptions: the footer
    logo, which, like Ignition, also draws its outlines and wipes its letters
-   in (a small area, for about 2 seconds), and the 03 orbit, which blurs the
-   text of the cards at the back. With reduced motion nothing moves: text is
-   simply visible, and the section colours still change, as a plain fade.
+   in (a small area, for about 2 seconds), and the 03 ring, which on computers
+   blurs the text of the cards at the back. With reduced motion nothing moves:
+   text is simply visible, and the section colours still change, as a plain fade.
    ========================================================================== */
 (function () {
   'use strict';
@@ -442,14 +442,35 @@
      Glass cards and the table: 16px rise and fade, once, as they come into view.
      Opacity only, never visibility: hidden, so buttons and links can still be
      reached with the Tab key and read by screen readers before they fade in.
-     The pricing cards are left to "03 What we do: the orbit" below. */
+     The 03 cards are left to "03 What we do" below. */
   function riseIn(el) {
     gsap.from(el, {
       y: 16, opacity: 0, duration: 0.8, ease: 'power3.out',
       scrollTrigger: { trigger: el, start: 'top 85%', once: true }
     });
   }
-  gsap.utils.toArray('.reveal').forEach(function (el) { if (!el.closest('.plans')) riseIn(el); });
+  gsap.utils.toArray('.reveal').forEach(function (el) { if (!el.closest('.plans, .extras')) riseIn(el); });
+
+  /* The same rise and fade for the 03 glass cards, but by a CSS transition
+     (.is-waiting, then .is-in, as each card's top reaches 85% of the screen):
+     phones run a transition off the main thread, and GSAP would rewrite a
+     glass card's style on every frame of it. Returns a function that undoes it. */
+  function riseByClass(items) {
+    if (!('IntersectionObserver' in window)) return function () {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting && e.boundingClientRect.top > 0) return;
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -15% 0px' });
+    items.forEach(function (el) { el.classList.add('is-waiting'); io.observe(el); });
+    return function () {
+      io.disconnect();
+      items.forEach(function (el) { el.classList.remove('is-waiting', 'is-in'); });
+    };
+  }
+  riseByClass(gsap.utils.toArray('.extras > .plan-card')); /* 45 days and Care */
 
   /* ---------------- 02 Work screenshots ----------------
      Each one slides in from the right and grows to full size as it reaches
@@ -586,80 +607,97 @@
     });
   });
 
-  /* ---------------- 03 What we do: the orbit ----------------
-     Computers only (a screen at least 1200 x 650, with a mouse or trackpad).
-     The three cards sit on a ring seen from slightly above. The ring pins
-     between the nav and the bottom of the screen and turns clockwise as you
-     scroll down: the front card swings left and back, the next one comes in
-     from the right. Price, then 45 days, then Care: two-thirds of a turn over
-     about two screen-heights. Tied to the scroll only, with no snapping, so
-     when you stop it stops. Each card holds at the front for a while and the
-     turn slows right down as it gets there, so wherever you stop, one card is
-     almost always square at the front.
+  /* ---------------- 03 What we do: the ring ----------------
+     The four plan cards sit on a ring seen from slightly above: Starter at the
+     front, Business on the right, Advanced behind, Boss on the left. On any
+     screen at least 500px tall the browser holds the ring under the nav (CSS
+     sticky on .plans__stage) while 2.6 screen-heights of scroll go past, and
+     the ring turns clockwise as you scroll down: the front card swings left
+     and back, and the next one comes in from the right. Starter, Business,
+     Advanced, Boss: three quarters of a turn in all. Tied to the scroll only,
+     with no snapping and no swiping, so when you stop it stops. Each card
+     holds at the front for a while and the turn slows right down as it gets
+     there, so wherever you stop, one card is almost always square at the front.
+     The ring is 1.4 cards wide, so two cards only change places (which one is
+     on top) where they don't overlap, and the swap never shows.
      The front card is full size with nothing on it, so its text is sharp. The
-     cards behind are smaller, dimmed and slightly out of focus (their text
-     only; the glass and the neon edge stay crisp). The dimming also keeps the
-     front card's text AA: at full strength, the orange button of a card behind
-     would show through the front card's glass. Two cards only pass each other
-     at the sides, where they don't overlap, so swapping which one is on top
-     never shows.
-     Tab into a card at the back and the page scrolls until it's at the front.
-     Phones, tablets and smaller screens keep the cards as laid out in the
+     cards behind are smaller and dimmed, and their text fades further; on
+     computers it's also slightly out of focus (the glass and the neon edge stay
+     crisp). Phones and tablets skip that blur, because redrawing blurred text
+     on every frame is the part a phone finds hard, and fade the text right
+     away instead, so no half words show at the screen edges: the cards behind
+     are clear glass with their neon edge, and a card's words appear as it
+     comes round to the front. The dimming also keeps the front card's text
+     AA: at full strength, the orange button of a card behind would show
+     through its glass. A card only starts to dim 45 degrees from the front,
+     where it stops overlapping the card coming in: a dimmed card lets a
+     little of what's behind it through, unblurred.
+     Only transform and opacity change while you scroll, and nothing is
+     measured then.
+     Tab into a card that isn't at the front and the page scrolls until it is.
+     Shorter screens (a phone on its side) keep the cards as laid out in the
      HTML, and they simply rise and fade in. */
-  (function orbit() {
-    var stage = document.querySelector('.plans');
-    var cards = stage ? gsap.utils.toArray(stage.querySelectorAll('.price, .plan-card')) : [];
+  (function ring() {
+    var run = document.querySelector('.plans');
+    var stage = run && run.querySelector('.plans__stage');
+    var list = stage && stage.querySelector('.plans__ring');
+    var cards = list ? gsap.utils.toArray(list.children) : [];
     var nav = document.getElementById('nav');
-    if (cards.length !== 3 || !nav) return;
+    if (cards.length !== 4 || !stage || !nav) return;
     var bodies = cards.map(function (card) { return card.querySelector('.card-body'); });
 
-    var START = [0, 240, 120];    /* each card's place on the ring, degrees clockwise from the front: price in front, 45 days next (right), Care left */
-    var FRONT = [0, 120, 240];    /* how far the ring has turned when each card is at the front */
-    var HOLD = [0.04, 0.5, 0.96]; /* the middle of each card's stay at the front, as a share of the pinned scroll */
-    /* straight behind: 76% size. From 120 degrees round: the card at 45% opacity, and its
-       text 3px out of focus and at 60% of that, so the orange button of a card behind
-       barely shows through the front card's glass */
-    var SHRINK = 0.24, DIM = 0.55, BLUR = 3, FADE = 0.4;
-    var COMPUTER = '(min-width: 1200px) and (min-height: 650px) and (hover: hover) and (pointer: fine)';
+    var START = [0, 270, 180, 90]; /* each card's place on the ring, degrees clockwise from the front: Starter in front, Business next (right), Advanced behind, Boss left */
+    var TURNS = [[0.05, 0.28], [0.39, 0.61], [0.72, 0.95]]; /* each quarter turn's start and end, as shares of the held scroll */
+    var HOLD = [0.025, 0.335, 0.665, 0.975]; /* the middle of each card's stay at the front */
+    /* The ring is 1.4 cards wide (RADIUS), and straight behind, a card is 20% of its height
+       higher (RISE) and 76% size. From 45 degrees round, a card dims, to 45% at the sides and
+       behind, and its text fades to 60% of that; on computers the text also blurs to 3px.
+       On phones and tablets the text fades out completely instead. So the orange button of
+       a card behind barely shows through the front card's glass. */
+    var RADIUS = 0.7, RISE = 0.2, SHRINK = 0.24, DIM = 0.55, BLUR = 3, FADE = 0.4, FADE_TOUCH = 1;
+    var RING = '(min-height: 500px)', FINE = '(hover: hover) and (pointer: fine)';
 
     function smoother(t) { return t * t * t * (t * (t * 6 - 15) + 10); } /* eases in and out, flat at both ends */
-    /* the pinned scroll (0 to 1) to how far the ring has turned. It holds at 0, 120 and 240 degrees. */
+    /* the held scroll (0 to 1) to how far the ring has turned. It holds at 0, 90, 180 and 270 degrees. */
     function turned(p) {
-      if (p < 0.08) return 0;
-      if (p < 0.42) return 120 * smoother((p - 0.08) / 0.34);
-      if (p < 0.58) return 120;
-      if (p < 0.92) return 120 + 120 * smoother((p - 0.58) / 0.34);
-      return 240;
+      for (var i = 0; i < TURNS.length; i++) {
+        var a = TURNS[i][0], b = TURNS[i][1];
+        if (p < a) return 90 * i;
+        if (p < b) return 90 * (i + smoother((p - a) / (b - a)));
+      }
+      return 90 * TURNS.length;
     }
 
-    gsap.matchMedia().add({ orbit: COMPUTER, still: 'not all and ' + COMPUTER }, function (ctx) {
-      if (!ctx.conditions.orbit) { cards.forEach(function (card) { riseIn(card); }); return; }
+    gsap.matchMedia().add({ ring: RING, still: 'not all and ' + RING, fine: FINE }, function (ctx) {
+      if (!ctx.conditions.ring) return riseByClass(cards);
 
-      stage.classList.add('is-orbit');
+      var blurText = ctx.conditions.fine, fade = blurText ? FADE : FADE_TOUCH;
+      run.classList.add('is-orbit');
       var w = 0, h = 0, dpr = 1, progress = 0, intro = { k: 0 };
-      var css = cards.map(function (card) { return gsap.quickSetter(card, 'css'); });
-      var z = [-1, -1, -1], blurs = [-1, -1, -1];
+      var z = [-1, -1, -1, -1], softs = [-1, -1, -1, -1], moves = ['', '', '', ''], alphas = ['', '', '', ''];
       function measure() { w = cards[0].offsetWidth; h = cards[0].offsetHeight; dpr = window.devicePixelRatio || 1; }
       function snap(v) { return Math.round(v * dpr) / dpr; } /* whole screen pixels, so the front card's text is never resampled */
 
+      /* Written straight to each card's style, and only when it changes: this runs on every
+         frame of scrolling, and while a card holds at the front nothing needs redoing. */
       function render() {
         var turn = turned(progress), depth = [];
         cards.forEach(function (card, i) {
           var deg = START[i] + turn, rad = deg * Math.PI / 180;
           var back = (1 - Math.cos(rad)) / 2;                     /* 0 at the front, 1 straight behind */
           var away = Math.abs((((deg % 360) + 540) % 360) - 180); /* degrees from the front, 0 to 180 */
-          var soft = away <= 60 ? 0 : away >= 120 ? 1 : smoother((away - 60) / 60);
-          css[i]({
-            x: snap(-0.56 * w * Math.sin(rad)),
-            y: snap(-0.16 * h * back + 16 * (1 - intro.k)), /* plus the 16px rise as the ring first comes into view */
-            scale: back < 0.001 ? 1 : 1 - SHRINK * back,
-            opacity: (1 - DIM * soft) * intro.k
-          });
-          var blur = Math.round(BLUR * soft * 10) / 10;
-          if (blur !== blurs[i]) {
-            blurs[i] = blur;
-            bodies[i].style.filter = blur ? 'blur(' + blur + 'px)' : '';
-            bodies[i].style.opacity = blur ? 1 - FADE * soft : '';
+          var soft = away <= 45 ? 0 : away >= 90 ? 1 : smoother((away - 45) / 45);
+          soft = Math.round(soft * 100) / 100; /* 100 steps are plenty, and spare the text needless redraws */
+          var move = 'translate(' + snap(-RADIUS * w * Math.sin(rad)) + 'px, ' +
+            snap(-RISE * h * back + 16 * (1 - intro.k)) + 'px)' + /* plus the 16px rise as the ring first comes into view */
+            (back < 0.001 ? '' : ' scale(' + Math.round((1 - SHRINK * back) * 1e4) / 1e4 + ')');
+          var alpha = String(Math.round((1 - DIM * soft) * intro.k * 1000) / 1000);
+          if (move !== moves[i]) { moves[i] = move; card.style.transform = move; }
+          if (alpha !== alphas[i]) { alphas[i] = alpha; card.style.opacity = alpha; }
+          if (soft !== softs[i]) {
+            softs[i] = soft;
+            if (blurText) bodies[i].style.filter = soft ? 'blur(' + Math.round(BLUR * soft * 10) / 10 + 'px)' : '';
+            bodies[i].style.opacity = soft ? 1 - fade * soft : '';
           }
           depth.push([Math.cos(rad), i]);
         });
@@ -668,31 +706,37 @@
       }
 
       var st = ScrollTrigger.create({
-        trigger: stage, pin: true, anticipatePin: 1, invalidateOnRefresh: true,
-        refreshPriority: 0.5, /* measured after the pinned cards in Work (1), before everything further down (0) */
-        /* centred between the nav and the bottom of the screen, plus a little room for the cards
-           behind, which reach slightly above the front one */
-        start: function () { measure(); return 'center center+=' + Math.round(nav.getBoundingClientRect().bottom / 2 + 0.03 * h); },
-        end: function () { return '+=' + Math.round(window.innerHeight * 1.75); },
+        trigger: run,
+        /* the stage sticks when it reaches the middle of the screen under the nav (css/site.css
+           works out where, from these two), and lets go when the space after it has scrolled past */
+        start: function () {
+          run.style.setProperty('--stick', Math.round(nav.getBoundingClientRect().bottom) + 'px');
+          run.style.setProperty('--stage-h', stage.offsetHeight + 'px');
+          measure();
+          return 'top ' + Math.round(parseFloat(getComputedStyle(stage).top)) + 'px';
+        },
+        end: function () { return '+=' + (run.offsetHeight - stage.offsetHeight); },
         onUpdate: function (self) { progress = self.progress; render(); },
         onRefresh: function (self) { progress = self.progress; render(); }
       });
       /* the first time the ring comes into view it rises and fades in, like the other cards on the page */
       gsap.to(intro, {
         k: 1, duration: 0.8, ease: 'power3.out', onUpdate: render,
-        scrollTrigger: { trigger: stage, start: 'top 85%', once: true }
+        scrollTrigger: { trigger: list, start: 'top 85%', once: true }
       });
 
       function bringForward(e) {
         var i = cards.indexOf(e.currentTarget);
-        if (Math.abs(turned(progress) - FRONT[i]) > 1) window.scrollTo(0, Math.round(st.start + HOLD[i] * (st.end - st.start)));
+        if (Math.abs(turned(progress) - 90 * i) > 1) window.scrollTo(0, Math.round(st.start + HOLD[i] * (st.end - st.start)));
       }
       cards.forEach(function (card) { card.addEventListener('focusin', bringForward); });
 
       return function () {
         cards.forEach(function (card) { card.removeEventListener('focusin', bringForward); });
-        stage.classList.remove('is-orbit');
-        gsap.set(cards, { clearProps: 'all' });
+        run.classList.remove('is-orbit');
+        run.style.removeProperty('--stick');
+        run.style.removeProperty('--stage-h');
+        cards.forEach(function (card) { card.style.transform = card.style.opacity = card.style.zIndex = ''; });
         bodies.forEach(function (body) { body.style.filter = body.style.opacity = ''; });
       };
     });

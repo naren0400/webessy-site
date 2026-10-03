@@ -50,13 +50,18 @@ Explain everything to me in simple, plain English. Short sentences.
   the right slide in from the side and grow as you scroll. Then four text blocks: The problem /
   The decision / What was built / What it proves. Then one short block, "You are looking at one
   of them". Then "We are early. That is the offer." as one big line of type — no box.
-- **03 What we do** — price card in glass: "Websites from ₹6,499", "Every build includes" list,
-  quote button. Beside it two glass cards: "45 days, included" and "Care ₹699 a month".
-  All three have the neon edge. On computers (screen at least 1200×650, mouse or trackpad) the
-  three cards sit on a ring instead: it pins and turns clockwise as you scroll, price → 45 days →
-  Care, driven by scroll only, no snapping. Phones and tablets keep the cards stacked — no swiping.
-  Below: "What we build" as a plain text list in 4 groups — no prices, no cards, no icons.
-  Then the comparison table "What a website usually costs".
+- **03 What we do** (changed 3 October 2026) — four plan cards in glass, each showing only its
+  name, its starting price and one button: Starter from ₹6,499, Business from ₹9,999, Advanced
+  from ₹18,499, and Boss (no price: "Let’s talk scope and ideas directly", a WhatsApp button).
+  No feature lists or "what's included" details on the cards. All four have the neon edge and
+  sit on a ring that holds in place (CSS sticky) and turns clockwise as you scroll, Starter →
+  Business → Advanced → Boss, driven by scroll only, no snapping. It runs on phones, tablets and
+  computers (screens at least 500px tall). Reduced motion, no JavaScript and shorter screens
+  keep the cards stacked — no swiping. Under the ring one line: "Special pricing for startups."
+  Never the word "negotiable"; no enterprise discounts (enterprise clients go to Boss).
+  Then two glass cards with the neon edge, "45 days, included" and "Care ₹699 a month", and the
+  two promise lines under them. Below: "What we build" as a plain text list in 4 groups — no
+  prices, no cards, no icons. Then the comparison table "What a website usually costs".
 - **04 How it works** — the 8 steps grouped into 4 stacked sticky panels (2 steps each) that
   slide over each other as you scroll.
 - **05 About** — photo on the left, Version B copy on the right.
@@ -111,9 +116,10 @@ Explain everything to me in simple, plain English. Short sentences.
   Nowhere else. The pricing section gets a soft static glow behind it so the glass has
   something to refract. On bone (the review cards), glass gets a light tint with ink text:
   the dark glass turns grey on bone and fails AA. Glass never overlaps glass, except in the 03
-  orbit, where the front card sits over the two behind (they're dimmed, so its text stays AA).
-- **Neon edge (`.neon`) is allowed only on:** the nav and the three 03 pricing cards. Nowhere
-  else — not the review cards. It sits on top of `.glass`, which stays unchanged.
+  ring, where the front card sits over the cards behind (they're dimmed, so its text stays AA).
+- **Neon edge (`.neon`) is allowed only on:** the nav and the 03 pricing cards (the four plans,
+  45 days and Care). Nowhere else — not the review cards. It sits on top of `.glass`, which
+  stays unchanged.
   - A 1px line of light on the glass edge, with a soft glow either side (cards: 8px out, 6px in;
     nav: 5px out, 4px in).
   - One colour at a time, with every edge changing together. One round takes 20 seconds:

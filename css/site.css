@@ -823,7 +823,9 @@ a.pin__num:hover::after { opacity: 1; }
 }
 
 /* ---------- 03 What we do ---------- */
-.services { --card-pad: clamp(24px, 3vw, 44px); padding-block: var(--section-pad); }
+/* overflow-x: clip, so the cards at the sides of the ring (they reach past the screen edge on
+   phones) never make the page scroll sideways. Clip, not hidden: the ring's stage still sticks. */
+.services { --card-pad: clamp(24px, 3vw, 44px); padding-block: var(--section-pad); overflow-x: clip; }
 .services__title { margin-top: 18px; }
 .services__sub {
   font-family: var(--font-display); font-weight: 400; font-size: clamp(34px, 4.6vw, 64px);
@@ -840,28 +842,53 @@ a.pin__num:hover::after { opacity: 1; }
   filter: blur(40px);
 }
 
-.plans { display: grid; gap: var(--gap); margin-top: clamp(48px, 8vh, 96px); }
-.price, .plan-card { position: relative; isolation: isolate; border-radius: 16px; padding: var(--card-pad); } /* isolation keeps the neon edge inside the card */
-.price__head { font-family: var(--font-display); font-weight: 400; }
-.price__from { display: block; font-size: var(--t-h3); line-height: 1.15; letter-spacing: -.015em; }
-.price__from em { font-style: italic; color: var(--accent); }
-.price__num {
-  display: block; margin-top: 10px; font-size: var(--t-price); line-height: .95; letter-spacing: -.03em;
-  font-variation-settings: "opsz" 144; font-variant-numeric: lining-nums;
+/* The four plan cards: Starter, Business, Advanced, Boss. Each shows only its name (a label at
+   the top), its starting price at the bottom and one button; Boss has a line where the price
+   would be. Laid out here as a plain grid: stacked on phones, two by two from tablets, four in
+   a row on wide screens. sections.js puts them on a ring instead (.is-orbit, further down). */
+.plans { margin-top: clamp(48px, 8vh, 96px); }
+.plans__ring { list-style: none; display: grid; gap: var(--gap); }
+.plan, .plan-card { position: relative; isolation: isolate; border-radius: 16px; padding: var(--card-pad); } /* isolation keeps the neon edge inside the card */
+.plan { display: flex; min-height: 300px; }
+.plan .card-body { flex: 1; display: flex; flex-direction: column; container-type: inline-size; }
+.plan__head { flex: 1; display: flex; flex-direction: column; font-family: var(--font-display); font-weight: 400; }
+.plan__name { color: var(--fg); }
+/* "from" is the heading's one italic accent word. Every card's numeral is the same size:
+   26cqi lets the widest, ₹18,499 (3.5em), fill nine tenths of the card. */
+.plan__price { display: block; margin-top: auto; padding-top: clamp(40px, 7vh, 72px); }
+.plan__price em { display: block; font-style: italic; font-size: var(--t-h3); line-height: 1.15; letter-spacing: -.015em; color: var(--accent); }
+.plan__num {
+  display: block; margin-top: 8px; font-size: clamp(48px, 6vw, 88px); font-size: min(var(--t-price), 26cqi);
+  line-height: .95; letter-spacing: -.03em; font-variation-settings: "opsz" 144; font-variant-numeric: lining-nums; white-space: nowrap;
 }
-.price__lede { margin-top: 24px; font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 46ch; }
-.price__label { margin-top: clamp(32px, 5vh, 48px); }
-.includes { list-style: none; margin-top: 14px; }
-.includes li { padding-block: 13px; border-top: 1px solid var(--line); font-size: var(--t-body); line-height: 1.5; }
-.includes li:last-child { border-bottom: 1px solid var(--line); }
-.price__cta { margin-top: clamp(28px, 5vh, 40px); }
+.plan__talk {
+  margin-top: clamp(40px, 7vh, 72px); font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(28px, 2.6vw, 38px); font-size: min(clamp(28px, 2.6vw, 38px), 11.5cqi);
+  line-height: 1.12; letter-spacing: -.02em; text-wrap: balance;
+}
+.plan__cta { align-self: flex-start; margin-top: clamp(22px, 3.6vh, 32px); white-space: nowrap; }
+/* the one line under the plans */
+.plans__note {
+  margin-top: clamp(28px, 4.6vh, 44px); font-family: var(--font-display); font-weight: 400;
+  font-size: var(--t-h3); line-height: 1.2; letter-spacing: -.015em;
+}
 
-.plans__side { display: grid; gap: var(--gap); }
+/* 45 days and Care: the two cards under the plans, over a still glow of their own. Side by
+   side from tablets; on computers a 7/5 split, with the promise lines lined up under them. */
+.extras { display: grid; gap: var(--gap); margin-top: clamp(72px, 12vh, 140px); }
 .plan-card p { font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 44ch; }
 .plan-card p + p { margin-top: 10px; }
 .plan-card .plan-card__lead {
   display: block; margin: 18px 0 12px; font-family: var(--font-display); font-weight: 400;
   font-size: clamp(22px, 2vw, 28px); line-height: 1.2; letter-spacing: -.015em; color: var(--fg);
+}
+/* the glass cards' entrance (except on the ring): the same 16px rise and fade as .reveal (0.8s,
+   power3.out), but as a CSS transition, which phones run off the main thread (sections.js adds
+   .is-waiting, then .is-in) */
+.plan.is-waiting, .plan-card.is-waiting { opacity: 0; transform: translateY(16px); }
+.plan.is-waiting.is-in, .plan-card.is-waiting.is-in {
+  opacity: 1; transform: none;
+  transition: opacity .8s cubic-bezier(.165, .84, .44, 1), transform .8s cubic-bezier(.165, .84, .44, 1);
 }
 
 /* the two lines that protect the client — small, directly under the cards, lined up with the card text */
@@ -909,7 +936,7 @@ a.pin__num:hover::after { opacity: 1; }
   .costs__table td:last-child { grid-column: 1 / -1; margin-top: 6px; }
 }
 @media (min-width: 720px) {
-  .plans__side, .promises { grid-template-columns: 1fr 1fr; }
+  .plans__ring, .extras, .promises { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .build__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .costs__table th, .costs__table td { padding: 20px 24px 20px 0; }
   .costs__table thead th { padding-block: 0 14px; }
@@ -919,11 +946,10 @@ a.pin__num:hover::after { opacity: 1; }
   .costs__table thead th:nth-child(2) { width: 26%; }
 }
 @media (min-width: 960px) {
-  /* 7/5 split: price card on the left, the two smaller cards sit lower on the right, bottoms lined up */
-  .plans, .promises { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .price, .promises p:first-child { grid-column: 1 / span 7; }
-  .plans__side, .promises p:last-child { grid-column: 8 / -1; }
-  .plans__side { grid-template-columns: none; align-self: end; }
+  /* 7/5 split: 45 days on the left, Care on the right, each promise line under its card */
+  .extras, .promises { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .extras > :first-child, .promises p:first-child { grid-column: 1 / span 7; }
+  .extras > :last-child, .promises p:last-child { grid-column: 8 / -1; }
   .costs { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); }
   .costs > * { grid-column: 1 / -1; }
   .costs .costs__note { grid-column: 5 / -1; }
@@ -931,35 +957,54 @@ a.pin__num:hover::after { opacity: 1; }
 @media (min-width: 1100px) {
   .build__groups { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-
-/* The orbit — computers only. sections.js adds .is-orbit to .plans (screens at least
-   1200 x 650 with a mouse or trackpad, no reduced motion), pins it and turns the three
-   cards on a ring as you scroll. All three share one grid cell, so they get one size:
-   the price card's. The price card lies sideways (price, line and button on the left,
-   the list on the right) so it fits a laptop screen. The cards' text sits in .card-body,
-   so the cards at the back can blur their text and keep the glass and the edge sharp. */
-.plans.is-orbit { display: grid; grid-template-columns: min(56%, 700px); justify-content: center; }
-.plans.is-orbit .plans__side { display: contents; }
-.plans.is-orbit .price, .plans.is-orbit .plan-card { grid-area: 1 / 1; display: flex; flex-direction: column; will-change: transform; }
-.plans.is-orbit .card-body { flex: 1; will-change: filter; }
-
-.plans.is-orbit .price .card-body {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr;
-  column-gap: clamp(28px, 3vw, 48px);
+@media (min-width: 1280px) {
+  /* four in a row: a little less padding, so "Message on WhatsApp" fits on one line */
+  .plans__ring { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .plans:not(.is-orbit) .plan { --card-pad: clamp(24px, 2vw, 36px); }
 }
-.plans.is-orbit .price__head { grid-area: 1 / 1; container-type: inline-size; }
-.plans.is-orbit .price__num { font-size: min(var(--t-price), 30cqi); } /* "₹6,499" is about 3.05em wide: it fills the column */
-.plans.is-orbit .price__lede { grid-area: 2 / 1; margin-top: clamp(14px, 2.4vh, 24px); }
-.plans.is-orbit .price__cta { grid-area: 3 / 1; align-self: end; justify-self: start; margin-top: clamp(20px, 3.4vh, 32px); }
-/* the label and the list share the right column; the list starts under the label */
-.plans.is-orbit .price__label { grid-area: 1 / 2; align-self: start; margin-top: 0; }
-.plans.is-orbit .includes { grid-row: 1 / 4; grid-column: 2; margin-top: calc(var(--t-label) * 1.2 + 14px); }
-.plans.is-orbit .includes li { padding-block: clamp(8px, 1.4vh, 13px); }
 
-/* the two smaller cards: the label at the top, the rest at the bottom, the lead line larger */
-.plans.is-orbit .plan-card .card-body { display: flex; flex-direction: column; }
-.plans.is-orbit .plan-card .label { margin-bottom: auto; }
-.plans.is-orbit .plan-card .plan-card__lead { margin: 24px 0 16px; font-size: clamp(34px, 3.2vw, 48px); line-height: 1.08; max-width: 15em; }
+/* The ring. sections.js adds .is-orbit to .plans (screens at least 500px tall, without reduced
+   motion: phones, tablets and computers) and turns the four cards on a ring as you scroll.
+   The browser holds the stage (the ring and the line about startups) in place, by CSS sticky,
+   so it never jumps on a phone, while the space after it, 2.6 screen-heights, scrolls past.
+   It holds in the middle of what's left of the screen under the nav (--stick, its bottom
+   edge), above the WhatsApp button on phones (--dock). sections.js sets --stick and
+   --stage-h, the stage's height. The stage has room at the top for the cards behind, which
+   reach slightly higher than the front one.
+   All four cards share one grid cell, so they get one size: --card-w wide, nearly square. The
+   cards at the sides reach past the screen edge on phones, and .services clips them. The text
+   of each card sits in .card-body, its own layer, so the cards behind can fade their text
+   (and on computers blur it) and keep the glass and the edge sharp. */
+.plans.is-orbit { --stick: 70px; --dock: 24px; --card-w: min(82vw, 330px); }
+.plans.is-orbit::after { content: ""; display: block; height: 260vh; }
+.plans.is-orbit .plans__stage {
+  position: sticky; top: var(--stick);
+  top: max(var(--stick), var(--stick) + (100vh - var(--stick) - var(--dock) - var(--stage-h, 0px)) / 2);
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: calc(var(--card-w) * .1);
+}
+.plans.is-orbit .plans__ring { grid-template-columns: var(--card-w); }
+.plans.is-orbit .plan { grid-area: 1 / 1; min-height: calc(var(--card-w) * .96); will-change: transform; }
+/* the text on its own layer: without it, every change of its opacity makes the browser rebuild
+   its layers, on every frame of a turn (measured 1.4ms a frame on a phone, against 0.02ms) */
+.plans.is-orbit .card-body { will-change: opacity; }
+.plans.is-orbit .plans__note { text-align: center; }
+@supports (height: 100svh) {
+  .plans.is-orbit::after { height: 260svh; }
+  .plans.is-orbit .plans__stage { top: max(var(--stick), var(--stick) + (100svh - var(--stick) - var(--dock) - var(--stage-h, 0px)) / 2); }
+}
+@media (max-width: 719.98px) {
+  .plans.is-orbit { --dock: calc(76px + env(safe-area-inset-bottom, 0px)); } /* 16px from the edge, the button's 48px, 12px clear */
+}
+@media (min-width: 720px) {
+  .plans.is-orbit { --card-w: min(52vw, 420px); }
+}
+@media (min-width: 1200px) {
+  .plans.is-orbit { --card-w: clamp(400px, 32vw, 460px); }
+}
+@media (hover: hover) and (pointer: fine) {
+  .plans.is-orbit .card-body { will-change: filter, opacity; }
+}
 
 /* ---------- 04 How it works ----------
    A black section. The 8 steps sit two to a panel in four solid panels: bone, orange,

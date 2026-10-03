@@ -344,10 +344,11 @@ Your private rate card lives in `RATES.md`, which is kept out of the repo.
 
 ## The model
 
-One starting price on the page. Everything else is quoted to the client's
-actual needs.
+Four plans on the page, each with a starting price, except Boss, which has
+none. Everything else is quoted to the client's actual needs.
 
-- One number is easy to understand and easy to defend
+*(Changed 3 October 2026 from one starting price, "Websites from ₹6,499".)*
+
 - Nobody compares you page-by-page against a template seller
 - You learn real costs from real jobs before committing to published prices
 
@@ -359,7 +360,38 @@ actual needs.
 
 ---
 
-## The price
+## The plans
+
+Four cards. Each shows only the plan name, the starting price and one
+button. No feature lists and no "what's included" details on the cards.
+
+| Plan | Price | Button |
+|---|---|---|
+| Starter | from ₹6,499 | Get your quote |
+| Business | from ₹9,999 | Get your quote |
+| Advanced | from ₹18,499 | Get your quote |
+| Boss | no price — "Let’s talk scope and ideas directly" | Message on WhatsApp |
+
+Every button goes straight to WhatsApp (+91 80500 82158), with the usual
+message already typed.
+
+Under the cards, one line:
+
+> Special pricing for startups.
+
+**Two rules for this block**
+
+- Never use the word "negotiable", anywhere.
+- No enterprise discounts on the page. Enterprise clients go to the Boss plan.
+
+---
+
+## Not on the page any more
+
+Taken off on 3 October 2026, when the four plans came in: the plan cards
+carry no "what's included" details. Kept here in case they come back.
+
+**The old price**
 
 > ### Websites from ₹6,499
 >
@@ -367,9 +399,7 @@ actual needs.
 > yours. Tell us what you need and you get one clear number before anything
 > starts.
 
----
-
-## Every build includes
+**Every build includes**
 
 > - Designed for phones first, because that is where your customers are
 > - Fast to load, on any connection
@@ -472,7 +502,8 @@ Small, directly under everything above.
 
 > **[ Get your quote ]**
 
-Goes straight to WhatsApp.
+Goes straight to WhatsApp. It is on each of the three priced plans; Boss
+has **[ Message on WhatsApp ]** instead, to the same place.
 
 ---
 
