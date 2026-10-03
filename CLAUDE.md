@@ -36,11 +36,12 @@ Explain everything to me in simple, plain English. Short sentences.
 - `js/ScrollTrigger.min.js` (3.12.5) — scroll-linked motion
 - `js/reveal.js` — the text reveal and its splitter (see Motion below)
 - `js/sections.js` — section colours and all motion for sections 02 to 06
+- `js/reviews.js` — the list the Reviews section is built from. Real reviews only; empty until the first one
 - `frames/desktop/` (80 webp) and `frames/mobile/` (80 webp) — hero footage
 - `fonts/` — create it; self-hosted font files go here
 
 ## Page structure — exactly these sections, in this order, nothing else
-01 Hero (built) · 02 Work · 03 What we do · 04 How it works · 05 About · 06 Contact · Footer
+01 Hero (built) · 02 Work · 03 What we do · 04 How it works · 05 About · Reviews · 06 Contact · Footer
 
 **Do not add:** stats counters, client logo strips, FAQ, feature/icon grids, blog, newsletter,
 "trusted by" bars, extra CTA banners, testimonial carousels, back-to-top buttons.
@@ -58,8 +59,13 @@ Explain everything to me in simple, plain English. Short sentences.
   Then the comparison table "What a website usually costs".
 - **04 How it works** — the 8 steps grouped into 4 stacked sticky panels (2 steps each) that
   slide over each other as you scroll.
-- **05 About** — photo on the left, Version B copy on the right. Reviews row below, in glass
-  cards, driven by a data array. **If the array is empty, render nothing at all.**
+- **05 About** — photo on the left, Version B copy on the right.
+- **Reviews** (no number, so Contact stays 06; added 3 October 2026) — full width: label, heading and the
+  "Write a review" button, then the reviews as light glass cards (name, business, review, optional photo;
+  up to three in a row, stacked on phones, no carousel), built from the list in `js/reviews.js`. While the
+  list is empty, the heading is "Be the first to write a review" and there are no cards. The button opens
+  a panel with the review form (Web3Forms) and "Send photos on WhatsApp". No stars, no numbers, no dates.
+  Without JavaScript the section stays hidden.
 - **06 Contact** — "Let's talk", WhatsApp button, email, the 3-line "what happens after you
   message", reply time. Small 4-field form (name, WhatsApp/phone, business, what you need).
 - **Footer** — Webessy Studios · Bengaluru, India · WhatsApp · Email · © 2026.
@@ -82,6 +88,7 @@ Explain everything to me in simple, plain English. Short sentences.
   | 03 What we do | ultramarine `#1B1F5E` | bone |
   | 04 How it works | black `#05060F`; the 4 panels bone, orange, violet `#5B3FD9`, green `#79A643` | panels: ink, ink, bone, ink |
   | 05 About | bone | ink |
+  | Reviews | bone | ink |
   | 06 Contact | orange `#FF561D` | ink |
   | Footer | black | bone |
 
@@ -102,7 +109,7 @@ Explain everything to me in simple, plain English. Short sentences.
   No purple gradients. No gradient text.
 - **Glass (`.glass`) is allowed only in:** nav, hero (built), pricing cards, review cards.
   Nowhere else. The pricing section gets a soft static glow behind it so the glass has
-  something to refract. On bone (the 05 reviews), glass gets a light tint with ink text:
+  something to refract. On bone (the review cards), glass gets a light tint with ink text:
   the dark glass turns grey on bone and fails AA. Glass never overlaps glass, except in the 03
   orbit, where the front card sits over the two behind (they're dimmed, so its text stays AA).
 - **Neon edge (`.neon`) is allowed only on:** the nav and the three 03 pricing cards. Nowhere

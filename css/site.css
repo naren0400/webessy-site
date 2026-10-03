@@ -1149,9 +1149,9 @@ a.pin__num:hover::after { opacity: 1; }
    line both sit 15px below it (the line's 14px padding plus its 1px rule). The one-line
    paragraph is set larger: it's the turn in the story. Phones and tablets stack it all:
    label, heading, photo, name, text.
-   Nothing here pins, scrubs or sticks. The words, the photo and any review cards come in
-   once, as they reach the screen (js/reveal.js, js/sections.js), and only transform and
-   opacity move, which keeps it smooth on phones. */
+   Nothing here pins, scrubs or sticks. The words and the photo come in once, as they
+   reach the screen (js/reveal.js, js/sections.js), and only transform and opacity move,
+   which keeps it smooth on phones. */
 .about { padding-block: var(--section-pad); }
 .about__title { margin-top: 18px; }
 .about__photo { margin-top: clamp(40px, 7vh, 72px); max-width: 440px; }
@@ -1191,36 +1191,6 @@ a.pin__num:hover::after { opacity: 1; }
   .about__where-line + .about__where-line { margin-top: 5px; }
 }
 
-/* Reviews: js/sections.js builds this row from its REVIEWS list, and only when the list
-   has reviews in it. Side by side where they fit (340px or wider each, three to a row at
-   most), stacked on phones. No carousel. The row is only as wide as its cards (--n, set by
-   sections.js), so the glow behind it (.glow-field, as in 03) sits behind the glass.
-   Light glass: the smoked .glass turns grey on bone, and bone text on it fails AA (3.3:1),
-   so here the tint inside the same blur is bone-white, with ink text, a white rim and a
-   softer shadow. Like .glass, the glass's own whites are fixed; the text uses the tokens. */
-.reviews {
-  list-style: none; display: grid; gap: var(--gap);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
-  width: min(100%, var(--n, 3) * 400px + (var(--n, 3) - 1) * var(--gap));
-  margin-top: clamp(80px, 13vh, 144px);
-}
-.review { position: relative; border-radius: 16px; padding: clamp(24px, 2.6vw, 36px); }
-.review.glass {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 255, 255, .34));
-  border-color: rgba(255, 255, 255, .72);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 18px 50px rgba(12, 12, 10, .1);
-}
-.review__fig { display: flex; flex-direction: column; height: 100%; }
-.review__quote { quotes: "\201C" "\201D"; }
-.review__quote p {
-  font-family: var(--font-display); font-style: italic; font-size: 22px; line-height: 1.35;
-  letter-spacing: -.01em; color: var(--fg); text-wrap: pretty;
-}
-.review__quote p::before { content: open-quote; }
-.review__quote p::after { content: close-quote; }
-.review__by { display: grid; gap: 6px; margin-top: auto; padding-top: 28px; }
-.review__name { color: var(--fg); }
-
 @media (min-width: 960px) {
   /* Three rows. On the right: the heading at the top, the text at the bottom of the middle
      row, then the last line. On the left the figure shares those rows (subgrid): the photo
@@ -1239,6 +1209,155 @@ a.pin__num:hover::after { opacity: 1; }
   .about__name { grid-row: 3; }
   .about__copy { grid-column: 7 / -1; grid-row: 2; align-self: end; margin-block: clamp(40px, 6vh, 64px); }
   .about__where { grid-column: 7 / -1; grid-row: 3; margin-top: 0; }
+}
+
+/* ---------- Reviews ----------
+   Its own section between About and Contact, bone like About, with no number in its label.
+   Full width, unlike its neighbours (About's photo split, Contact's 7/5 split): the label on
+   a hairline (it marks where About ends, as both are bone), the heading, and the Write a
+   review button at the end of the heading's last line (under it on phones), then the cards.
+   js/sections.js builds the cards from js/reviews.js and keeps one of the two headings.
+   The text is ink from About to Contact (bone and orange both use it), so it never changes
+   colour here, even when Contact's orange arrives behind the last cards.
+   Smooth on phones: only the cards blur, over a glow that never moves; nothing is tied to
+   scroll; only transform and opacity animate. */
+.reviews { padding-block: clamp(40px, 6vh, 72px) var(--section-pad); }
+.reviews__label { padding-top: 14px; border-top: 1px solid var(--line); }
+.reviews__head { margin-top: 18px; }
+.reviews__title { text-wrap: balance; }
+.reviews__title em { font-style: italic; color: var(--accent); }
+.reviews__write { margin-top: clamp(28px, 4.5vh, 40px); scroll-margin: 120px 0 32px; }
+
+/* The cards: side by side where they fit (340px or wider each, three to a row at most),
+   stacked on phones. No carousel. The row is only as wide as its cards (--n, set by
+   sections.js). Light glass: the smoked .glass turns grey on bone, and bone text on it
+   fails AA (3.3:1), so here the tint inside the same blur is bone-white, with ink text, a
+   white rim and a softer shadow. Like .glass, the glass's own whites are fixed; the text
+   uses the tokens. */
+.reviews__list {
+  list-style: none; display: grid; gap: var(--gap);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  width: min(100%, var(--n, 3) * 400px + (var(--n, 3) - 1) * var(--gap));
+  margin-top: clamp(56px, 9vh, 104px);
+}
+/* Each card has its own still glow behind it, so the glass has colour to blur however many
+   cards there are. It sits exactly under its card, with the same corners: it only shows
+   through the glass, never spills on to the bone or on to the next card, and where it is cut
+   off, the card's edge covers the cut. Soft gradients, no blur filter: a filter on every card
+   is more for a phone to draw. Never animated. Alternate cards turn it round, so a row
+   doesn't repeat itself. */
+.reviews__item { position: relative; isolation: isolate; display: flex; }
+.reviews__item::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: 16px;
+  background:
+    radial-gradient(62% 56% at 22% 24%, rgba(91, 63, 217, .26), rgba(91, 63, 217, .18) 30%, rgba(91, 63, 217, .07) 65%, rgba(91, 63, 217, 0)),
+    radial-gradient(56% 50% at 80% 80%, rgba(255, 86, 29, .18), rgba(255, 86, 29, .12) 30%, rgba(255, 86, 29, .04) 65%, rgba(255, 86, 29, 0));
+}
+.reviews__item:nth-child(even)::before {
+  background:
+    radial-gradient(62% 56% at 78% 22%, rgba(91, 63, 217, .26), rgba(91, 63, 217, .18) 30%, rgba(91, 63, 217, .07) 65%, rgba(91, 63, 217, 0)),
+    radial-gradient(56% 50% at 20% 82%, rgba(255, 86, 29, .18), rgba(255, 86, 29, .12) 30%, rgba(255, 86, 29, .04) 65%, rgba(255, 86, 29, 0));
+}
+/* the cards' entrance: the same 16px rise and fade as .reveal (0.8s, power3.out), but as a CSS
+   transition, which phones run off the main thread (sections.js adds .is-waiting, then .is-in) */
+.reviews__item.is-waiting { opacity: 0; transform: translateY(16px); }
+.reviews__item.is-waiting.is-in {
+  opacity: 1; transform: none;
+  transition: opacity .8s cubic-bezier(.165, .84, .44, 1), transform .8s cubic-bezier(.165, .84, .44, 1);
+}
+.review { position: relative; display: flex; flex-direction: column; width: 100%; border-radius: 16px; padding: clamp(24px, 2.6vw, 36px); }
+.review.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 255, 255, .34));
+  border-color: rgba(255, 255, 255, .72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 18px 50px rgba(12, 12, 10, .1);
+}
+/* the photo, if they sent one: a small square with square corners, like a print */
+.review__photo {
+  display: block; width: 72px; height: 72px; object-fit: cover; margin-bottom: 22px;
+  background: color-mix(in srgb, var(--fg) 8%, transparent); /* holds its place until the file arrives */
+}
+.review__quote { quotes: "\201C" "\201D"; }
+.review__quote p {
+  font-family: var(--font-display); font-style: italic; font-size: 22px; line-height: 1.35;
+  letter-spacing: -.01em; color: var(--fg); text-wrap: pretty;
+}
+.review__quote p::before { content: open-quote; }
+.review__quote p::after { content: close-quote; }
+.review__by { display: grid; gap: 6px; margin-top: auto; padding-top: 28px; }
+.review__name { color: var(--fg); }
+
+@media (min-width: 720px) {
+  .reviews__line { display: block; } /* "Be the first" / "to write a review" */
+}
+@media (min-width: 960px) {
+  .reviews__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--gap); }
+  /* the button stands on the heading's baseline: 0.14em above the bottom of its box (measured) */
+  .reviews__write { flex: none; margin: 0 0 calc(var(--t-display) * .14); }
+  .review__photo { width: 80px; height: 80px; }
+}
+
+/* The review panel: a <dialog> the Write a review button opens. Solid black (its own
+   data-theme), not glass: glass is only for the nav, the hero, the pricing cards and the
+   review cards. Nothing behind it is blurred either: a blur over the whole screen is the
+   heaviest thing a phone can be asked to draw. Phones: it fills the screen and slides up.
+   From 720px: a tall panel on the right, over the dimmed page. Only transform and opacity
+   animate: sections.js adds .is-open just after opening, and waits for the slide out before
+   closing. While it's open the page behind is locked, so a thumb scrolls the form, not the
+   page. Where locking takes a scrollbar away (Windows), sections.js pads the page by the
+   scrollbar's width, so nothing behind shifts or reflows. (Not scrollbar-gutter: on the
+   page it changes what vw measures, so every heading sized in vw would shrink a little.)
+   The fields use the Contact form's .field rules: 16px text, so iPhones don't zoom in. */
+.rpanel {
+  position: fixed; inset: 0; width: auto; height: auto; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; overflow: hidden;
+  transform: translateY(100%); transition: transform .5s cubic-bezier(.2, .7, .2, 1);
+}
+.rpanel:not([open]) { display: none; }
+.rpanel.is-open { transform: none; }
+/* the dim layer: one flat colour, no blur. Fixed values: older Safari doesn't pass the tokens on to ::backdrop */
+.rpanel::backdrop { background: rgba(5, 6, 15, .62); opacity: 0; transition: opacity .5s ease; }
+.rpanel.is-open::backdrop { opacity: 1; }
+html.rpanel-lock body { overflow: hidden; }
+.rpanel__box {
+  height: 100%; overflow-y: auto; overscroll-behavior: contain;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) var(--gutter) calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.rpanel__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.rpanel__title {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-h3);
+  line-height: 1.15; letter-spacing: -.015em; outline: none;
+}
+.rpanel__close { min-height: 44px; padding: 10px 18px; }
+.rform { display: grid; gap: 20px; margin-top: clamp(28px, 5vh, 44px); }
+.rform[hidden], .rform__done[hidden], .rform__fail[hidden] { display: none; }
+.rform textarea {
+  display: block; width: 100%; min-height: 152px; padding: 12px 14px; border-radius: 4px; resize: vertical;
+  border: 1px solid var(--fg-soft); border-color: color-mix(in srgb, var(--fg) 56%, transparent);
+  background: transparent; color: var(--fg); font: 400 16px/1.5 var(--font-body);
+  -webkit-appearance: none; appearance: none; transition: border-color .2s ease, box-shadow .2s ease;
+}
+.rform textarea:hover { border-color: var(--fg); }
+.rform textarea:focus, .rform textarea[aria-invalid="true"] { outline: none; border-color: var(--fg); box-shadow: 0 0 0 1px var(--fg); }
+.rform__send { justify-self: start; min-height: 48px; margin-top: 8px; padding-inline: 28px; }
+.rform__fail { font-size: var(--t-small); line-height: 1.5; }
+.rform__fail a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.rform__fail a:hover { text-decoration-thickness: 2px; }
+.rform__fail a:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.rform__done { margin-top: clamp(28px, 5vh, 44px); outline: none; }
+.rform__done-title {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-display);
+  line-height: 1; letter-spacing: -.025em; font-variation-settings: "opsz" 144;
+}
+.rform__done p + p { margin-top: 14px; font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 40ch; }
+.rpanel__photos { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+
+@media (min-width: 720px) {
+  .rpanel { left: auto; width: min(560px, 100%); transform: translateX(100%); }
+  .rpanel__box { padding: clamp(28px, 4vh, 44px) clamp(28px, 3vw, 48px) calc(48px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rpanel, .rpanel::backdrop, .rform textarea { transition: none; }
+  .rpanel { transform: none; }
 }
 
 /* ---------- 06 Contact ----------

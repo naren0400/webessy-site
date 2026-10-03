@@ -1,8 +1,8 @@
 /* ==========================================================================
    SECTIONS — section colours, text reveal and motion for 02 to 06, the
-   sticky WhatsApp button, the reviews under About, the contact form, and
-   the footer logo drawing itself in. The intro, hero and nav live in their
-   own files and are not touched here.
+   sticky WhatsApp button, the Reviews section (its cards and its form
+   panel), the contact form, and the footer logo drawing itself in. The
+   intro, hero and nav live in their own files and are not touched here.
    Only transform and opacity are animated, with two exceptions: the footer
    logo, which, like Ignition, also draws its outlines and wipes its letters
    in (a small area, for about 2 seconds), and the 03 orbit, which blurs the
@@ -69,46 +69,197 @@
     window.addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(watch, 200); });
   })();
 
-  /* ---------------- 05 About: reviews ----------------
-     Real reviews only: a client's own words, with their name and their business.
-     While this list is empty, the page gets nothing at all: no row, no glass, no
-     glow, no gap. Add each review on its own line, like this (double quotes, so an
-     apostrophe inside is fine; leave out the quote marks, the page adds them):
-       { quote: "Two sentences in their own words.", name: "Their name", business: "Their business" },
-     They become light glass cards in a row at the end of About, in this order
-     (css/site.css, "05 About"). Needs no GSAP, so with reduced motion they're
-     simply there. */
-  var REVIEWS = [
-  ];
-
+  /* ---------------- Reviews: the cards ----------------
+     Built from the list in js/reviews.js: real reviews only, each a client's own
+     words with their name, their business and, if they sent one, a photo. While
+     the list is empty the heading is "Be the first to write a review" and there
+     are no cards; with reviews in it the heading is "In their words", and each
+     review becomes a light glass card, in the list's order (css/site.css,
+     "Reviews"). The section is hidden in the HTML and only shown from here, so
+     without JavaScript nothing on the page says there are no reviews. Needs no
+     GSAP, so with reduced motion it's all simply there. */
   (function reviews() {
-    var about = document.querySelector('#about .container');
-    if (!about || !REVIEWS.length) return;
+    var section = document.getElementById('reviews');
+    if (!section) return;
+    var list = section.querySelector('.reviews__list');
+    var data = Array.isArray(window.WEBESSY_REVIEWS) ? window.WEBESSY_REVIEWS : [];
     function make(tag, cls, text) {
       var el = document.createElement(tag);
       if (cls) el.className = cls;
       if (text) el.textContent = text;
       return el;
     }
-    var row = make('ul', 'reviews glow-field');
-    row.setAttribute('role', 'list'); /* Safari drops list semantics from a list with no bullets */
-    REVIEWS.forEach(function (r) {
-      var quote = String(r.quote || '').replace(/^[\s"“”]+|[\s"“”]+$/g, ''); /* the page adds the quote marks */
-      var name = String(r.name || '').trim();
+    data.forEach(function (r) {
+      if (!r) return;
+      var quote = String(r.review || '').replace(/^[\s"“”]+|[\s"“”]+$/g, ''); /* the page adds the quote marks */
+      var name = String(r.name || '').trim(), business = String(r.business || '').trim();
       if (!quote || !name) return;
-      var card = make('li', 'review glass reveal'), fig = make('figure', 'review__fig');
+      var item = make('li', 'reviews__item'), card = make('figure', 'review glass');
+      if (r.photo) {
+        var img = make('img', 'review__photo');
+        img.setAttribute('loading', 'lazy'); /* before src, or some browsers start the download */
+        img.setAttribute('decoding', 'async');
+        img.width = 240; img.height = 240; /* every review photo is 240 x 240 (js/reviews.js) */
+        img.alt = String(r.photoAlt || '').trim();
+        img.src = String(r.photo);
+        card.appendChild(img);
+      }
       var said = make('blockquote', 'review__quote'), by = make('figcaption', 'review__by');
       said.appendChild(make('p', '', quote));
       by.appendChild(make('span', 'label review__name', name));
-      if (r.business) by.appendChild(make('span', 'label', String(r.business).trim()));
-      fig.appendChild(said);
-      fig.appendChild(by);
-      card.appendChild(fig);
-      row.appendChild(card);
+      if (business) by.appendChild(make('span', 'label', business));
+      card.appendChild(said);
+      card.appendChild(by);
+      item.appendChild(card);
+      list.appendChild(item);
     });
-    if (!row.children.length) return;
-    row.style.setProperty('--n', Math.min(3, row.children.length)); /* as wide as its cards, three to a row at most */
-    about.appendChild(row);
+    var some = list.children.length > 0;
+    var other = section.querySelector('[data-when="' + (some ? 'empty' : 'some') + '"]');
+    other.parentNode.removeChild(other);
+    if (some) list.style.setProperty('--n', Math.min(3, list.children.length)); /* as wide as its cards, three to a row at most */
+    else list.parentNode.removeChild(list);
+    section.hidden = false;
+
+    /* Each card rises and fades in as its top reaches 85% of the screen, like every
+       .reveal, but by a CSS transition (.is-waiting, then .is-in) rather than GSAP:
+       phones run a transition off the main thread, and GSAP would rewrite a glass
+       card's style on every frame of it. With reduced motion they're simply there. */
+    if (!some || reduce || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting && e.boundingClientRect.top > 0) return;
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -15% 0px' });
+    Array.prototype.forEach.call(list.children, function (item) {
+      item.classList.add('is-waiting');
+      io.observe(item);
+    });
+  })();
+
+  /* ---------------- Reviews: the panel and its form ----------------
+     Write a review opens the form in a <dialog> over the page. It slides in
+     (.is-open, added once it's open) and slides out before it closes. Close,
+     the Escape key and, on computers, a click on the dimmed page close it, and
+     the focus goes back to the button. While it's open, the page behind is
+     locked. Opening puts the focus on the panel's title, not on a field, so a
+     phone doesn't throw its keyboard up over the panel as it arrives.
+     The form sends like the Contact form: through Web3Forms, without leaving
+     the page. Name and review are required, and a problem gets a plain line
+     under its field (the words are in the HTML: data-empty). Once sent, the
+     form makes way for "Sent."; if it can't send, a line offers WhatsApp
+     instead. Needs no GSAP, so it works with reduced motion too. */
+  (function reviewPanel() {
+    var panel = document.getElementById('rpanel');
+    var opener = document.querySelector('.reviews__write');
+    if (!panel || !opener) return;
+    var title = panel.querySelector('.rpanel__title'), box = panel.querySelector('.rpanel__box');
+    var modal = typeof panel.showModal === 'function';
+    var timer = 0, onEnd = null, downOutside = false;
+
+    function open() {
+      if (panel.open) return;
+      box.scrollTop = 0;
+      /* locking hides the scrollbar where it takes space (Windows): pad the page by its width instead, so nothing moves */
+      var bar = window.innerWidth - root.clientWidth;
+      if (bar > 0) document.body.style.paddingRight = bar + 'px';
+      root.classList.add('rpanel-lock');
+      if (modal) panel.showModal(); else panel.setAttribute('open', '');
+      title.focus({ preventScroll: true });
+      void panel.offsetWidth; /* settle the closed position first, so the slide has somewhere to start from */
+      panel.classList.add('is-open');
+    }
+    function stopWaiting() {
+      clearTimeout(timer); timer = 0;
+      if (onEnd) { panel.removeEventListener('transitionend', onEnd); onEnd = null; }
+    }
+    function finish() {
+      stopWaiting();
+      if (!panel.open) return;
+      if (modal) panel.close(); /* 'close' runs closed() */
+      else { panel.removeAttribute('open'); closed(); }
+    }
+    function shut() {
+      if (!panel.open || timer) return;
+      panel.classList.remove('is-open');
+      if (reduce) { finish(); return; }
+      onEnd = function (e) { if (e.target === panel && e.propertyName === 'transform') finish(); };
+      panel.addEventListener('transitionend', onEnd);
+      timer = setTimeout(finish, 700); /* in case the slide's end is never reported */
+    }
+    /* however it closed: by shut(), or at once (a browser may close it on a second Escape) */
+    function closed() {
+      stopWaiting();
+      panel.classList.remove('is-open');
+      root.classList.remove('rpanel-lock');
+      document.body.style.paddingRight = '';
+      opener.focus({ preventScroll: true });
+    }
+
+    opener.addEventListener('click', open);
+    panel.querySelector('.rpanel__close').addEventListener('click', shut);
+    if (modal) panel.addEventListener('close', closed);
+    panel.addEventListener('cancel', function (e) { e.preventDefault(); shut(); }); /* Escape: slide out first */
+    /* a click on the dimmed page, outside the panel. Both ends of the click must be out
+       there, so selecting text in a field and letting go outside doesn't close it. */
+    panel.addEventListener('pointerdown', function (e) { downOutside = e.target === panel; });
+    panel.addEventListener('click', function (e) {
+      if (e.target === panel && downOutside) shut();
+      downOutside = false;
+    });
+
+    var form = panel.querySelector('.rform');
+    if (!form || !window.fetch || !window.FormData) return;
+    var done = panel.querySelector('.rform__done');
+    var fail = form.querySelector('.rform__fail');
+    var send = form.querySelector('.rform__send');
+    var label = send.textContent, busy = false;
+    var required = Array.prototype.slice.call(form.querySelectorAll('[required]'));
+    form.noValidate = true; /* our messages from here on, not the browser's bubbles */
+
+    function mark(input, msg) {
+      document.getElementById(input.getAttribute('aria-describedby')).textContent = msg;
+      if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    }
+    function problem(input) { return input.value.trim() ? '' : input.getAttribute('data-empty'); }
+    /* once a field has a message, it updates as you type and goes when the field is fixed */
+    required.forEach(function (input) {
+      input.addEventListener('input', function () { if (input.hasAttribute('aria-invalid')) mark(input, problem(input)); });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (busy) return;
+      var first = null;
+      required.forEach(function (input) {
+        var msg = problem(input);
+        mark(input, msg);
+        if (msg && !first) first = input;
+      });
+      if (first) { first.focus(); return; }
+
+      busy = true;
+      fail.hidden = true;
+      send.textContent = send.getAttribute('data-sending');
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var wait = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
+      fetch(form.action, {
+        method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' },
+        signal: ctrl ? ctrl.signal : undefined
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { if (!res.ok || !data.success) throw new Error(data.message || 'not sent'); });
+        })
+        .then(function () {
+          form.hidden = true;
+          done.hidden = false;
+          done.focus();
+        }, function () {
+          fail.hidden = false;
+        })
+        .then(function () { clearTimeout(wait); busy = false; send.textContent = label; });
+    });
   })();
 
   /* ---------------- 06 Contact: the form ----------------

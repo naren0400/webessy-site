@@ -500,9 +500,7 @@
   </section>
   <!-- 05 ABOUT — a 5/7 split: the photo on the left, the words on the right. The name under the
        photo and the last line of the text sit level along the bottom. The one-line paragraph is
-       set larger, a line for each half: it's the turn in the story. The reviews row is added at
-       the end of this section by js/sections.js (its REVIEWS list), and only when the list has
-       reviews in it: while it's empty, nothing at all. -->
+       set larger, a line for each half: it's the turn in the story. -->
   <section id="about" class="about" data-theme="bone" aria-labelledby="about-title">
     <div class="container">
       <div class="about__grid">
@@ -528,6 +526,67 @@
         <p class="label about__where" data-reveal="lines"><span class="about__where-line">Based in Bengaluru.</span> <span class="about__where-line">Building for businesses anywhere.</span></p>
       </div>
     </div>
+  </section>
+  <!-- REVIEWS — no number in the label, so Contact stays 06. Full width: the label on a hairline,
+       the heading with the Write a review button at the end of its last line, then the reviews
+       as light glass cards. js/sections.js builds the cards from the list in js/reviews.js and
+       keeps one of the two headings: "Be the first to write a review" while the list is empty,
+       "In their words" once it has reviews. Without JavaScript the list can't be read, so the
+       section stays hidden. No numbers anywhere: no stars, no counts, no dates. -->
+  <section id="reviews" class="reviews" data-theme="bone" aria-labelledby="reviews-label" hidden>
+    <div class="container">
+      <p id="reviews-label" class="label reviews__label" data-reveal="words">Reviews</p>
+      <div class="reviews__head">
+        <h2 class="display reviews__title" data-reveal="words" data-when="empty"><span class="reviews__line">Be the <em>first</em></span> <span class="reviews__line">to write a review</span></h2>
+        <h2 class="display reviews__title" data-reveal="words" data-when="some">In their words</h2>
+        <button class="btn btn--primary reviews__write reveal" type="button" aria-haspopup="dialog" aria-controls="rpanel">Write a review</button>
+      </div>
+      <ul class="reviews__list" role="list"></ul>
+    </div>
+
+    <!-- The review form, in a panel over the page: on phones it slides up and fills the screen,
+         on computers it comes in from the right. Solid black, not glass, and nothing behind it
+         is blurred. Sends to 0400webessy@gmail.com through Web3Forms (js/sections.js). Name and
+         review are required. No asterisks. -->
+    <dialog id="rpanel" class="rpanel" data-theme="black" aria-labelledby="rpanel-title">
+      <div class="rpanel__box">
+        <div class="rpanel__top">
+          <h2 id="rpanel-title" class="rpanel__title" tabindex="-1" autofocus>Write a review</h2>
+          <button class="btn btn--ghost rpanel__close" type="button">Close</button>
+        </div>
+        <form class="rform" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="748c7731-14d0-49e6-ad14-2ddd6455ba38">
+          <input type="hidden" name="subject" value="New review from the website">
+          <input type="hidden" name="from_name" value="Webessy Studios website">
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" hidden><!-- spam trap: people never see it -->
+          <div class="field">
+            <label for="rf-name">Name</label>
+            <input id="rf-name" name="name" type="text" autocomplete="name" autocapitalize="words" required aria-describedby="rf-name-msg" data-empty="Add your name.">
+            <p id="rf-name-msg" class="field__msg"></p>
+          </div>
+          <div class="field">
+            <label for="rf-business">Business</label>
+            <input id="rf-business" name="business" type="text" autocomplete="organization" autocapitalize="words">
+          </div>
+          <div class="field">
+            <label for="rf-review">Your review</label>
+            <textarea id="rf-review" name="review" rows="5" autocapitalize="sentences" required aria-describedby="rf-review-msg" data-empty="Add your review."></textarea>
+            <p id="rf-review-msg" class="field__msg"></p>
+          </div>
+          <div class="field">
+            <label for="rf-link">Link to your work</label>
+            <input id="rf-link" name="link" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false">
+          </div>
+          <button class="btn btn--primary rform__send" type="submit" data-sending="Sending…">Send</button>
+          <p class="rform__fail" role="alert" hidden>That did not send. <a href="https://wa.me/918050082158" target="_blank" rel="noopener">Message on WhatsApp</a></p>
+        </form>
+        <div class="rform__done" tabindex="-1" hidden>
+          <p class="rform__done-title">Sent.</p>
+          <p>Thank you. We read every review before it goes on the site.</p>
+        </div>
+        <p class="rpanel__photos"><a class="btn btn--ghost" href="https://wa.me/918050082158?text=Hi%2C%20here%20are%20the%20photos%20for%20my%20review" target="_blank" rel="noopener">Send photos on WhatsApp</a></p>
+      </div>
+    </dialog>
   </section>
   <!-- 06 CONTACT — "Let's talk" is the heading and the WhatsApp link in one. The copy and the
        three steps on the left, the form lower on the right. -->
@@ -676,6 +735,7 @@
 <script src="js/hero.js"></script>
 <script src="js/ScrollTrigger.min.js"></script>
 <script src="js/reveal.js"></script>
+<script src="js/reviews.js"></script>
 <script src="js/sections.js"></script>
 </body>
 </html>

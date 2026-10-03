@@ -64,6 +64,7 @@ rules; `--ink` is the hero's light text) · `--ultramarine` `#1B1F5E` · `--bg` 
 | 03 What we do | `ultramarine` | ultramarine | bone |
 | 04 How it works | `black` | black; panels bone, orange, violet, green | panels ink, ink, bone, ink |
 | 05 About | `bone` | bone | ink |
+| Reviews (no number) | `bone` | bone | ink |
 | 06 Contact | `orange` | orange | ink |
 | Footer | `black` | black | bone |
 
@@ -125,8 +126,9 @@ neon edge (as `#8E7CFF`). Blue — the hero and the neon edge only. Never as gra
 - Section padding: `clamp(96px, 14vh, 180px)` top and bottom
 - Base grid: 12 columns, gap `clamp(16px, 2vw, 28px)`
 - Vary composition: 02 is left-pinned/right-scrolling, 03 is a 7/5 split (on computers, a ring of
-  three cards, §8), 04 is full-width stacked, 05 is a 5/7 split mirrored, 06 is a 7/5 split. No two
-  neighbours use the same layout.
+  three cards, §8), 04 is full-width stacked, 05 is a 5/7 split mirrored, Reviews is full width
+  (the heading with its button at the end of the line, then a row of cards), 06 is a 7/5 split.
+  No two neighbours use the same layout.
 
 ## 5. Corners — a deliberate scale, not one radius everywhere
 
@@ -140,8 +142,8 @@ neon edge (as `#8E7CFF`). Blue — the hero and the neon edge only. Never as gra
 Use the existing `.glass` class unchanged. It is smoked glass: a dark tint inside a 22px blur,
 a bright 1px top highlight, and a soft drop shadow.
 
-Glass only reads as glass with colour behind it. For the pricing section (and the reviews row),
-add one **static** glow layer behind the cards:
+Glass only reads as glass with colour behind it. For the pricing section, add one **static** glow
+layer behind the cards (the review cards have their own, below):
 
 ```css
 .glow-field { position: relative; isolation: isolate; }
@@ -159,9 +161,16 @@ card sits over the two behind. They're dimmed to 45% there, or the orange button
 would show through the front card's glass and drop its soft text to 3.6:1.
 
 Glass takes on the colour behind it. On ultramarine (03) the dark smoked glass works with bone
-text. On bone (the 05 reviews) it turns grey, and bone text on it fails AA (3.3:1). Glass on
+text. On bone (the review cards) it turns grey, and bone text on it fails AA (3.3:1). Glass on
 bone gets a light tint instead: a bone-white tint inside the blur, with ink text. Work out the
 pairs before shipping it.
+
+The review cards don't use `.glow-field`. Each card has its own still glow
+(`.reviews__item::before`), exactly under the card with the same corners: it only shows through
+the glass, never spills on to the bone or on to the next card, and works for any number of cards.
+Soft gradients, no blur filter (a filter on every card is more for a phone to draw). Measured from
+pixels: ink on the light glass 15.3:1 or more, the business line (ink 66%) 5.8:1 at worst; with
+Contact's orange behind the last cards (the text turns orange's ink and ink 80%), 6.1:1 or more.
 
 ### Neon edge
 
@@ -213,8 +222,21 @@ numbers in Fraunces at 70% of the panel's text colour: 30% fails AA on every pan
 and 70% gives 3.4:1 or better. Step titles `--t-h3`; body `--t-body`. Softer body text must
 still reach 4.5:1: ink 80% on orange, ink 82% on green, bone 92% on violet.
 
-**Review cards (glass)** — quote in Fraunces italic 22px, name and business in `--t-label`.
-On bone, the light glass from §6.
+**Review cards (glass)** — in the Reviews section, built from `js/reviews.js`. An optional photo
+first: a square, 72px (80px on computers), square corners, from a 240 × 240 file. Then the review
+in Fraunces italic 22px (the page adds the curly quotes), and the name and business in
+`--t-label` at the bottom. On bone, the light glass from §6. Up to three in a row (each 340px or
+wider; the row is only as wide as its cards), stacked on phones. No carousel, no neon edge.
+
+**Review panel** — a `<dialog>` the "Write a review" button opens. Solid black
+(`data-theme="black"` on the dialog), not glass, and nothing behind it is blurred: one flat dim
+layer. Phones: full screen, slides up. From 720px: 560px wide on the right, full height, slides
+in from the right. The title in Fraunces at `--t-h3`, a Close button (ghost), the form, then a
+hairline and "Send photos on WhatsApp" (ghost). Opening puts the focus on the title, so a phone
+keeps its keyboard down. The page behind is locked; where that takes a scrollbar away, the page
+is padded by its width (never `scrollbar-gutter`: on the page it changes what vw measures, and
+every heading sized in vw shrinks a little). Close, Escape and a click on the dim layer close it,
+and the focus goes back to the button.
 
 **Form** — labels above inputs, inputs 48px tall, 4px radius, 1px border, transparent
 background, focus border `var(--fg)`. Required fields validated in JavaScript with a plain inline
@@ -299,6 +321,14 @@ never red, which fails on orange.
     button; the next one slides over it. It scales to 0.95 and never dims.
   - The panels don't fade in (a fade would show the panel underneath). Reduced motion and no
     JavaScript: the panels simply follow each other.
+- **Reviews:** nothing is tied to scroll. The label and the heading rise word by word; the button
+  and each card rise and fade once. The cards do it by a CSS transition (`.is-waiting`, then
+  `.is-in`, from an IntersectionObserver at 85%), not GSAP: phones run a transition off the main
+  thread, and GSAP rewrites a glass card's style on every frame. Measured on a 4× slower phone
+  profile, dropped frames per 1000px scrolled: about 290 with GSAP, 230 with the transition, 190
+  for Contact. The panel slides in (0.5s, transform only, while the dim layer fades) and slides
+  out before it closes. Reduced motion: the cards are simply there, and the panel appears and goes
+  at once.
 - **prefers-reduced-motion:** no transforms, no scrubbing; everything simply visible. Text is not
   split. Section colours still change, as a plain fade. The neon edge stays violet.
 - Keep the frame rate: animate only `transform` and `opacity`. One exception: the 03 orbit blurs
@@ -308,7 +338,8 @@ never red, which fails on orange.
 
 Where an asset does not exist yet, render a clean placeholder box at the correct aspect ratio with
 a visible label, for example `[TODO: Photo of Naren]`. Currently missing: Naren's photo, real
-reviews.
+reviews (until the first one, the Reviews section shows its empty state, "Be the first to write
+a review").
 
 ## 10. Review checklist — run before saying a section is done
 

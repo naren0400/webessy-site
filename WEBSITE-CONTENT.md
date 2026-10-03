@@ -38,6 +38,7 @@ kept out of this repo.
 3. [What we do](#3-what-we-do)
 4. [How it works](#4-how-it-works)
 5. [About](#5-about)
+   - [Reviews](#reviews), its own section after About, with no number on the page
 6. [Contact](#6-contact)
 7. [Search and sharing](#7-search-and-sharing)
 
@@ -679,6 +680,72 @@ The number is never explained anywhere on the site. It is a mark, not a story.
 
 One practical thing: the largest element in your logo is `0400`, but the word
 people say out loud is "Webessy". Expect to introduce yourself as Webessy.
+
+---
+---
+
+# Reviews
+
+Added 3 October 2026. Its own section, between About and Contact, on bone like
+About. It has no number on the page, so Contact stays 06.
+
+Real reviews only, from real clients, in their own words. No stars, no
+numbers, no dates anywhere in this section.
+
+---
+
+## On the page
+
+| Where | Words |
+|---|---|
+| Label | Reviews |
+| Heading, while there are no reviews | Be the *first* to write a review |
+| Heading, once there are reviews | In their words |
+| Button | Write a review |
+
+Each review is a glass card: their words, their name, their business, and a
+photo if they sent one.
+
+---
+
+## The review form
+
+The button opens a panel with the form. Four fields. No asterisks.
+
+| Field | |
+|---|---|
+| Name | Required |
+| Business | Helps, but never stops anyone sending |
+| Your review | Required |
+| Link to your work | Helps, but never stops anyone sending |
+
+| Where | Words |
+|---|---|
+| Panel title | Write a review |
+| Close button | Close |
+| Button | Send |
+| While it sends | Sending… |
+| Name left empty | Add your name. |
+| Review left empty | Add your review. |
+| Sent | **Sent.** Thank you. We read every review before it goes on the site. |
+| Did not send | That did not send. *Message on WhatsApp* (a link to WhatsApp, nothing typed) |
+| Under the form | **[ Send photos on WhatsApp ]** |
+
+**Where it goes:** Web3Forms, to 0400webessy@gmail.com. The email has the
+subject "New review from the website", from "Webessy Studios website".
+Visitors never see these two.
+
+**Send photos on WhatsApp** opens WhatsApp with this already typed:
+
+> *Hi, here are the photos for my review*
+
+---
+
+## Putting a review up
+
+Nothing goes on the site until you have read it. To put a review up, copy it
+from the email into `js/reviews.js`; the file explains how. Photos come to you
+on WhatsApp. They go in `images/reviews/`, square, 240 × 240 pixels.
 
 ---
 ---
