@@ -690,7 +690,7 @@ Draft copy. Written to be used as-is, changed freely.
 **Number:** +91 80500 82158 (phone and WhatsApp)
 **Email:** 0400webessy@gmail.com
 
-**Reply time:** one working day (chosen 1 October 2026).
+**Reply time:** 24 hours (changed from one working day on 3 October 2026).
 
 ---
 
@@ -716,7 +716,7 @@ So this section does one thing: make messaging feel small.
 >
 > Or fill this in and we will come to you.
 >
-> *We reply within one working day.*
+> *We reply within 24 hours.*
 
 ---
 
@@ -765,7 +765,7 @@ sending. No asterisks.
 | Name left empty | Add your name. |
 | Number left empty | Add a WhatsApp or phone number. |
 | Number too short | That number looks too short. |
-| Sent | **Sent.** We reply within one working day. |
+| Sent | **Sent.** We reply within 24 hours. |
 | Did not send | That did not send. *Message on WhatsApp* (a link) |
 
 The email you receive has the subject "New enquiry from the website", from
