@@ -294,8 +294,8 @@ never red, which fails on orange.
 ## 9. Placeholders for missing assets
 
 Where an asset does not exist yet, render a clean placeholder box at the correct aspect ratio with
-a visible label, for example `[TODO: Yauvana screenshot — desktop hero]`. Currently missing:
-5 Yauvana screenshots, Naren's photo, reply time, real reviews.
+a visible label, for example `[TODO: Photo of Naren]`. Currently missing: Naren's photo, real
+reviews.
 
 ## 10. Review checklist — run before saying a section is done
 

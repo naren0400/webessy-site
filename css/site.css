@@ -543,16 +543,8 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 
 .work__media { display: flex; flex-direction: column; gap: clamp(40px, 9vh, 112px); overflow-x: clip; }
 .shot { margin: 0; }
-.shot img { display: block; width: 100%; height: auto; }
-/* stand-in until the Yauvana screenshots arrive: same shape, visibly marked, tinted from the text colour */
-.shot__ph {
-  display: grid; place-items: center; aspect-ratio: 16 / 10; padding: 20px;
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
-  border: 1px dashed color-mix(in srgb, var(--fg) 30%, transparent);
-  text-align: center; text-transform: none; letter-spacing: .04em;
-}
-.shot--phone .shot__ph { aspect-ratio: 9 / 19.5; }
-.shot--form .shot__ph { aspect-ratio: 4 / 3; }
+/* the screenshots load lazily: until a file arrives, a faint tint from the text colour holds its shape */
+.shot img { display: block; width: 100%; height: auto; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .shot-pair, .shot-row { display: grid; gap: clamp(40px, 9vh, 112px); }
 .shot--phone { width: 62%; }
 

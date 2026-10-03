@@ -87,17 +87,21 @@
           </div>
         </div>
 
-        <!-- Swap each placeholder for <img src width height alt loading="lazy">. Alt text is in WEBSITE-CONTENT.md §7. -->
+        <!-- The Yauvana screenshots, in images/work/. Each comes in several sizes. "sizes" says how wide
+             each one shows at each screen width, so the browser fetches the smallest file that stays sharp.
+             If this column's layout changes, change "sizes" too. width and height are the largest file's
+             size: they only give the shape, so the space is held before the picture loads.
+             Alt text is in WEBSITE-CONTENT.md §7. -->
         <div class="work__media">
-          <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — desktop hero]</div></figure>
-          <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — 3D layout model, mid-interaction]</div></figure>
+          <figure class="shot"><img src="images/work/yauvana-hero-1080.webp" srcset="images/work/yauvana-hero-720.webp 720w, images/work/yauvana-hero-1080.webp 1080w, images/work/yauvana-hero-1440.webp 1440w" sizes="(min-width: 1368px) 712px, (min-width: 960px) 52vw, 90vw" width="1440" height="810" alt="Yauvana Estate website homepage on a computer: the headline “Breathe young.” over misty, forested hills" loading="lazy" decoding="async"></figure>
+          <figure class="shot"><img src="images/work/yauvana-3d-model-1080.webp" srcset="images/work/yauvana-3d-model-720.webp 720w, images/work/yauvana-3d-model-1080.webp 1080w, images/work/yauvana-3d-model-1440.webp 1440w" sizes="(min-width: 1368px) 712px, (min-width: 960px) 52vw, 90vw" width="1440" height="782" alt="Interactive 3D layout model of the estate, turned at an angle: plots, tree-lined avenues and the clubhouse" loading="lazy" decoding="async"></figure>
           <div class="shot-pair">
-            <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — scroll sequence, frame 1]</div></figure>
-            <figure class="shot"><div class="shot__ph label">[TODO: Yauvana screenshot — scroll sequence, frame 2]</div></figure>
+            <figure class="shot"><img src="images/work/yauvana-entrance-1080.webp" srcset="images/work/yauvana-entrance-720.webp 720w, images/work/yauvana-entrance-1080.webp 1080w, images/work/yauvana-entrance-1440.webp 1440w" sizes="(min-width: 1368px) 342px, (min-width: 960px) 25vw, (min-width: 720px) 44vw, 90vw" width="1440" height="810" alt="Frame from the Yauvana scroll sequence: a render of the main entrance arch and gatehouse" loading="lazy" decoding="async"></figure>
+            <figure class="shot"><img src="images/work/yauvana-avenue-1080.webp" srcset="images/work/yauvana-avenue-720.webp 720w, images/work/yauvana-avenue-1080.webp 1080w, images/work/yauvana-avenue-1440.webp 1440w" sizes="(min-width: 1368px) 342px, (min-width: 960px) 25vw, (min-width: 720px) 44vw, 90vw" width="1440" height="810" alt="Frame from the Yauvana scroll sequence: a render of a tree-lined avenue with kerb lighting" loading="lazy" decoding="async"></figure>
           </div>
           <div class="shot-row">
-            <figure class="shot shot--phone"><div class="shot__ph label">[TODO: Yauvana screenshot — whole page on a phone]</div></figure>
-            <figure class="shot shot--form"><div class="shot__ph label">[TODO: Yauvana screenshot — enquiry form]</div></figure>
+            <figure class="shot shot--phone"><img src="images/work/yauvana-phone-540.webp" srcset="images/work/yauvana-phone-540.webp 540w, images/work/yauvana-phone-780.webp 780w" sizes="(min-width: 1368px) 228px, (min-width: 960px) 17vw, (min-width: 720px) 30vw, 56vw" width="780" height="1688" alt="Yauvana Estate site on a mobile phone, showing the headline “Breathe young.”" loading="lazy" decoding="async"></figure>
+            <figure class="shot"><img src="images/work/yauvana-clubhouse-1080.webp" srcset="images/work/yauvana-clubhouse-720.webp 720w, images/work/yauvana-clubhouse-1080.webp 1080w, images/work/yauvana-clubhouse-1440.webp 1440w" sizes="(min-width: 1368px) 456px, (min-width: 960px) 34vw, (min-width: 720px) 59vw, 90vw" width="1440" height="810" alt="Frame from the Yauvana scroll sequence: a render of the clubhouse and pool at dusk" loading="lazy" decoding="async"></figure>
           </div>
         </div>
       </div>

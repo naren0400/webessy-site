@@ -947,10 +947,16 @@ Every image needs it. Describe what is in the picture, plainly.
 
 | Image | Alt text |
 |---|---|
-| Yauvana hero | Yauvana Estate website homepage showing the plotted layout |
-| 3D model | Interactive 3D layout model of the estate |
-| Phone screenshot | Yauvana Estate site on a mobile phone |
+| Yauvana hero | Yauvana Estate website homepage on a computer: the headline “Breathe young.” over misty, forested hills |
+| 3D model | Interactive 3D layout model of the estate, turned at an angle: plots, tree-lined avenues and the clubhouse |
+| Scroll sequence — entrance | Frame from the Yauvana scroll sequence: a render of the main entrance arch and gatehouse |
+| Scroll sequence — avenue | Frame from the Yauvana scroll sequence: a render of a tree-lined avenue with kerb lighting |
+| Scroll sequence — clubhouse | Frame from the Yauvana scroll sequence: a render of the clubhouse and pool at dusk |
+| Phone screenshot | Yauvana Estate site on a mobile phone, showing the headline “Breathe young.” |
 | Your photo | Naren, founder of Webessy Studios |
+
+*(Yauvana rows updated 3 October 2026 to describe the real screenshots. The hero
+screenshot shows the hills and the headline, not the plotted layout.)*
 
 **Not** "image1", "screenshot", or keyword stuffing like "best website designer
 bangalore website design". Google ignores it and screen readers read it aloud
