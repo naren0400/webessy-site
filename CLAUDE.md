@@ -25,6 +25,9 @@ Explain everything to me in simple, plain English. Short sentences.
   3. While one of the 04 panels is behind it, the nav takes its look over bone (change 1, and
      no outer glow). `js/sections.js` sets `data-nav="panel"` on `<html>`; the rules are in the
      same "section colours" block.
+  Hero bug fixes (4 October 2026, iPhone stutter): phones (touch, under 720px wide) scroll the
+  hero in 190vh instead of 312vh (`#hero` 290vh tall), and on phones and tablets the 3D 0400 is
+  built and drawn once, unseen, while the page is still, so its first appearance doesn't freeze.
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
   Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
@@ -55,7 +58,9 @@ Explain everything to me in simple, plain English. Short sentences.
   from ₹18,499, and Boss (no price: "Let’s talk scope and ideas directly", a WhatsApp button).
   No feature lists or "what's included" details on the cards. All four have the neon edge and
   sit on a ring that holds in place (CSS sticky) and turns clockwise as you scroll, Starter →
-  Business → Advanced → Boss, driven by scroll only, no snapping. It runs on phones, tablets and
+  Business → Advanced → Boss, driven by scroll, no snapping. Since 4 October 2026 it turns at half
+  the old speed, and while a finger or the mouse is on a card it waits, then catches up smoothly
+  when you let go (the page keeps scrolling meanwhile). It runs on phones, tablets and
   computers (screens at least 500px tall). Reduced motion, no JavaScript and shorter screens
   keep the cards stacked — no swiping. Under the ring one line: "Special pricing for startups."
   Never the word "negotiable"; no enterprise discounts (enterprise clients go to Boss).

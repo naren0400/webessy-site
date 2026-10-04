@@ -261,8 +261,12 @@ html.nav-done #navMark { visibility: visible; }
 
 /* ---------- hero ----------
    The hero scrolls 312vh: its 412vh height minus the 100vh stage. hero.js keeps
-   its scroll map in the same units, so change the two together. */
+   its scroll map in the same units, so change the two together.
+   Phones (a touch screen under 720px wide: portrait phones) scroll it in 190vh:
+   290vh tall. hero.js plays the same steps in the same order, as shares of
+   whatever the hero scrolls, so they simply go by faster. */
 #hero { position: relative; height: 412vh; }
+@media (hover: none) and (pointer: coarse) and (max-width: 719.98px) { #hero { height: 290vh; } }
 #heroStage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
 #frames { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transform-origin: 0 0; }
 /* the dark layer the room dims to before the statement. Darkest along the bottom,
@@ -966,7 +970,8 @@ a.pin__num:hover::after { opacity: 1; }
 /* The ring. sections.js adds .is-orbit to .plans (screens at least 500px tall, without reduced
    motion: phones, tablets and computers) and turns the four cards on a ring as you scroll.
    The browser holds the stage (the ring and the line about startups) in place, by CSS sticky,
-   so it never jumps on a phone, while the space after it, 2.6 screen-heights, scrolls past.
+   so it never jumps on a phone, while the space after it, 4.4 screen-heights, scrolls past
+   (sections.js spreads the three quarter turns over it).
    It holds in the middle of what's left of the screen under the nav (--stick, its bottom
    edge), above the WhatsApp button on phones (--dock). sections.js sets --stick and
    --stage-h, the stage's height. The stage has room at the top for the cards behind, which
@@ -976,7 +981,7 @@ a.pin__num:hover::after { opacity: 1; }
    of each card sits in .card-body, its own layer, so the cards behind can fade their text
    (and on computers blur it) and keep the glass and the edge sharp. */
 .plans.is-orbit { --stick: 70px; --dock: 24px; --card-w: min(82vw, 330px); }
-.plans.is-orbit::after { content: ""; display: block; height: 260vh; }
+.plans.is-orbit::after { content: ""; display: block; height: 440vh; }
 .plans.is-orbit .plans__stage {
   position: sticky; top: var(--stick);
   top: max(var(--stick), var(--stick) + (100vh - var(--stick) - var(--dock) - var(--stage-h, 0px)) / 2);
@@ -990,7 +995,7 @@ a.pin__num:hover::after { opacity: 1; }
 .plans.is-orbit .card-body { will-change: opacity; }
 .plans.is-orbit .plans__note { text-align: center; }
 @supports (height: 100svh) {
-  .plans.is-orbit::after { height: 260svh; }
+  .plans.is-orbit::after { height: 440svh; }
   .plans.is-orbit .plans__stage { top: max(var(--stick), var(--stick) + (100svh - var(--stick) - var(--dock) - var(--stage-h, 0px)) / 2); }
 }
 @media (max-width: 719.98px) {

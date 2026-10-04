@@ -426,30 +426,35 @@
     bands.forEach(function (band) { io.observe(band); });
   })();
 
-  /* Positions are measured while the intro still locks the page, and fonts
-     change line heights when they arrive, so measure again at both moments. */
-  document.addEventListener('intro:done', function () { ScrollTrigger.refresh(); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
+  /* ---------------- measuring the page ----------------
+     ScrollTrigger measures where everything is when the page is ready, when
+     the intro lets go of the page (it locks it while it plays), when the
+     fonts arrive (they change line heights) and when everything has loaded.
+     Each time it scrolls the page to the top and back in one step. On an
+     iPhone that stops a flick dead and can jump the page, and there
+     "everything has loaded" comes late: it waits for the hero's 80 frames.
+     So it measures at those moments only while the page is still: if you're
+     scrolling, it waits until the scroll has stopped and no finger is on the
+     screen. Turning the phone or resizing the window measures as before
+     (ScrollTrigger already waits for the scroll to stop there). */
+  ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,resize' });
+  var measureDue = false;
+  function measureWhenStill() {
+    if (ScrollTrigger.isScrolling()) { measureDue = true; return; }
+    measureDue = false;
+    ScrollTrigger.refresh();
+  }
+  ScrollTrigger.addEventListener('scrollEnd', function () { if (measureDue) measureWhenStill(); });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', measureWhenStill);
+  else measureWhenStill();
+  window.addEventListener('load', measureWhenStill);
+  document.addEventListener('intro:done', measureWhenStill);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureWhenStill);
 
   if (reduce) return;
 
-  /* ---------------- text reveal (js/reveal.js) ----------------
-     Headings word by word, paragraphs line by line, big statement lines
-     letter by letter — see data-reveal in the HTML. */
-  if (typeof window.webessyReveal === 'function') window.webessyReveal(document);
-
-  /* ---------------- rise and fade for things that aren't text ----------------
-     Glass cards and the table: 16px rise and fade, once, as they come into view.
-     Opacity only, never visibility: hidden, so buttons and links can still be
-     reached with the Tab key and read by screen readers before they fade in.
-     The 03 cards are left to "03 What we do" below. */
-  function riseIn(el) {
-    gsap.from(el, {
-      y: 16, opacity: 0, duration: 0.8, ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
-    });
-  }
-  gsap.utils.toArray('.reveal').forEach(function (el) { if (!el.closest('.plans, .extras')) riseIn(el); });
+  /* (The text reveal and the rise and fade for the table and the other cards
+     are set up last, at the bottom of this file.) */
 
   /* The same rise and fade for the 03 glass cards, but by a CSS transition
      (.is-waiting, then .is-in, as each card's top reaches 85% of the screen):
@@ -611,13 +616,17 @@
      The four plan cards sit on a ring seen from slightly above: Starter at the
      front, Business on the right, Advanced behind, Boss on the left. On any
      screen at least 500px tall the browser holds the ring under the nav (CSS
-     sticky on .plans__stage) while 2.6 screen-heights of scroll go past, and
+     sticky on .plans__stage) while 4.4 screen-heights of scroll go past, and
      the ring turns clockwise as you scroll down: the front card swings left
      and back, and the next one comes in from the right. Starter, Business,
-     Advanced, Boss: three quarters of a turn in all. Tied to the scroll only,
-     with no snapping and no swiping, so when you stop it stops. Each card
-     holds at the front for a while and the turn slows right down as it gets
-     there, so wherever you stop, one card is almost always square at the front.
+     Advanced, Boss: three quarters of a turn in all, each quarter over 1.17
+     screen-heights of scroll. Tied to the scroll, with no snapping and no
+     swiping, so when you stop it stops. Each card holds at the front for a
+     while and the turn slows right down as it gets there, so wherever you
+     stop, one card is almost always square at the front.
+     While a finger or the mouse is on a card, the ring waits where it is (the
+     page itself still scrolls), and when you let go it turns round to where
+     the scroll has got to.
      The ring is 1.4 cards wide, so two cards only change places (which one is
      on top) where they don't overlap, and the swap never shows.
      The front card is full size with nothing on it, so its text is sharp. The
@@ -647,8 +656,11 @@
     var bodies = cards.map(function (card) { return card.querySelector('.card-body'); });
 
     var START = [0, 270, 180, 90]; /* each card's place on the ring, degrees clockwise from the front: Starter in front, Business next (right), Advanced behind, Boss left */
-    var TURNS = [[0.05, 0.28], [0.39, 0.61], [0.72, 0.95]]; /* each quarter turn's start and end, as shares of the held scroll */
-    var HOLD = [0.025, 0.335, 0.665, 0.975]; /* the middle of each card's stay at the front */
+    /* each quarter turn's start and end, as shares of the held scroll (4.4 screen-heights): a
+       turn takes 1.17 screen-heights, and a card stays at the front for 0.29 of one between
+       turns, 0.15 at the two ends */
+    var TURNS = [[0.035, 0.301], [0.367, 0.633], [0.699, 0.965]];
+    var HOLD = [0.0175, 0.334, 0.666, 0.9825]; /* the middle of each card's stay at the front */
     /* The ring is 1.4 cards wide (RADIUS), and straight behind, a card is 20% of its height
        higher (RISE) and 76% size. From 45 degrees round, a card dims, to 45% at the sides and
        behind, and its text fades to 60% of that; on computers the text also blurs to 3px.
@@ -673,7 +685,7 @@
 
       var blurText = ctx.conditions.fine, fade = blurText ? FADE : FADE_TOUCH;
       run.classList.add('is-orbit');
-      var w = 0, h = 0, dpr = 1, progress = 0, intro = { k: 0 };
+      var w = 0, h = 0, dpr = 1, progress = 0, turn = 0, intro = { k: 0 }; /* turn: how far the ring on screen has turned */
       var z = [-1, -1, -1, -1], softs = [-1, -1, -1, -1], moves = ['', '', '', ''], alphas = ['', '', '', ''];
       function measure() { w = cards[0].offsetWidth; h = cards[0].offsetHeight; dpr = window.devicePixelRatio || 1; }
       function snap(v) { return Math.round(v * dpr) / dpr; } /* whole screen pixels, so the front card's text is never resampled */
@@ -681,7 +693,7 @@
       /* Written straight to each card's style, and only when it changes: this runs on every
          frame of scrolling, and while a card holds at the front nothing needs redoing. */
       function render() {
-        var turn = turned(progress), depth = [];
+        var depth = [];
         cards.forEach(function (card, i) {
           var deg = START[i] + turn, rad = deg * Math.PI / 180;
           var back = (1 - Math.cos(rad)) / 2;                     /* 0 at the front, 1 straight behind */
@@ -716,8 +728,8 @@
           return 'top ' + Math.round(parseFloat(getComputedStyle(stage).top)) + 'px';
         },
         end: function () { return '+=' + (run.offsetHeight - stage.offsetHeight); },
-        onUpdate: function (self) { progress = self.progress; render(); },
-        onRefresh: function (self) { progress = self.progress; render(); }
+        onUpdate: function (self) { progress = self.progress; follow(); },
+        onRefresh: function (self) { progress = self.progress; follow(); }
       });
       /* the first time the ring comes into view it rises and fades in, like the other cards on the page */
       gsap.to(intro, {
@@ -725,14 +737,68 @@
         scrollTrigger: { trigger: list, start: 'top 85%', once: true }
       });
 
+      /* While a finger or the mouse is on a card, the ring waits where it is; the page itself
+         still scrolls. Let go (or move the mouse off the cards) and it turns round to where the
+         scroll has got to, easing in and out: about half a second, a little longer for a longer
+         way. The mouse holds it only once it has moved on to a card, not when a card turns in
+         under a mouse that's standing still. Only transform and opacity change, as always. */
+      var touching = false, hovering = false, held = false, catching = false;
+      var from = 0, t0 = 0, dur = 0, px = -1, py = -1;
+      function follow() { if (!held && !catching) turn = turned(progress); render(); }
+      function catchUp(time) {
+        var k = Math.min(1, (time - t0) / dur);
+        turn = from + (turned(progress) - from) * smoother(k); /* ends exactly where the scroll is, even if it moved meanwhile */
+        if (k === 1) { catching = false; gsap.ticker.remove(catchUp); }
+        render();
+      }
+      function setHold() {
+        var on = touching || hovering, gap = Math.abs(turned(progress) - turn);
+        if (on === held) return;
+        held = on;
+        if (catching) { catching = false; gsap.ticker.remove(catchUp); }
+        if (!on && gap > 0.05) {
+          from = turn; t0 = gsap.ticker.time; dur = 0.5 + gap / 600;
+          catching = true; gsap.ticker.add(catchUp);
+        }
+      }
+      function fingerDown() { touching = true; setHold(); }
+      function fingerUp(e) { if (!e.touches.length) { touching = false; setHold(); } }
+      function pointerMove(e) {
+        if (e.pointerType === 'touch' || (e.clientX === px && e.clientY === py)) return;
+        px = e.clientX; py = e.clientY;
+        hovering = !!e.target.closest('.plan');
+        setHold();
+      }
+      function pointerOff(e) { if (e.pointerType !== 'touch') { hovering = false; setHold(); } }
+      cards.forEach(function (card) {
+        card.addEventListener('touchstart', fingerDown, { passive: true });
+        card.addEventListener('pointerleave', pointerOff);
+      });
+      stage.addEventListener('pointermove', pointerMove);
+      window.addEventListener('touchend', fingerUp, { passive: true });
+      window.addEventListener('touchcancel', fingerUp, { passive: true });
+
       function bringForward(e) {
         var i = cards.indexOf(e.currentTarget);
+        /* from the keyboard, a mouse resting on a card no longer holds the ring
+           (browsers too old to know :focus-visible throw here: treat it as the keyboard) */
+        var keys = true;
+        try { keys = e.target.matches(':focus-visible'); } catch (err) { /* keys stays true */ }
+        if (keys) { hovering = false; setHold(); }
         if (Math.abs(turned(progress) - 90 * i) > 1) window.scrollTo(0, Math.round(st.start + HOLD[i] * (st.end - st.start)));
       }
       cards.forEach(function (card) { card.addEventListener('focusin', bringForward); });
 
       return function () {
-        cards.forEach(function (card) { card.removeEventListener('focusin', bringForward); });
+        cards.forEach(function (card) {
+          card.removeEventListener('focusin', bringForward);
+          card.removeEventListener('touchstart', fingerDown);
+          card.removeEventListener('pointerleave', pointerOff);
+        });
+        stage.removeEventListener('pointermove', pointerMove);
+        window.removeEventListener('touchend', fingerUp);
+        window.removeEventListener('touchcancel', fingerUp);
+        gsap.ticker.remove(catchUp);
         run.classList.remove('is-orbit');
         run.style.removeProperty('--stick');
         run.style.removeProperty('--stage-h');
@@ -944,4 +1010,27 @@
       onEnter: function () { tl.play(); }
     });
   })();
+
+  /* Set up last: the build sheet, the ring and the 04 stack above change how
+     tall the page is, so everything below is measured after them and sits in
+     the right place from the start, even while measuring the whole page waits
+     for you to stop scrolling (see "measuring the page"). */
+
+  /* ---------------- text reveal (js/reveal.js) ----------------
+     Headings word by word, paragraphs line by line, big statement lines
+     letter by letter — see data-reveal in the HTML. */
+  if (typeof window.webessyReveal === 'function') window.webessyReveal(document);
+
+  /* ---------------- rise and fade for things that aren't text ----------------
+     The table, the About photo and the like: 16px rise and fade, once, as they
+     come into view. Opacity only, never visibility: hidden, so buttons and
+     links can still be reached with the Tab key and read by screen readers
+     before they fade in. The 03 cards have their own (riseByClass, the ring). */
+  function riseIn(el) {
+    gsap.from(el, {
+      y: 16, opacity: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+    });
+  }
+  gsap.utils.toArray('.reveal').forEach(function (el) { if (!el.closest('.plans, .extras')) riseIn(el); });
 })();

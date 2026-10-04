@@ -315,12 +315,20 @@ never red, which fails on orange.
   1200px; nearly square), and sit on a ring seen from slightly above. The browser holds the
   stage (`.plans__stage`: the ring and the startups line) by CSS sticky, never a JS pin, which
   jumps on iPhones as it locks: it holds in the middle of the screen under the nav, above the
-  WhatsApp button on phones, while 2.6 screen-heights of space after it scroll past (`::after`).
+  WhatsApp button on phones, while 4.4 screen-heights of space after it scroll past (`::after`;
+  2.6 until 4 October 2026, when the turns were slowed to half speed).
   The ring turns clockwise as you scroll: the front card swings left and back, and the next one
   comes in from the right.
-  - Order: Starter → Business → Advanced → Boss, 270° in all. It holds at 0–5%, 28–39%, 61–72%
-    and 95–100% of the held scroll, with eased turns between (smootherstep), so wherever you stop,
-    one card is almost always square at the front. Scroll only, no snapping, no swiping.
+  - Order: Starter → Business → Advanced → Boss, 270° in all. It holds at 0–3.5%, 30–37%,
+    63–70% and 96.5–100% of the held scroll, with eased turns between (smootherstep, each quarter
+    turn over 1.17 screen-heights), so wherever you stop, one card is almost always square at the
+    front. Scroll only, no snapping, no swiping.
+  - Hold (approved 4 October 2026): while a finger or the mouse is on a card, the ring waits
+    where it is; the page itself still scrolls. On release it turns round to where the scroll has
+    got to (smootherstep, 0.5s plus 0.1s per 60°), landing exactly on the scroll's position even
+    if it moved meanwhile. The mouse holds it only after a real move on to a card, never when a
+    card turns in under a still pointer (or a resting mouse would freeze the ring). Keyboard focus
+    (`:focus-visible`) lets go of a mouse hold, so Tab still brings a card to the front.
   - Place on the ring: x = −0.7·width·sin θ, y = −0.2·height·(1 − cos θ)/2,
     scale = 1 − 0.24·(1 − cos θ)/2. With four cards the ring must be at least 1.36 cards wide:
     two cards change places (which one is on top) when they're equally far round, and at 0.56
@@ -367,6 +375,15 @@ never red, which fails on orange.
   split. Section colours still change, as a plain fade. The neon edge stays violet.
 - Keep the frame rate: animate only `transform` and `opacity`. One exception: the 03 ring blurs
   the text of the cards at the back (computers only).
+- **Measuring the page** (4 October 2026, the iPhone stutter): `ScrollTrigger.refresh()` scrolls
+  the page to the top and back in one step, which stops an iPhone flick dead and can jump the
+  page. Never call it directly: call `measureWhenStill()` in `js/sections.js`, which waits until
+  the scroll has stopped and no finger is on the screen. ScrollTrigger's own refresh on "load"
+  and "DOMContentLoaded" is switched off for the same reason ("load" comes late on iPhones: it
+  waits for the hero's 80 frames). So that every trigger is in the right place before the first
+  full measure, set up anything that changes the page's height (like the build sheet, the ring
+  and the 04 stack) before the text reveal and `riseIn`, which run last, at the bottom of
+  `js/sections.js`.
 
 ## 9. Placeholders for missing assets
 

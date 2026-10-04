@@ -2,7 +2,8 @@
    HERO — the welcome, then Veo frames scrubbed by scroll, the chrome 0400
    inside the window, then the statement "Make people choose you."
    Scroll map, in vh of scrolling. The hero scrolls 312vh: its 412vh height
-   (css/site.css) minus the 100vh stage. Change the two together.
+   (css/site.css) minus the 100vh stage. Change the two together. Phones
+   scroll it in 190vh (290vh tall): the same map, as shares of the scroll.
        0 -  14   the welcome's words rise and fade, line by line
        3 -  24   the welcome's picture dissolves into frame 1, pushing in a little
       20 - 180   frames 1 → 80 (pull back from the light to the portal)
@@ -26,6 +27,8 @@
      - No live blur in the hero (see #hero.lite in css/site.css).
      - The 3D canvas covers only a box around the 0400, at 1.5x, and is
        redrawn only when the scroll moves it (no idle sway).
+     - The 3D 0400 is built, and drawn once unseen (which prepares its
+       shaders), while the page is still, so neither holds up a scroll.
      - The welcome's slow drift and its stars are CSS animations, which run
        off the main thread. Its stars are drawn once per screen size.
 
@@ -304,11 +307,34 @@
       document.head.appendChild(s);
     });
   }
+  /* Phones and tablets: building the 0400 and drawing it the first time hold
+     the page up for a moment (its shaders are prepared then), long enough to
+     see on a phone. So both happen while the page is still: no scrolling for
+     0.3s and no finger on the screen, once the first frame has arrived (the
+     0400's place comes from it). If you keep scrolling, they happen a little
+     before the 0400 comes in. */
+  var lastScroll = 0, touching = false;
+  if (LITE) ['touchstart', 'touchend', 'touchcancel'].forEach(function (type) {
+    window.addEventListener(type, function (e) { touching = e.touches.length > 0; }, { passive: true });
+  });
+  function whenStill() {
+    return new Promise(function (go) {
+      (function check() {
+        if (pT * SPAN_VH > T.chrome[0] - 60 || (map1 && !touching && performance.now() - lastScroll > 300)) go();
+        else setTimeout(check, 100);
+      })();
+    });
+  }
   function startChrome() {
     if (chrome || !gcv) return;
     loadScript('js/three.min.js')
       .then(function () { return loadScript('js/logo3d.js'); })
-      .then(function () { chrome = makeChrome(); chrome.resize(); wake(); })
+      .then(function () { return LITE ? whenStill() : null; })
+      .then(function () {
+        chrome = makeChrome(); chrome.resize();
+        if (LITE && map1) chrome.render(params(pS), computeMap(1), 0); /* unseen: the canvas is still transparent */
+        wake();
+      })
       .catch(function (e) { console.warn('[hero] chrome 0400 unavailable: ' + e.message); if (gcv) gcv.style.display = 'none'; });
   }
   if (window.__introDone) startChrome(); else document.addEventListener('intro:done', startChrome, { once: true });
@@ -837,7 +863,7 @@
     if (again) wake(); else resting = true;
   }
 
-  window.addEventListener('scroll', function () { readScroll(); wake(); }, { passive: true });
+  window.addEventListener('scroll', function () { lastScroll = performance.now(); readScroll(); wake(); }, { passive: true });
   window.addEventListener('resize', layout);
   document.addEventListener('intro:done', function () { measureSpan(); readScroll(); wake(); });
   layout();
