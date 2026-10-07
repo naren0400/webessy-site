@@ -1537,6 +1537,85 @@ html.rpanel-lock body { overflow: hidden; }
 @media (min-width: 720px) {
   .foot__row { display: flex; justify-content: space-between; }
 }
+.foot__row a[aria-current="page"] { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Launch pages: privacy.html, terms.html, 404.html ----------
+   Plain pages with no JavaScript: nothing moves but the nav's neon edge. Each names its
+   theme on <html> (bone for the two legal pages, black for 404), so the nav takes its look
+   for that colour (see "section colours" at the top) and the whole page, overscroll
+   included, is painted in it. The nav and the footer are the main page's, their links
+   pointing back to index.html; here the footer logo is simply there. */
+html.page-doc, html.page-doc body { background: var(--page); color: var(--fg); }
+
+/* The legal pages: the date, the title and one lead line across the top, then the text in
+   one column, 62ch at most. From 960px the list of sections stays beside it (CSS sticky). */
+.doc { padding-block: var(--section-pad); }
+.doc__title { margin-top: 18px; }
+.doc__title em, .lost__title em { color: var(--accent); }
+.doc__lead {
+  margin-top: clamp(24px, 4vh, 40px); max-width: 34ch; text-wrap: pretty;
+  font-family: var(--font-display); font-weight: 400; font-size: clamp(22px, 2.1vw, 30px);
+  line-height: 1.25; letter-spacing: -.015em;
+}
+.doc__grid { margin-top: clamp(56px, 9vh, 96px); padding-top: 18px; border-top: 1px solid var(--line); }
+.doc__toc { display: none; }
+.doc__body { counter-reset: doc; }
+.doc__body > section { counter-increment: doc; scroll-margin-top: 96px; }
+.doc__body > section + section { margin-top: clamp(48px, 7vh, 72px); }
+.doc__body h2 {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-h3);
+  line-height: 1.15; letter-spacing: -.015em; max-width: 26ch; text-wrap: balance;
+}
+/* section numbers in the mono label face. The order already gives them, so screen readers
+   skip them where "/ ''" works (as in Contact's three steps). */
+.doc__body h2::before, .doc__toc li::before {
+  content: counter(doc, decimal-leading-zero); content: counter(doc, decimal-leading-zero) / "";
+  font-family: var(--font-mono); font-size: var(--t-label); letter-spacing: .14em; color: var(--fg-soft);
+}
+.doc__body h2::before { display: block; margin-bottom: 14px; line-height: 1.2; }
+.doc__body p, .doc__body li { font-size: var(--t-body); line-height: 1.6; max-width: 62ch; }
+.doc__body h2 + * { margin-top: 20px; }
+.doc__body p + p, .doc__body p + ul, .doc__body ul + p { margin-top: 1em; }
+.doc__body ul { list-style: none; }
+.doc__body li { position: relative; padding-left: 1.5em; }
+.doc__body li + li { margin-top: .75em; }
+.doc__body li::before { content: ""; position: absolute; left: 0; top: .8em; width: .7em; border-top: 1px solid currentColor; }
+.doc__body strong { font-weight: 500; }
+.doc__body a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.doc__body a:hover { text-decoration-thickness: 2px; }
+.doc a:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.doc__toc ol { list-style: none; counter-reset: doc; }
+.doc__toc li { counter-increment: doc; display: flex; align-items: baseline; gap: 12px; font-size: var(--t-small); line-height: 1.4; }
+.doc__toc li + li { margin-top: 10px; }
+.doc__toc li::before { flex: 0 0 2.4em; }
+.doc__toc a { color: var(--fg-soft); }
+.doc__toc a:hover { color: var(--fg); text-decoration: underline; text-underline-offset: 3px; }
+@media (min-width: 960px) {
+  .doc__grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: start; }
+  .doc__toc { display: block; grid-column: 1 / span 3; position: sticky; top: 104px; }
+  .doc__body { grid-column: 5 / -1; }
+}
+/* rupee amounts in Fraunces: Instrument Sans has no ₹ sign */
+.inr { font-family: var(--font-display); }
+/* Still to decide. Marked in the text, visible on purpose, so each one is easy to find
+   (search for CONFIRM) and can't go live unnoticed. Ink on bone with a 7% ink tint: 13.7:1. */
+.confirm {
+  padding: .1em .4em; color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 7%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--fg) 45%, transparent);
+  font-family: var(--font-mono); font-size: .8em; line-height: 1.7;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+/* 404: one black screen. The words sit low on the left, like the end of a section, with
+   the way home under them. */
+.lost {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: 100vh; min-height: 100svh; padding-block: 120px clamp(56px, 12vh, 120px);
+}
+.lost__title { margin-top: 18px; }
+.lost__text { margin-top: 24px; max-width: 40ch; font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); }
+.lost .btn { margin-top: 36px; }
 
 /* ---------- intro (Ignition) ---------- */
 #intro { position: fixed; inset: 0; z-index: 60; overflow: hidden; }

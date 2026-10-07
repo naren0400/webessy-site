@@ -28,6 +28,9 @@ Explain everything to me in simple, plain English. Short sentences.
   Hero bug fixes (4 October 2026, iPhone stutter): phones (touch, under 720px wide) scroll the
   hero in 190vh instead of 312vh (`#hero` 290vh tall), and on phones and tablets the 3D 0400 is
   built and drawn once, unseen, while the page is still, so its first appearance doesn't freeze.
+- **DONE (7 October 2026):** launch pages and SEO basics: Privacy, Terms, 404, favicons, link
+  previews (`images/og-image.png`), canonical addresses, `robots.txt`, `sitemap.xml`. No meta
+  description mentions Bengaluru (the page title may).
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
   Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
@@ -42,6 +45,19 @@ Explain everything to me in simple, plain English. Short sentences.
 - `js/reviews.js` — the list the Reviews section is built from. Real reviews only; empty until the first one
 - `frames/desktop/` (80 webp) and `frames/mobile/` (80 webp) — hero footage
 - `fonts/` — create it; self-hosted font files go here
+- `privacy.html`, `terms.html` — the legal pages: bone, no JavaScript, styles in the "Launch pages"
+  block of `css/site.css`. Their nav and footer are copies of `index.html`'s (the nav's links point
+  to `index.html#…`), so a change to either goes in all three files. `[CONFIRM: …]` marks what Naren
+  still has to decide. The privacy policy describes what the site really does: if a service, cookie,
+  analytics or form is added, update it first.
+- `404.html` — the server shows it for any missing address (`.htaccess`). It has `<base href="/">`,
+  so its links and files work at deep addresses too.
+- `.htaccess` — the 404 page, and answers "not found" for `.md` and `.zip` files uploaded by mistake.
+- `robots.txt`, `sitemap.xml` — the real pages only: home, privacy, terms.
+- `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` — the 0400 digits from `webessy-logo.svg` on black.
+- `tools/set-domain.js` — the site's address (`https://webessy.com`) is written here, once. After
+  changing it, run `node tools/set-domain.js`: it rewrites the canonical, link-preview, sitemap and
+  robots addresses in every page. Don't write the domain anywhere else.
 
 ## Page structure — exactly these sections, in this order, nothing else
 01 Hero (built) · 02 Work · 03 What we do · 04 How it works · 05 About · Reviews · 06 Contact · Footer
@@ -78,7 +94,7 @@ Explain everything to me in simple, plain English. Short sentences.
   Without JavaScript the section stays hidden.
 - **06 Contact** — "Let's talk", WhatsApp button, email, the 3-line "what happens after you
   message", reply time. Small 4-field form (name, WhatsApp/phone, business, what you need).
-- **Footer** — Webessy Studios · Bengaluru, India · WhatsApp · Email · © 2026.
+- **Footer** — Webessy Studios · Bengaluru, India · WhatsApp · Email · Privacy · Terms · © 2026.
 
 ## Design rules
 - **Fonts:** Fraunces for section headings (max one italic accent word per heading), Instrument

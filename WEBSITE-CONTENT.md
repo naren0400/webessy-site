@@ -41,6 +41,7 @@ kept out of this repo.
    - [Reviews](#reviews), its own section after About, with no number on the page
 6. [Contact](#6-contact)
 7. [Search and sharing](#7-search-and-sharing)
+8. [Launch pages](#8-launch-pages): Privacy, Terms, 404
 
 ---
 ---
@@ -922,6 +923,7 @@ Under the contact section, small:
 - Webessy Studios
 - Bengaluru, India
 - WhatsApp · Email
+- Privacy · Terms *(added 7 October 2026)*
 - © 2026
 
 **Email:** `0400webessy@gmail.com` works for launch.
@@ -1012,6 +1014,10 @@ Save it as `og-image.jpg`, under 300 KB.
 **Test it before launch.** Send the link to yourself on WhatsApp. If the preview
 looks wrong, it is wrong for every client you ever send it to.
 
+*(Built 7 October 2026 as `images/og-image.png`: 1200 × 630, 138 KB, with the
+Twitter card tags as well. Privacy and Terms use their own title and
+description with the same image.)*
+
 ---
 
 ## Page title
@@ -1038,10 +1044,11 @@ Under 155 characters. Written for a human deciding whether to click, not for
 Google.
 
 ```html
-<meta name="description" content="We build fast, custom websites that make people choose you. Scroll animation, 3D and design built from scratch. From ₹6,499. Based in Bengaluru.">
+<meta name="description" content="We build fast, custom websites that make people choose you. Scroll animation, 3D and design built from scratch. From ₹6,499.">
 ```
 
-*(148 characters.)*
+*(124 characters. Changed 7 October 2026: "Based in Bengaluru." is gone. No meta
+description mentions Bengaluru; the page title still does.)*
 
 ---
 
@@ -1115,6 +1122,9 @@ Sitemap: https://webessy.com/sitemap.xml
 </urlset>
 ```
 
+*(Since 7 October 2026 it also lists `privacy.html` and `terms.html`. The address
+in every page lives in `tools/set-domain.js`.)*
+
 ---
 
 ## Google Business Profile
@@ -1167,3 +1177,41 @@ they make your site look padded.
 - [ ] Google Business Profile created
 - [ ] Every link tested on a phone
 - [ ] WhatsApp button tested from a phone that is not yours
+
+---
+---
+
+# 8. Launch pages
+
+Added 7 October 2026: `privacy.html`, `terms.html` and `404.html`, linked from the
+footer as **Privacy · Terms**.
+
+- **Privacy policy:** written for India's Digital Personal Data Protection Act,
+  2023 and the DPDP Rules, 2025, from what the site really does (two forms through
+  Web3Forms, WhatsApp and email links, no cookies, no analytics). Its full text
+  lives in `privacy.html`.
+- **Terms & conditions:** only the terms already on this page (the quote,
+  payments, content and dates, the domain, handover, 45 days of free changes,
+  Care). Its full text lives in `terms.html`.
+- Everything not decided yet is marked **[CONFIRM: …]** on those two pages, in
+  plain sight. Search the files for CONFIRM. Nothing goes live with one left in.
+
+## Titles and descriptions
+
+| Page | Title | Description |
+|---|---|---|
+| Home | as in section 7 | as in section 7 |
+| Privacy | Privacy Policy \| Webessy Studios | What Webessy Studios collects when you use this website or message us, why, who else handles it, and your rights under India’s DPDP Act. |
+| Terms | Terms & Conditions \| Webessy Studios | The terms for a website built by Webessy Studios: your written quote, payments, 45 days of free changes, the Care plan and your own domain. |
+| 404 | Page not found \| Webessy Studios | This page does not exist. Go back to the Webessy Studios home page. |
+
+No description mentions Bengaluru.
+
+## The 404 page
+
+| Where | Words |
+|---|---|
+| Label | 404 |
+| Heading | Page not *found* |
+| Line | The link may be old, or the address may have a typo. |
+| Button | Back to home |

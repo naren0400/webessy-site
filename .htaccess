@@ -1,0 +1,10 @@
+# Webessy Studios: settings for the web server at Hostinger (it reads this file).
+
+# A page that doesn't exist shows our own 404 page, and still answers "404 Not Found".
+ErrorDocument 404 /404.html
+
+# The working notes (RATES.md and the other .md files) and the .zip files never belong
+# online. If one is uploaded by mistake, the server answers "not found" instead of showing it.
+<IfModule mod_alias.c>
+  RedirectMatch 404 (?i)\.(md|zip)$
+</IfModule>
