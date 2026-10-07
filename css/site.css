@@ -248,12 +248,16 @@ html.nav-in #nav { opacity: 1; }
 #navMark { height: 22px; width: auto; display: block; visibility: hidden; filter: drop-shadow(0 1px 5px rgba(0, 0, 0, .45)); }
 html.nav-done #navMark { visibility: visible; }
 #nav .links { display: flex; align-items: center; gap: 26px; font-size: 13px; letter-spacing: .04em; color: var(--muted); }
-#nav .links a:hover { color: var(--ink); }
+#nav .links a:not(.cta):hover { color: var(--ink); }
+/* The call to action, "Start your project": the page's main button (.btn--primary), same type,
+   colours and pill. Always orange here, even over Contact, where the page's own button turns
+   ink: the nav's glass stays dark. 40px tall, so it sits 8px in from the pill's edge all round. */
 #nav .cta {
-  color: #0C0C0A; background: var(--orange); padding: 11px 18px; border-radius: 999px;
-  font-weight: 500; letter-spacing: .02em; box-shadow: 0 6px 22px rgba(255, 86, 29, .35);
+  color: var(--ink-dark); background: var(--orange); padding: 11px 20px; border-radius: 999px;
+  font: 500 15px/1.2 var(--font-body); letter-spacing: normal;
 }
 #nav .cta:hover { filter: brightness(1.08); }
+#nav .cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 @media (max-width: 720px) {
   #nav { padding: 0 6px 0 18px; }
   #nav .links a:not(.cta) { display: none; }
@@ -442,25 +446,19 @@ html:not(.nav-done) .wl-in, #welcome.wl-wait .wl-in { transform: translate3d(0, 
   font-variant-caps: small-caps; letter-spacing: .04em; line-height: 1.35; text-wrap: balance;
 }
 .st-sub b { font-weight: inherit; color: var(--orange); }
-.st-explore {
-  flex: none; display: grid; place-items: center; width: 96px; height: 96px; border-radius: 50%;
-  border: 1px solid rgba(236, 234, 251, .6); color: var(--ink);
-  font: 500 15px/1 var(--font-body); letter-spacing: .02em;
-  pointer-events: auto; transition: background-color .25s ease, border-color .25s ease, color .25s ease;
-}
-.st-explore:hover { background: var(--ink); border-color: var(--ink); color: var(--bg); }
-.st-explore:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+/* the call to action, "Start your project": the page's main button (.btn .btn--primary). It keeps
+   the Explore button's class, which hero.js shows with the line above it and ends the thin line at. */
+.st-explore { flex: none; pointer-events: auto; }
 /* the thin line that draws itself through the statement (path built by hero.js) */
 #statementPath { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; visibility: hidden; }
 #statementPath path { fill: none; stroke: var(--lavender); stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
 #statementPath circle { fill: var(--ink); }
-html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button scrolls to Work */
+/* (hero.js still adds html.smooth-scroll for a moment when .st-explore is clicked: the Explore
+   button scrolled to Work. The button now opens WhatsApp, so the class has no rule any more.) */
 
 @media (max-width: 719.98px) {
   #statement { --st-foot: 176px; }
-  .st-explore { width: 84px; height: 84px; }
 }
-@media (prefers-reduced-motion: reduce) { .st-explore { transition: none; } }
 
 /* Phones and tablets (hero.js adds .lite): no live blur anywhere in the hero.
    Blurring footage that changes every frame is the costliest thing a phone can
@@ -492,8 +490,11 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
 .prose p { font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); max-width: 62ch; }
 .prose p + p { margin-top: 1em; }
 
-/* buttons — pill; one primary per section. Orange with ink text, except on
-   the orange section, where the theme turns it ink with bone text. */
+/* buttons — pill. The primary button is the one call to action, "Start your project", which
+   opens WhatsApp: the same button in the nav, at the end of the hero, on each plan card, in
+   Contact and floating on phones. Orange with ink text, except on the orange section, where the
+   theme turns it ink with bone text. Every other action is a text link (.link), apart from a
+   form's own Send. While a form sends, its button is disabled. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 14px 22px; border-radius: 999px; border: 1px solid transparent;
@@ -501,10 +502,23 @@ html.smooth-scroll { scroll-behavior: smooth; } /* only while the Explore button
   transition: filter .2s ease, border-color .2s ease;
 }
 .btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.btn:disabled { cursor: progress; }
 .btn--primary { background: var(--btn-bg); color: var(--btn-fg); }
-.btn--primary:hover { filter: brightness(1.08); }
+.btn--primary:not(:disabled):hover { filter: brightness(1.08); }
 .btn--ghost { background: transparent; color: var(--fg); border-color: var(--line); }
-.btn--ghost:hover { border-color: var(--fg-soft); }
+.btn--ghost:not(:disabled):hover { border-color: var(--fg-soft); }
+
+/* a secondary action: plain underlined text in the section's text colour, never a button shape.
+   Works on a <button> too (Write a review). The padding, cancelled by the margin, makes it
+   taller to tap without taking more room. */
+.link {
+  display: inline-block; padding: 8px 0; margin: -8px 0; border: 0; border-radius: 0;
+  background: none; color: var(--fg); cursor: pointer; -webkit-appearance: none; appearance: none;
+  font: 500 15px/1.4 var(--font-body); text-align: left;
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px;
+}
+.link:hover { text-decoration-thickness: 2px; }
+.link:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 
 /* sticky WhatsApp button — phones only, bottom-left so the hero's bottom-right stays clear.
    sections.js adds .is-on after the hero and removes it again from Contact to the end of the page. */
@@ -962,7 +976,7 @@ a.pin__num:hover::after { opacity: 1; }
   .build__groups { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 @media (min-width: 1280px) {
-  /* four in a row: a little less padding, so "Message on WhatsApp" fits on one line */
+  /* four in a row: a little less padding, so "Start your project" fits on one line */
   .plans__ring { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .plans:not(.is-orbit) .plan { --card-pad: clamp(24px, 2vw, 36px); }
 }
@@ -1265,7 +1279,7 @@ a.pin__num:hover::after { opacity: 1; }
    Its own section between About and Contact, bone like About, with no number in its label.
    Full width, unlike its neighbours (About's photo split, Contact's 7/5 split): the label on
    a hairline (it marks where About ends, as both are bone), the heading, and the Write a
-   review button at the end of the heading's last line (under it on phones), then the cards.
+   review link at the end of the heading's last line (under it on phones), then the cards.
    js/sections.js builds the cards from js/reviews.js and keeps one of the two headings.
    The text is ink from About to Contact (bone and orange both use it), so it never changes
    colour here, even when Contact's orange arrives behind the last cards.
@@ -1276,7 +1290,7 @@ a.pin__num:hover::after { opacity: 1; }
 .reviews__head { margin-top: 18px; }
 .reviews__title { text-wrap: balance; }
 .reviews__title em { font-style: italic; color: var(--accent); }
-.reviews__write { margin-top: clamp(28px, 4.5vh, 40px); scroll-margin: 120px 0 32px; }
+.reviews__write { margin-top: clamp(20px, 3.5vh, 32px); scroll-margin: 120px 0 32px; }
 
 /* The cards: side by side where they fit (340px or wider each, three to a row at most),
    stacked on phones. No carousel. The row is only as wide as its cards (--n, set by
@@ -1340,9 +1354,10 @@ a.pin__num:hover::after { opacity: 1; }
   .reviews__line { display: block; } /* "Be the first" / "to write a review" */
 }
 @media (min-width: 960px) {
-  .reviews__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--gap); }
-  /* the button stands on the heading's baseline: 0.14em above the bottom of its box (measured) */
-  .reviews__write { flex: none; margin: 0 0 calc(var(--t-display) * .14); }
+  /* the link sits on the baseline of the heading's last line (where last baseline isn't known,
+     at the bottom of the heading) */
+  .reviews__head { display: flex; align-items: flex-end; align-items: last baseline; justify-content: space-between; gap: var(--gap); }
+  .reviews__write { flex: none; margin-top: -8px; }
   .review__photo { width: 80px; height: 80px; }
 }
 
@@ -1411,8 +1426,8 @@ html.rpanel-lock body { overflow: hidden; }
 }
 
 /* ---------- 06 Contact ----------
-   7/5 split: "Let's talk", the copy and the three steps on the left, the form lower on
-   the right. "Let's talk" is the section heading and the WhatsApp link in one. */
+   7/5 split: "Let's talk", the copy, the call to action ("Start your project", ink on orange)
+   and the three steps on the left, the form lower on the right. */
 .contact { padding-block: var(--section-pad); overflow-x: clip; }
 /* when the Tab key scrolls a link or a field into view, keep it (and a field's label)
    clear of the fixed nav at the top and of the screen's bottom edge */
@@ -1422,29 +1437,16 @@ html.rpanel-lock body { overflow: hidden; }
 
 /* The title fills its column. "Let's talk" is 3.01em wide in Fraunces (opsz 144, -.03em
    tracking), but the italic k reaches on to 3.11em (measured), so 100cqi / 3.12 ends the
-   ink just inside the column, where the arrow under it ends too. The caption and the long
-   arrow, drawn like the arrows in the logo, say where the link goes. */
-.talk { display: flex; flex-direction: column; margin-top: 18px; }
-.talk__title {
-  font-family: var(--font-display); font-weight: 400; font-variation-settings: "opsz" 144;
+   ink just inside the column. */
+.contact__title {
+  margin-top: 18px; font-family: var(--font-display); font-weight: 400; font-variation-settings: "opsz" 144;
   font-size: clamp(72px, 14vw, 200px); font-size: calc(100cqi / 3.12); line-height: .92; letter-spacing: -.03em;
 }
-.talk__title em { font-style: italic; color: var(--accent); }
-.talk__via {
-  display: flex; align-items: center; gap: 16px; margin-top: clamp(12px, 2vh, 20px);
-  font: 500 clamp(15px, 1.2vw, 18px)/1.3 var(--font-body);
-}
-.talk__arrow { position: relative; flex: 1; min-width: 48px; height: 13px; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
-.talk__arrow::before { content: ""; position: absolute; left: 0; right: 1px; top: 5.75px; height: 1.5px; background: currentColor; }
-.talk__arrow svg {
-  position: absolute; right: 0; top: 0; width: 11px; height: 13px; overflow: visible;
-  fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
-}
-.talk:hover .talk__via { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
-.talk:hover .talk__arrow, .talk:focus-visible .talk__arrow { transform: translateX(10px); }
-.talk:focus-visible { outline: 2px solid var(--fg); outline-offset: 8px; }
+.contact__title em { font-style: italic; color: var(--accent); }
 
 .contact__copy { margin-top: clamp(40px, 7vh, 72px); }
+/* the call to action, under the copy, with "what happens after you message" right under it */
+.contact__cta { margin-top: clamp(28px, 4.5vh, 40px); }
 .contact__lead {
   font-family: var(--font-display); font-weight: 400; font-size: clamp(22px, 2.1vw, 30px);
   line-height: 1.25; letter-spacing: -.015em; max-width: 30ch; text-wrap: pretty;
@@ -1493,6 +1495,10 @@ html.rpanel-lock body { overflow: hidden; }
 .field__msg { margin-top: 8px; font-size: var(--t-small); line-height: 1.4; }
 .field__msg:empty { display: none; }
 .cform__send { justify-self: start; min-height: 48px; margin-top: 8px; padding-inline: 28px; }
+/* Send is the quieter, outlined button, so it doesn't compete with "Start your project". Its
+   border is the fields' own, ink 56%: 3.05:1 on orange (a control's edge needs 3:1). */
+.cform__send.btn--ghost { border-color: var(--fg-soft); border-color: color-mix(in srgb, var(--fg) 56%, transparent); }
+.cform__send.btn--ghost:not(:disabled):hover { border-color: var(--fg); }
 .cform__fail { font-size: var(--t-small); line-height: 1.5; }
 .cform__done { margin-top: clamp(24px, 4vh, 36px); outline: none; }
 .cform__done-title {
@@ -1507,8 +1513,7 @@ html.rpanel-lock body { overflow: hidden; }
   .contact__side { grid-column: 8 / -1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .talk__arrow, .field input { transition: none; }
-  .talk:hover .talk__arrow, .talk:focus-visible .talk__arrow { transform: none; }
+  .field input { transition: none; }
 }
 
 /* ---------- Footer ----------
@@ -1615,7 +1620,7 @@ html.page-doc, html.page-doc body { background: var(--page); color: var(--fg); }
 }
 .lost__title { margin-top: 18px; }
 .lost__text { margin-top: 24px; max-width: 40ch; font-size: var(--t-body); line-height: 1.6; color: var(--fg-soft); }
-.lost .btn { margin-top: 36px; }
+.lost__home { margin-top: 36px; }
 
 /* ---------- intro (Ignition) ---------- */
 #intro { position: fixed; inset: 0; z-index: 60; overflow: hidden; }

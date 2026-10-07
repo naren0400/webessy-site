@@ -44,6 +44,22 @@ kept out of this repo.
 8. [Launch pages](#8-launch-pages): Privacy, Terms, 404
 
 ---
+
+## One call to action
+
+Added 7 October 2026. The main action everywhere is one button:
+
+> **[ Start your project ]**
+
+It opens WhatsApp (+91 80500 82158) with the usual message already typed, and it
+looks the same everywhere: in the nav, at the end of the hero, on each of the four
+plans, in Contact, and on the floating button on phones.
+
+Everything else is a plain text link, never a competing button: the email
+address, Write a review, Send photos on WhatsApp, the Yauvana link, and Back to
+home on the 404 page. The contact form's Send is a quieter outlined button.
+
+---
 ---
 
 # 1. Hero
@@ -82,7 +98,7 @@ the full frame.
 >
 > Give your business an **unfair advantage** online.
 >
-> [Explore]
+> [Start your project]
 
 **How it is set**
 
@@ -92,7 +108,9 @@ the full frame.
 - Three lines (MAKE PEOPLE / CHOOSE / YOU.) in Bodoni Moda capitals, filling
   the width. No box behind it.
 - The line under it is in small caps, with "unfair advantage" in orange.
-- The round button reads "Explore" and scrolls to Work.
+- The button reads "Start your project" and opens WhatsApp, like every main
+  button on the site (changed 7 October 2026: it was a round "Explore" button
+  that scrolled to Work).
 
 **Rules behind it**
 
@@ -368,10 +386,10 @@ button. No feature lists and no "what's included" details on the cards.
 
 | Plan | Price | Button |
 |---|---|---|
-| Starter | from ₹6,499 | Get your quote |
-| Business | from ₹9,999 | Get your quote |
-| Advanced | from ₹18,499 | Get your quote |
-| Boss | no price — "Let’s talk scope and ideas directly" | Message on WhatsApp |
+| Starter | from ₹6,499 | Start your project |
+| Business | from ₹9,999 | Start your project |
+| Advanced | from ₹18,499 | Start your project |
+| Boss | no price — "Let’s talk scope and ideas directly" | Start your project |
 
 Every button goes straight to WhatsApp (+91 80500 82158), with the usual
 message already typed.
@@ -501,10 +519,10 @@ Small, directly under everything above.
 
 ## The button
 
-> **[ Get your quote ]**
+> **[ Start your project ]**
 
-Goes straight to WhatsApp. It is on each of the three priced plans; Boss
-has **[ Message on WhatsApp ]** instead, to the same place.
+Goes straight to WhatsApp, on all four plans (changed 7 October 2026 from
+"Get your quote", and "Message on WhatsApp" on Boss).
 
 ---
 
@@ -733,7 +751,7 @@ numbers, no dates anywhere in this section.
 | Label | Reviews |
 | Heading, while there are no reviews | Be the *first* to write a review |
 | Heading, once there are reviews | In their words |
-| Button | Write a review |
+| Link (a text link, not a button, since 7 October 2026) | Write a review |
 
 Each review is a glass card: their words, their name, their business, and a
 photo if they sent one.
@@ -742,14 +760,14 @@ photo if they sent one.
 
 ## The review form
 
-The button opens a panel with the form. Four fields. No asterisks.
+The link opens a panel with the form. Four fields. No asterisks.
 
 | Field | |
 |---|---|
 | Name | Required |
 | Business | Helps, but never stops anyone sending |
 | Your review | Required |
-| Link to your work | Helps, but never stops anyone sending |
+| Link to your work | Helps, never required. If they give one, it must be a web address ("yourbusiness.com" is fine) |
 
 | Where | Words |
 |---|---|
@@ -759,9 +777,11 @@ The button opens a panel with the form. Four fields. No asterisks.
 | While it sends | Sending… |
 | Name left empty | Add your name. |
 | Review left empty | Add your review. |
+| Link that isn't a web address | **[TODO: not written yet. Added 7 October 2026, when the link started being checked.]** |
 | Sent | **Sent.** Thank you. We read every review before it goes on the site. |
 | Did not send | That did not send. *Message on WhatsApp* (a link to WhatsApp, nothing typed) |
-| Under the form | **[ Send photos on WhatsApp ]** |
+| Sent within 3 seconds of the panel opening (too quick for a person: spam) | the "Did not send" line, and nothing is sent |
+| Under the form | Send photos on WhatsApp (a text link) |
 
 **Where it goes:** Web3Forms, to 0400webessy@gmail.com. The email has the
 subject "New review from the website", from "Webessy Studios website".
@@ -811,7 +831,7 @@ So this section does one thing: make messaging feel small.
 >
 > No pitch. No follow-up calls you did not ask for.
 >
-> **[ Message on WhatsApp ]**
+> **[ Start your project ]**
 >
 > Or fill this in and we will come to you.
 >
@@ -866,6 +886,10 @@ sending. No asterisks.
 | Number too short | That number looks too short. |
 | Sent | **Sent.** We reply within 24 hours. |
 | Did not send | That did not send. *Message on WhatsApp* (a link) |
+| Sent within 3 seconds of the page opening (too quick for a person: spam) | the "Did not send" line, and nothing is sent |
+
+The button under the form, Send, is the quieter outlined button (since 7 October
+2026), so it doesn't compete with Start your project.
 
 The email you receive has the subject "New enquiry from the website", from
 "Webessy Studios website". Visitors never see these two.
@@ -1151,6 +1175,9 @@ Google Analytics is free. Plausible or Umami are simpler and do not need a
 cookie banner. For a one-page site, any of them is fine — just pick one and
 put the snippet in before launch.
 
+*(Done 7 October 2026: Cloudflare Web Analytics, on every page. It sets no
+cookies, so there is no cookie banner. The privacy policy says so.)*
+
 ---
 
 ## The honest limit of a one-page site
@@ -1173,7 +1200,7 @@ they make your site look padded.
 - [ ] Alt text on every image
 - [ ] One h1, sections as h2
 - [ ] robots.txt and sitemap.xml at the root
-- [ ] Analytics installed
+- [x] Analytics installed
 - [ ] Google Business Profile created
 - [ ] Every link tested on a phone
 - [ ] WhatsApp button tested from a phone that is not yours
@@ -1188,8 +1215,8 @@ footer as **Privacy · Terms**.
 
 - **Privacy policy:** written for India's Digital Personal Data Protection Act,
   2023 and the DPDP Rules, 2025, from what the site really does (two forms through
-  Web3Forms, WhatsApp and email links, no cookies, no analytics). Its full text
-  lives in `privacy.html`.
+  Web3Forms, WhatsApp and email links, no cookies, and since 7 October 2026
+  Cloudflare Web Analytics, which sets none). Its full text lives in `privacy.html`.
 - **Terms & conditions:** only the terms already on this page (the quote,
   payments, content and dates, the domain, handover, 45 days of free changes,
   Care). Its full text lives in `terms.html`.
@@ -1214,4 +1241,4 @@ No description mentions Bengaluru.
 | Label | 404 |
 | Heading | Page not *found* |
 | Line | The link may be old, or the address may have a typo. |
-| Button | Back to home |
+| Link (a text link since 7 October 2026) | Back to home |

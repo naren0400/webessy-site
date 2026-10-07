@@ -1,7 +1,7 @@
 /* ==========================================================================
    SECTIONS — section colours, text reveal and motion for 02 to 06, the
-   sticky WhatsApp button, the Reviews section (its cards and its form
-   panel), the contact form, and the footer logo drawing itself in. The
+   sticky "Start your project" button, the Reviews section (its cards and
+   its form panel), the two forms, and the footer logo drawing itself in. The
    intro, hero and nav live in their own files and are not touched here.
    Only transform and opacity are animated, with two exceptions: the footer
    logo, which, like Ignition, also draws its outlines and wipes its letters
@@ -15,10 +15,11 @@
   var root = document.documentElement;
   var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-  /* ---------------- sticky WhatsApp button (phones) ----------------
-     Shows once the hero has scrolled away, and hides again from Contact to the
-     end of the page: Contact has the real WhatsApp link, and in the footer the
-     button would cover the logo. CSS keeps it hidden on wider screens. */
+  /* ---------------- sticky "Start your project" button (phones) ----------------
+     It opens WhatsApp. Shows once the hero has scrolled away, and hides again
+     from Contact to the end of the page: Contact has its own Start your project
+     button, and in the footer this one would cover the logo. CSS keeps it
+     hidden on wider screens. */
   (function waFloat() {
     var btn = document.getElementById('waFloat');
     var hero = document.getElementById('hero');
@@ -138,18 +139,122 @@
     });
   })();
 
+  /* ---------------- the two forms: checks, spam and sending ----------------
+     Contact and Write a review both send through Web3Forms to the studio's
+     inbox, without leaving the page. Before anything goes:
+     - Every field with a message line under it (aria-describedby) is
+       checked: empty but required (the words are in the HTML: data-empty),
+       a phone number under 10 digits (data-short), a link that isn't a web
+       address or an email address that isn't one (data-bad). Fields that
+       aren't required may stay empty. A link may leave out the https://:
+       "yourbusiness.com" is fine, and goes as https://yourbusiness.com.
+       A problem gets a plain line under its field, and the first field with
+       one gets the focus. Once a field has a line, it updates as you type
+       and goes when the field is right.
+     - Spam. "botcheck" is Web3Forms' trap, a box people never see: if it's
+       ticked, a bot filled the form in. Web3Forms refuses those too; here
+       the form only pretends to send. And anything sent less than 3 seconds
+       after the form opened (the page loading, or the review panel opening)
+       is too quick for a person: nothing goes, and the "That did not send"
+       line shows, so a real person can simply press Send again.
+     - While it sends, the button is disabled and reads "Sending…", so a
+       second tap can't send it twice.
+     Once sent, the form makes way for "Sent."; if it can't send, the line
+     offers WhatsApp instead. Without JavaScript the browser checks the
+     required fields and posts the form itself. Needs no GSAP, so it works
+     with reduced motion too. Returns a function that starts the 3 seconds
+     again (the review panel calls it each time it opens). */
+  function webForm(form, done) {
+    if (!form || !done || !window.fetch || !window.FormData) return function () {};
+    var fail = form.querySelector('[role="alert"]');
+    var send = form.querySelector('[type="submit"]');
+    var trap = form.querySelector('[name="botcheck"]');
+    var fields = Array.prototype.slice.call(form.querySelectorAll('[aria-describedby]'));
+    var label = send.textContent, busy = false, opened = now();
+    form.noValidate = true; /* our messages from here on, not the browser's bubbles */
+
+    function now() { return window.performance && performance.now ? performance.now() : Date.now(); }
+    function problem(input) {
+      var v = input.value.trim();
+      if (!v) return input.required ? input.getAttribute('data-empty') : '';
+      if (input.type === 'tel' && v.replace(/\D/g, '').length < 10) return input.getAttribute('data-short');
+      if (input.type === 'url' && !webAddress(v)) return input.getAttribute('data-bad');
+      if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return input.getAttribute('data-bad');
+      return '';
+    }
+    function mark(input, msg) {
+      document.getElementById(input.getAttribute('aria-describedby')).textContent = msg;
+      if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    }
+    function sent() { form.hidden = true; done.hidden = false; done.focus(); }
+    fields.forEach(function (input) {
+      input.addEventListener('input', function () { if (input.hasAttribute('aria-invalid')) mark(input, problem(input)); });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (busy) return;
+      fail.hidden = true;
+      var first = null;
+      fields.forEach(function (input) {
+        var msg = problem(input);
+        mark(input, msg);
+        if (msg && !first) first = input;
+      });
+      if (first) { first.focus(); return; }
+      if (trap && trap.checked) { sent(); return; } /* a bot: it only looks sent */
+      if (now() - opened < 3000) { fail.hidden = false; return; } /* too quick for a person */
+
+      var body = new FormData(form);
+      fields.forEach(function (input) {
+        if (input.type === 'url' && input.value.trim()) body.set(input.name, webAddress(input.value.trim()));
+      });
+      busy = true;
+      var focused = document.activeElement === send;
+      send.disabled = true;
+      send.textContent = send.getAttribute('data-sending');
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
+      fetch(form.action, {
+        method: 'POST', body: body, headers: { Accept: 'application/json' },
+        signal: ctrl ? ctrl.signal : undefined
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { if (!res.ok || !data.success) throw new Error(data.message || 'not sent'); });
+        })
+        .then(sent, function () { fail.hidden = false; })
+        .then(function () {
+          clearTimeout(timer); busy = false;
+          send.disabled = false;
+          send.textContent = label;
+          /* a button loses the focus while it's disabled: give it back if it had it */
+          if (focused && !form.hidden && (!document.activeElement || document.activeElement === document.body)) send.focus();
+        });
+    });
+    return function () { opened = now(); };
+  }
+
+  /* A link as typed, with https:// added if it was left out, or '' if it
+     isn't a web address: it must be http(s), with no name or password in
+     it, on a real domain (a name, a dot, an ending). */
+  function webAddress(v) {
+    if (typeof URL !== 'function') return v; /* a browser too old to check: let it through */
+    var full = /^[a-z][a-z0-9+.-]*:\/\//i.test(v) ? v : 'https://' + v, url;
+    try { url = new URL(full); } catch (err) { return ''; }
+    if (!/^https?:$/.test(url.protocol) || url.username || url.password) return '';
+    return /^([a-z0-9-]+\.)+([a-z]{2,}|xn--[a-z0-9-]+)$/i.test(url.hostname) ? full : '';
+  }
+
   /* ---------------- Reviews: the panel and its form ----------------
      Write a review opens the form in a <dialog> over the page. It slides in
      (.is-open, added once it's open) and slides out before it closes. Close,
      the Escape key and, on computers, a click on the dimmed page close it, and
-     the focus goes back to the button. While it's open, the page behind is
+     the focus goes back to the link. While it's open, the page behind is
      locked. Opening puts the focus on the panel's title, not on a field, so a
      phone doesn't throw its keyboard up over the panel as it arrives.
-     The form sends like the Contact form: through Web3Forms, without leaving
-     the page. Name and review are required, and a problem gets a plain line
-     under its field (the words are in the HTML: data-empty). Once sent, the
-     form makes way for "Sent."; if it can't send, a line offers WhatsApp
-     instead. Needs no GSAP, so it works with reduced motion too. */
+     The form is one of "the two forms" above. Name and review are required;
+     the link to their work is checked if they give one. Its 3 seconds start
+     each time the panel opens. */
   (function reviewPanel() {
     var panel = document.getElementById('rpanel');
     var opener = document.querySelector('.reviews__write');
@@ -157,9 +262,11 @@
     var title = panel.querySelector('.rpanel__title'), box = panel.querySelector('.rpanel__box');
     var modal = typeof panel.showModal === 'function';
     var timer = 0, onEnd = null, downOutside = false;
+    var restartClock = webForm(panel.querySelector('.rform'), panel.querySelector('.rform__done'));
 
     function open() {
       if (panel.open) return;
+      restartClock();
       box.scrollTop = 0;
       /* locking hides the scrollbar where it takes space (Windows): pad the page by its width instead, so nothing moves */
       var bar = window.innerWidth - root.clientWidth;
@@ -208,126 +315,12 @@
       if (e.target === panel && downOutside) shut();
       downOutside = false;
     });
-
-    var form = panel.querySelector('.rform');
-    if (!form || !window.fetch || !window.FormData) return;
-    var done = panel.querySelector('.rform__done');
-    var fail = form.querySelector('.rform__fail');
-    var send = form.querySelector('.rform__send');
-    var label = send.textContent, busy = false;
-    var required = Array.prototype.slice.call(form.querySelectorAll('[required]'));
-    form.noValidate = true; /* our messages from here on, not the browser's bubbles */
-
-    function mark(input, msg) {
-      document.getElementById(input.getAttribute('aria-describedby')).textContent = msg;
-      if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
-    }
-    function problem(input) { return input.value.trim() ? '' : input.getAttribute('data-empty'); }
-    /* once a field has a message, it updates as you type and goes when the field is fixed */
-    required.forEach(function (input) {
-      input.addEventListener('input', function () { if (input.hasAttribute('aria-invalid')) mark(input, problem(input)); });
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (busy) return;
-      var first = null;
-      required.forEach(function (input) {
-        var msg = problem(input);
-        mark(input, msg);
-        if (msg && !first) first = input;
-      });
-      if (first) { first.focus(); return; }
-
-      busy = true;
-      fail.hidden = true;
-      send.textContent = send.getAttribute('data-sending');
-      var ctrl = window.AbortController ? new AbortController() : null;
-      var wait = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
-      fetch(form.action, {
-        method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' },
-        signal: ctrl ? ctrl.signal : undefined
-      })
-        .then(function (res) {
-          return res.json().then(function (data) { if (!res.ok || !data.success) throw new Error(data.message || 'not sent'); });
-        })
-        .then(function () {
-          form.hidden = true;
-          done.hidden = false;
-          done.focus();
-        }, function () {
-          fail.hidden = false;
-        })
-        .then(function () { clearTimeout(wait); busy = false; send.textContent = label; });
-    });
   })();
 
   /* ---------------- 06 Contact: the form ----------------
-     Sends through Web3Forms to the studio's inbox without leaving the page.
-     Only the name and the number are required. A problem gets a plain line
-     under its field (the words are in the HTML: data-empty, data-short) and
-     the first field with one gets the focus. Once sent, the form makes way
-     for "Sent."; if it can't send, a line offers WhatsApp instead. Without
-     JavaScript the browser checks the two required fields and posts the
-     form itself. Needs no GSAP, so it works with reduced motion too. */
-  (function contactForm() {
-    var form = document.querySelector('.cform');
-    if (!form || !window.fetch || !window.FormData) return;
-    var done = document.querySelector('.cform__done');
-    var fail = form.querySelector('.cform__fail');
-    var send = form.querySelector('.cform__send');
-    var label = send.textContent, busy = false;
-    var required = Array.prototype.slice.call(form.querySelectorAll('[required]'));
-    form.noValidate = true; /* our messages from here on, not the browser's bubbles */
-
-    function problem(input) {
-      var v = input.value.trim();
-      if (!v) return input.getAttribute('data-empty');
-      if (input.type === 'tel' && v.replace(/\D/g, '').length < 10) return input.getAttribute('data-short');
-      return '';
-    }
-    function mark(input, msg) {
-      document.getElementById(input.getAttribute('aria-describedby')).textContent = msg;
-      if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
-    }
-    /* once a field has a message, it updates as you type and goes when the field is fixed */
-    required.forEach(function (input) {
-      input.addEventListener('input', function () { if (input.hasAttribute('aria-invalid')) mark(input, problem(input)); });
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (busy) return;
-      var first = null;
-      required.forEach(function (input) {
-        var msg = problem(input);
-        mark(input, msg);
-        if (msg && !first) first = input;
-      });
-      if (first) { first.focus(); return; }
-
-      busy = true;
-      fail.hidden = true;
-      send.textContent = send.getAttribute('data-sending');
-      var ctrl = window.AbortController ? new AbortController() : null;
-      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
-      fetch(form.action, {
-        method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' },
-        signal: ctrl ? ctrl.signal : undefined
-      })
-        .then(function (res) {
-          return res.json().then(function (data) { if (!res.ok || !data.success) throw new Error(data.message || 'not sent'); });
-        })
-        .then(function () {
-          form.hidden = true;
-          done.hidden = false;
-          done.focus();
-        }, function () {
-          fail.hidden = false;
-        })
-        .then(function () { clearTimeout(timer); busy = false; send.textContent = label; });
-    });
-  })();
+     One of "the two forms" above. Only the name and the number are
+     required. Its 3 seconds start as the page loads. */
+  webForm(document.querySelector('.cform'), document.querySelector('.cform__done'));
 
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
   gsap.registerPlugin(ScrollTrigger);

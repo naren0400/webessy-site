@@ -17,7 +17,7 @@ Explain everything to me in simple, plain English. Short sentences.
 ## Status
 - **DONE — FROZEN:** Ignition intro (`js/intro.js`), hero (`js/hero.js`, `js/logo3d.js`, `frames/`),
   nav. Only change these to fix a bug I report. Never refactor, restyle or "improve" them.
-  Three approved nav changes exist, and nothing else in the nav changes:
+  Four approved nav changes exist, and nothing else in the nav changes:
   1. Over bone and orange sections its links show at full strength, and over bone its glass is
      darker, so the links pass AA. It lives in the "section colours" block of `css/site.css`.
   2. The neon edge (see "Neon edge" under Design rules). Over bone and orange it drops its outer
@@ -25,12 +25,22 @@ Explain everything to me in simple, plain English. Short sentences.
   3. While one of the 04 panels is behind it, the nav takes its look over bone (change 1, and
      no outer glow). `js/sections.js` sets `data-nav="panel"` on `<html>`; the rules are in the
      same "section colours" block.
+  4. (7 October 2026) Its button reads "Start your project" and looks like the page's main
+     button (15px, the same orange and ink, no glow; 40px tall to fit the pill). Hovering no
+     longer turns its text light (that failed AA). The rules are in the "nav" block.
+  Hero end (7 October 2026, approved): the round "Explore" button is now the call to action,
+  "Start your project" (`.btn .btn--primary`, opens WhatsApp). It keeps the class `.st-explore`,
+  because `js/hero.js` shows it with the line under the statement and ends the thin line at it.
+  `js/hero.js` itself is unchanged.
   Hero bug fixes (4 October 2026, iPhone stutter): phones (touch, under 720px wide) scroll the
   hero in 190vh instead of 312vh (`#hero` 290vh tall), and on phones and tablets the 3D 0400 is
   built and drawn once, unseen, while the page is still, so its first appearance doesn't freeze.
 - **DONE (7 October 2026):** launch pages and SEO basics: Privacy, Terms, 404, favicons, link
   previews (`images/og-image.png`), canonical addresses, `robots.txt`, `sitemap.xml`. No meta
   description mentions Bengaluru (the page title may).
+- **DONE (7 October 2026):** one call to action ("Start your project" everywhere), form checks
+  and spam protection ("the two forms" in `js/sections.js`), Cloudflare Web Analytics on every
+  page, http to https in `.htaccess`. A secrets check found nothing but the two public keys.
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
   Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
@@ -52,7 +62,8 @@ Explain everything to me in simple, plain English. Short sentences.
   analytics or form is added, update it first.
 - `404.html` — the server shows it for any missing address (`.htaccess`). It has `<base href="/">`,
   so its links and files work at deep addresses too.
-- `.htaccess` — the 404 page, and answers "not found" for `.md` and `.zip` files uploaded by mistake.
+- `.htaccess` — sends every http:// visit to https:// (301; no HSTS yet, on purpose), the 404
+  page, and answers "not found" for `.md` and `.zip` files uploaded by mistake.
 - `robots.txt`, `sitemap.xml` — the real pages only: home, privacy, terms.
 - `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` — the 0400 digits from `webessy-logo.svg` on black.
 - `tools/set-domain.js` — the site's address (`https://webessy.com`) is written here, once. After
@@ -70,8 +81,8 @@ Explain everything to me in simple, plain English. Short sentences.
   The decision / What was built / What it proves. Then one short block, "You are looking at one
   of them". Then "We are early. That is the offer." as one big line of type — no box.
 - **03 What we do** (changed 3 October 2026) — four plan cards in glass, each showing only its
-  name, its starting price and one button: Starter from ₹6,499, Business from ₹9,999, Advanced
-  from ₹18,499, and Boss (no price: "Let’s talk scope and ideas directly", a WhatsApp button).
+  name, its starting price and one "Start your project" button: Starter from ₹6,499, Business
+  from ₹9,999, Advanced from ₹18,499, and Boss (no price: "Let’s talk scope and ideas directly").
   No feature lists or "what's included" details on the cards. All four have the neon edge and
   sit on a ring that holds in place (CSS sticky) and turns clockwise as you scroll, Starter →
   Business → Advanced → Boss, driven by scroll, no snapping. Since 4 October 2026 it turns at half
@@ -87,16 +98,23 @@ Explain everything to me in simple, plain English. Short sentences.
   slide over each other as you scroll.
 - **05 About** — photo on the left, Version B copy on the right.
 - **Reviews** (no number, so Contact stays 06; added 3 October 2026) — full width: label, heading and the
-  "Write a review" button, then the reviews as light glass cards (name, business, review, optional photo;
+  "Write a review" text link, then the reviews as light glass cards (name, business, review, optional photo;
   up to three in a row, stacked on phones, no carousel), built from the list in `js/reviews.js`. While the
-  list is empty, the heading is "Be the first to write a review" and there are no cards. The button opens
-  a panel with the review form (Web3Forms) and "Send photos on WhatsApp". No stars, no numbers, no dates.
-  Without JavaScript the section stays hidden.
-- **06 Contact** — "Let's talk", WhatsApp button, email, the 3-line "what happens after you
-  message", reply time. Small 4-field form (name, WhatsApp/phone, business, what you need).
+  list is empty, the heading is "Be the first to write a review" and there are no cards. The link opens
+  a panel with the review form (Web3Forms) and the "Send photos on WhatsApp" link. No stars, no numbers,
+  no dates. Without JavaScript the section stays hidden.
+- **06 Contact** — "Let's talk", the "Start your project" button, the 3-line "what happens after
+  you message", the email (a text link), reply time. Small 4-field form (name, WhatsApp/phone,
+  business, what you need); its Send is the quieter outlined button.
 - **Footer** — Webessy Studios · Bengaluru, India · WhatsApp · Email · Privacy · Terms · © 2026.
 
 ## Design rules
+- **One call to action** (7 October 2026): the main action everywhere is "Start your project",
+  which opens WhatsApp. Same words and the same button (`.btn--primary`) in the nav, at the hero's
+  end, on each plan card, in Contact and on the phones' floating button. Everything else is a
+  text link (`.link`), never a competing button: the email, Write a review, Send photos on
+  WhatsApp, the Yauvana link, Back to home on the 404. A form's own Send stays a button: primary
+  in the review panel (its only action), outlined in Contact.
 - **Fonts:** Fraunces for section headings (max one italic accent word per heading), Instrument
   Sans for body and UI, JetBrains Mono for small labels such as `02 / WORK`. Bodoni Moda is for
   the hero's big title cards only (the end statement); never use it for section headings.
@@ -172,6 +190,14 @@ Explain everything to me in simple, plain English. Short sentences.
   frames. Keep that corner of the hero clear of UI.
 - **Never edit, rename or re-encode anything in `frames/`.**
 - **No fake content:** no invented reviews, clients, numbers or stats.
+- **Analytics:** Cloudflare Web Analytics, its snippet exactly as given, just before `</body>` on
+  every page (index, privacy, terms, 404). It sets no cookies, so there is no cookie banner. Its
+  token is public by design. It only reports from the real domain: on file:// and localhost the
+  console shows two Cloudflare lines (a refused report). Those are expected.
+- **Forms** ("the two forms" in `js/sections.js`): required fields and formats checked with a
+  plain line under the field; Web3Forms' `botcheck` honeypot; nothing sent within 3 seconds of
+  the form opening (the "did not send" line shows instead); the button disabled while it sends.
+  Inputs stay 16px or more (iPhones zoom in below that). Tests stub `fetch`: a real send emails Naren.
 - Contact details: WhatsApp `+91 80500 82158`, link
   `https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business`,
   email `0400webessy@gmail.com`.

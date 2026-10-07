@@ -5,8 +5,9 @@ description: Design system for the Webessy Studios site — type scale, spacing,
 
 # Webessy design system
 
-The hero, intro and nav are finished and frozen (the nav has three approved changes: its contrast
-fix in §3, the neon edge in §6, and its look over the 04 panels in §3).
+The hero, intro and nav are finished and frozen (the nav has four approved changes: its contrast
+fix in §3, the neon edge in §6, its look over the 04 panels in §3, and its "Start your project"
+button in §7; the hero's end has the same button since 7 October 2026, also in §7).
 Everything here is for sections 02 to 06 and the footer. Match what already exists in
 `css/site.css` — reuse its variables, section themes and `.glass` class.
 
@@ -127,7 +128,7 @@ neon edge (as `#8E7CFF`). Blue — the hero and the neon edge only. Never as gra
 - Base grid: 12 columns, gap `clamp(16px, 2vw, 28px)`
 - Vary composition: 02 is left-pinned/right-scrolling, 03 is a centred ring of four plan cards
   (§8) and then a 7/5 split (45 days, Care), 04 is full-width stacked, 05 is a 5/7 split mirrored, Reviews is full width
-  (the heading with its button at the end of the line, then a row of cards), 06 is a 7/5 split.
+  (the heading with its Write a review link at the end of the line, then a row of cards), 06 is a 7/5 split.
   No two neighbours use the same layout.
 
 ## 5. Corners — a deliberate scale, not one radius everywhere
@@ -204,12 +205,25 @@ and `--neon-i` (glow inside).
 
 ## 7. Components
 
+**One call to action** (7 October 2026) — "Start your project", which opens WhatsApp, is the
+only primary button: the same words and the same button in the nav, at the hero's end (the old
+Explore button's place, `.st-explore`, which hero.js ends its line at), on each plan card, in
+Contact (under the copy, the three steps right under it) and floating on phones. Every other
+action is a text link (`.link`): the email, Write a review, Send photos on WhatsApp, the Yauvana
+link, Back to home on the 404. A form's own Send stays a button: primary in the review panel
+(its only action), secondary in Contact, so it doesn't compete there.
+
 **Buttons** — pill, `padding: 14px 22px`, Instrument Sans 500, 15px.
 Primary: `var(--btn-bg)` fill, `var(--btn-fg)` text — orange with ink text, except on the orange
-Contact section, where it's ink with bone text (an orange button would vanish there).
-Secondary: transparent, 1px `var(--line)` border, text `var(--fg)`. Both: visible
-`:focus-visible` outline 2px `var(--fg)` offset 3px. Only one primary button per section — except
-the 03 plan cards, one per card (below).
+Contact section, where it's ink with bone text (an orange button would vanish there). The nav's
+is always orange (its glass stays dark), 40px tall to sit 8px inside the pill.
+Secondary: transparent, 1px `var(--line)` border, text `var(--fg)`; Contact's Send takes the
+fields' ink 56% border (3.05:1 on orange). Both: visible `:focus-visible` outline 2px `var(--fg)`
+offset 3px. While a form sends, its button is disabled (`cursor: progress`, no hover).
+
+**Text links** (`.link`) — Instrument Sans 500, 15px, `var(--fg)`, underlined 1px (2px on
+hover), offset 4px; 8px of padding cancelled by the margin, so they're taller to tap without
+taking room. Works on a `<button>` too.
 
 **Plan cards (glass)** — four: Starter, Business, Advanced, Boss. Each shows only its name, its
 starting price and one button; never a feature list or "what's included". The heading reads as
@@ -217,9 +231,9 @@ one line ("Starter from ₹6,499"): the name as a `--t-label` label in `--fg` at
 the bottom "*from*" (Fraunces italic at `--t-h3`, `var(--accent)`: the heading's one accent word)
 and the price at `--t-price`, capped at 26cqi so the widest, ₹18,499 (3.5em), fits; every card's
 price is the same size. Boss has "Let’s talk scope and ideas directly" (Fraunces, 28–38px) where
-the price would be. One primary button per card, on one line ("Get your quote", or "Message on
-WhatsApp" on Boss), pointing to its heading (`aria-describedby`) so a screen reader names the
-plan: four orange buttons in this section, approved 3 October 2026, because the ring shows one
+the price would be. One primary button per card, on one line ("Start your project" on every
+card since 7 October 2026), pointing to its heading (`aria-describedby`) so a screen reader names
+the plan: four orange buttons in this section, approved 3 October 2026, because the ring shows one
 card at full strength at a time. Without the ring: stacked on phones, two by two from 720px,
 four in a row from 1280px (with a little less padding there). Under them, one line in Fraunces
 at `--t-h3`: "Special pricing for startups." Never the word "negotiable"; no enterprise
@@ -245,21 +259,25 @@ in Fraunces italic 22px (the page adds the curly quotes), and the name and busin
 `--t-label` at the bottom. On bone, the light glass from §6. Up to three in a row (each 340px or
 wider; the row is only as wide as its cards), stacked on phones. No carousel, no neon edge.
 
-**Review panel** — a `<dialog>` the "Write a review" button opens. Solid black
+**Review panel** — a `<dialog>` the "Write a review" link opens. Solid black
 (`data-theme="black"` on the dialog), not glass, and nothing behind it is blurred: one flat dim
 layer. Phones: full screen, slides up. From 720px: 560px wide on the right, full height, slides
 in from the right. The title in Fraunces at `--t-h3`, a Close button (ghost), the form, then a
-hairline and "Send photos on WhatsApp" (ghost). Opening puts the focus on the title, so a phone
-keeps its keyboard down. The page behind is locked; where that takes a scrollbar away, the page
-is padded by its width (never `scrollbar-gutter`: on the page it changes what vw measures, and
-every heading sized in vw shrinks a little). Close, Escape and a click on the dim layer close it,
-and the focus goes back to the button.
+hairline and "Send photos on WhatsApp" (a text link). Opening puts the focus on the title, so a
+phone keeps its keyboard down. The page behind is locked; where that takes a scrollbar away, the
+page is padded by its width (never `scrollbar-gutter`: on the page it changes what vw measures,
+and every heading sized in vw shrinks a little). Close, Escape and a click on the dim layer close
+it, and the focus goes back to the link.
 
 **Form** — labels above inputs, inputs 48px tall, 4px radius, 1px border, transparent
-background, focus border `var(--fg)`. Required fields validated in JavaScript with a plain inline
-message under the field. No floating labels. On the orange Contact section: text in ink, input
-borders at least ink 56% (the 3:1 a form border needs on orange), and error messages in ink —
-never red, which fails on orange.
+background, focus border `var(--fg)`; text 16px, or iPhones zoom in. Checked in JavaScript
+("the two forms" in `js/sections.js`): required fields, a phone number of 10 digits or more, a
+link that is a web address (the https:// may be left out), an email address that looks like one.
+A plain message under the field, from the field's `data-empty`, `data-short` or `data-bad`.
+Spam: Web3Forms' `botcheck` honeypot (ticked: it only pretends to send), and nothing goes within
+3 seconds of the form opening (the "did not send" line shows). No floating labels. On the
+orange Contact section: text in ink, input borders at least ink 56% (the 3:1 a form border needs
+on orange), and error messages in ink — never red, which fails on orange.
 
 ## 8. Motion
 
@@ -363,7 +381,7 @@ never red, which fails on orange.
     button; the next one slides over it. It scales to 0.95 and never dims.
   - The panels don't fade in (a fade would show the panel underneath). Reduced motion and no
     JavaScript: the panels simply follow each other.
-- **Reviews:** nothing is tied to scroll. The label and the heading rise word by word; the button
+- **Reviews:** nothing is tied to scroll. The label and the heading rise word by word; the link
   and each card rise and fade once. The cards do it by a CSS transition (`.is-waiting`, then
   `.is-in`, from an IntersectionObserver at 85%), not GSAP: phones run a transition off the main
   thread, and GSAP rewrites a glass card's style on every frame. Measured on a 4× slower phone
@@ -405,7 +423,8 @@ a review").
       form borders included? Work the ratios out; don't eyeball them.
 - [ ] Violet only as a 04 panel, the glow or the neon edge? Blue only in the hero and the neon
       edge? Orange accent `#E84A12` on bone, and only at 24px and up?
-- [ ] More than one italic word in a heading? More than one primary button (03's plan cards aside)?
+- [ ] More than one italic word in a heading? A primary button that isn't "Start your project"
+      (a form's own Send aside)? A secondary action shaped like a button instead of a text link?
 - [ ] Right reveal: headings `words`, paragraphs and lists `lines`, one big statement `chars`,
       cards and tables `reveal`? Nothing split inside a card?
 - [ ] Any icon grid, emoji, gradient text, or banned buzzword?

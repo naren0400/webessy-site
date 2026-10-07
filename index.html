@@ -41,7 +41,7 @@
     <a href="#work">Work</a>
     <a href="#services">Services</a>
     <a href="#contact">Contact</a>
-    <a class="cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Get your quote</a>
+    <a class="cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Start your project</a>
   </div>
 </nav>
 
@@ -85,9 +85,12 @@
           <span class="st-line st-2"><span class="st-in">choose</span></span>
           <span class="st-line st-3"><span class="st-in">you.</span></span>
         </h1>
+        <!-- the call to action, "Start your project": the page's main button. It keeps the class
+             st-explore (it was the Explore button): hero.js shows it with the line above it and
+             ends the thin line through the statement at it. -->
         <div class="st-foot">
           <p class="st-sub">Give your business an <b>unfair advantage</b> online.</p>
-          <a class="st-explore" href="#work">Explore</a>
+          <a class="st-explore btn btn--primary" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Start your project</a>
         </div>
       </div>
       <svg id="statementPath" aria-hidden="true" focusable="false"><path d=""/><circle r="2.4" cx="-10" cy="-10"/></svg>
@@ -293,7 +296,7 @@
                   <span class="label plan__name">Starter</span>
                   <span class="plan__price"><em>from</em> <span class="plan__num">₹6,499</span></span>
                 </h3>
-                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-starter">Get your quote</a>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-starter">Start your project</a>
               </div>
             </li>
             <li class="plan glass reveal">
@@ -303,7 +306,7 @@
                   <span class="label plan__name">Business</span>
                   <span class="plan__price"><em>from</em> <span class="plan__num">₹9,999</span></span>
                 </h3>
-                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-business">Get your quote</a>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-business">Start your project</a>
               </div>
             </li>
             <li class="plan glass reveal">
@@ -313,7 +316,7 @@
                   <span class="label plan__name">Advanced</span>
                   <span class="plan__price"><em>from</em> <span class="plan__num">₹18,499</span></span>
                 </h3>
-                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-advanced">Get your quote</a>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-advanced">Start your project</a>
               </div>
             </li>
             <li class="plan glass reveal">
@@ -323,7 +326,7 @@
                   <span class="label plan__name">Boss</span>
                 </h3>
                 <p class="plan__talk">Let’s talk scope and ideas directly</p>
-                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-boss">Message on WhatsApp</a>
+                <a class="btn btn--primary plan__cta" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener" aria-describedby="plan-boss">Start your project</a>
               </div>
             </li>
           </ul>
@@ -579,7 +582,8 @@
     </div>
   </section>
   <!-- REVIEWS — no number in the label, so Contact stays 06. Full width: the label on a hairline,
-       the heading with the Write a review button at the end of its last line, then the reviews
+       the heading with the Write a review link at the end of its last line (a text link, not a
+       button shape: the one button style is for "Start your project"), then the reviews
        as light glass cards. js/sections.js builds the cards from the list in js/reviews.js and
        keeps one of the two headings: "Be the first to write a review" while the list is empty,
        "In their words" once it has reviews. Without JavaScript the list can't be read, so the
@@ -590,15 +594,16 @@
       <div class="reviews__head">
         <h2 class="display reviews__title" data-reveal="words" data-when="empty"><span class="reviews__line">Be the <em>first</em></span> <span class="reviews__line">to write a review</span></h2>
         <h2 class="display reviews__title" data-reveal="words" data-when="some">In their words</h2>
-        <button class="btn btn--primary reviews__write reveal" type="button" aria-haspopup="dialog" aria-controls="rpanel">Write a review</button>
+        <button class="link reviews__write reveal" type="button" aria-haspopup="dialog" aria-controls="rpanel">Write a review</button>
       </div>
       <ul class="reviews__list" role="list"></ul>
     </div>
 
     <!-- The review form, in a panel over the page: on phones it slides up and fills the screen,
          on computers it comes in from the right. Solid black, not glass, and nothing behind it
-         is blurred. Sends to 0400webessy@gmail.com through Web3Forms (js/sections.js). Name and
-         review are required. No asterisks. -->
+         is blurred. Sends to 0400webessy@gmail.com through Web3Forms (js/sections.js, "the two
+         forms"). Name and review are required; a link, if given, must be a web address. No
+         asterisks. The messages are in data-empty and data-bad. -->
     <dialog id="rpanel" class="rpanel" data-theme="black" aria-labelledby="rpanel-title">
       <div class="rpanel__box">
         <div class="rpanel__top">
@@ -626,7 +631,8 @@
           </div>
           <div class="field">
             <label for="rf-link">Link to your work</label>
-            <input id="rf-link" name="link" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false">
+            <input id="rf-link" name="link" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" aria-describedby="rf-link-msg" data-bad="[TODO: the words when the link isn’t a web address]">
+            <p id="rf-link-msg" class="field__msg"></p>
           </div>
           <button class="btn btn--primary rform__send" type="submit" data-sending="Sending…">Send</button>
           <p class="rform__fail" role="alert" hidden>That did not send. <a href="https://wa.me/918050082158" target="_blank" rel="noopener">Message on WhatsApp</a></p>
@@ -635,25 +641,25 @@
           <p class="rform__done-title">Sent.</p>
           <p>Thank you. We read every review before it goes on the site.</p>
         </div>
-        <p class="rpanel__photos"><a class="btn btn--ghost" href="https://wa.me/918050082158?text=Hi%2C%20here%20are%20the%20photos%20for%20my%20review" target="_blank" rel="noopener">Send photos on WhatsApp</a></p>
+        <p class="rpanel__photos"><a class="link" href="https://wa.me/918050082158?text=Hi%2C%20here%20are%20the%20photos%20for%20my%20review" target="_blank" rel="noopener">Send photos on WhatsApp</a></p>
       </div>
     </dialog>
   </section>
-  <!-- 06 CONTACT — "Let's talk" is the heading and the WhatsApp link in one. The copy and the
-       three steps on the left, the form lower on the right. -->
+  <!-- 06 CONTACT — "Let's talk", the copy, the call to action ("Start your project", which opens
+       WhatsApp) and the three steps on the left, the form lower on the right. On orange the
+       main button is ink. The form's Send is the quieter outlined button, and the email a text
+       link, so nothing competes with Start your project. -->
   <section id="contact" class="contact" data-theme="orange" aria-labelledby="contact-title">
     <div class="container contact__grid">
       <div class="contact__main">
         <p class="label" data-reveal="words">06 / Contact</p>
-        <a class="talk" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">
-          <h2 id="contact-title" class="talk__title" data-reveal="chars">Let’s <em>talk</em></h2>
-          <span class="talk__via">Message on WhatsApp<span class="talk__arrow" aria-hidden="true"><svg viewBox="0 0 11 13" focusable="false"><path d="M1 1 L10 6.5 L1 12"/></svg></span></span>
-        </a>
+        <h2 id="contact-title" class="contact__title" data-reveal="chars">Let’s <em>talk</em></h2>
         <div class="contact__copy" data-reveal="lines">
           <p class="contact__lead">Tell us what you are building. We will tell you what it takes, what it costs, and whether we are the right people for it.</p>
           <p>No pitch. No follow-up calls you did not ask for.</p>
         </div>
-        <!-- what happens after you message: three small lines, right by the button -->
+        <a class="btn btn--primary contact__cta reveal" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Start your project</a>
+        <!-- what happens after you message: three small lines, right under the button -->
         <ol class="next" data-reveal="lines">
           <li>We ask a few questions about your business</li>
           <li>You get a written quote, free</li>
@@ -666,8 +672,9 @@
       <div class="contact__side">
         <p class="contact__or" data-reveal="lines">Or fill this in and we will come to you.</p>
         <!-- Sends to 0400webessy@gmail.com through Web3Forms. Without JavaScript the browser checks
-             the two required fields and posts it; with it, js/sections.js shows the messages here.
-             Name and number are required. No asterisks (WEBSITE-CONTENT.md). -->
+             the two required fields and posts it; with it, js/sections.js ("the two forms") checks
+             them, keeps spam out and shows the messages here. Name and number are required. No
+             asterisks (WEBSITE-CONTENT.md). -->
         <form class="cform reveal" action="https://api.web3forms.com/submit" method="POST">
           <input type="hidden" name="access_key" value="748c7731-14d0-49e6-ad14-2ddd6455ba38">
           <input type="hidden" name="subject" value="New enquiry from the website">
@@ -691,7 +698,7 @@
             <label for="cf-need">What do you need?</label>
             <input id="cf-need" name="need" type="text">
           </div>
-          <button class="btn btn--primary cform__send" type="submit" data-sending="Sending…">Send</button>
+          <button class="btn btn--ghost cform__send" type="submit" data-sending="Sending…">Send</button>
           <p class="cform__fail" role="alert" hidden>That did not send. <a href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Message on WhatsApp</a></p>
         </form>
         <div class="cform__done" tabindex="-1" hidden>
@@ -738,7 +745,7 @@
   </div>
 </footer>
 
-<a id="waFloat" class="btn btn--primary wa-float" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Message on WhatsApp</a>
+<a id="waFloat" class="btn btn--primary wa-float" href="https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business" target="_blank" rel="noopener">Start your project</a>
 
 <div id="intro" aria-hidden="true">
   <div id="introBg"></div>
@@ -789,5 +796,6 @@
 <script src="js/reveal.js"></script>
 <script src="js/reviews.js"></script>
 <script src="js/sections.js"></script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "982073b868b24da3832432b28bc9bd6b"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
