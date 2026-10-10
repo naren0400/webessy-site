@@ -149,25 +149,49 @@
     });
   }
 
-  function setup(el) {
+  /* An element to reveal. Its text is split later (splitAhead), not while the page loads. */
+  function prepare(el) {
     var mode = el.getAttribute('data-reveal');
-    if (!STAGGER.hasOwnProperty(mode)) return;
-    if (started) { if (started.has(el)) return; started.add(el); }
-    if (el.parentElement && el.parentElement.closest('[data-reveal]')) return; /* the outer one covers it */
-    if (el.querySelector(INTERACTIVE)) { riseAndFade(el); return; }
+    if (!STAGGER.hasOwnProperty(mode)) return null;
+    if (started) { if (started.has(el)) return null; started.add(el); }
+    if (el.parentElement && el.parentElement.closest('[data-reveal]')) return null; /* the outer one covers it */
+    if (el.querySelector(INTERACTIVE)) return { el: el, rise: true };
+    return { el: el, mode: mode, splits: null };
+  }
 
+  /* Split the text, once, and hide the pieces below their masks. Done a screen or more before
+     the element comes into view: split, the text is thousands of small boxes, and every layout
+     of the page gets slower with them (all split at once, a phone profile spent 1.4 to 3.6s
+     on it while the page loaded). */
+  function splitAhead(r) {
+    if (r.splits) return;
     /* the text blocks to split: the paragraphs or items inside, or the element itself */
-    var blocks = toArray(el.querySelectorAll(BLOCKS)).filter(function (b) { return !b.querySelector(BLOCKS); });
-    if (!blocks.length) blocks = [el];
-    var splits = blocks.map(function (b) { return split(b, mode); });
-    var pieces = el.querySelectorAll('.rv-i');
+    var blocks = toArray(r.el.querySelectorAll(BLOCKS)).filter(function (b) { return !b.querySelector(BLOCKS); });
+    if (!blocks.length) blocks = [r.el];
+    r.splits = blocks.map(function (b) { return split(b, r.mode); });
+    var pieces = r.el.querySelectorAll('.rv-i');
     if (pieces.length) gsap.set(pieces, { yPercent: 120 }); /* start hidden below their masks */
+  }
 
+  /* Two triggers: one splits the text when the element is one and a half screens below the
+     screen, the other plays the reveal when its top reaches 85% of the screen. ScrollTrigger
+     runs them before the browser paints, so after a jump down the page (a nav link) the text
+     is hidden before it is ever drawn. */
+  function watch(r) {
+    if (r.rise) { riseAndFade(r.el); return; }
+    if (!r.splits) {
+      ScrollTrigger.create({
+        trigger: r.el, once: true,
+        start: function () { return 'top bottom+=' + Math.round(window.innerHeight * 1.5); },
+        onEnter: function () { splitAhead(r); }
+      });
+    }
     ScrollTrigger.create({
-      trigger: el, start: START, once: true,
+      trigger: r.el, start: START, once: true,
       onEnter: function () {
+        splitAhead(r); /* already done, unless the page was never still long enough */
         /* line breaks and letter widths need the real fonts */
-        var go = function () { play(splits, mode); };
+        var go = function () { play(r.splits, r.mode); };
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); else go();
       }
     });
@@ -177,6 +201,14 @@
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     gsap.registerPlugin(ScrollTrigger);
-    toArray((scope || document).querySelectorAll('[data-reveal]')).forEach(setup);
+    var ready = toArray((scope || document).querySelectorAll('[data-reveal]')).map(prepare).filter(Boolean);
+
+    /* Split now whatever is on the screen or within one and a half screens below it: one
+       measurement, taken before anything changes. Then the triggers, which measure the page,
+       so it doesn't change between them. */
+    var reach = window.innerHeight * 2.5;
+    var tops = ready.map(function (r) { return r.rise ? 0 : r.el.getBoundingClientRect().top; });
+    ready.forEach(function (r, i) { if (!r.rise && tops[i] < reach) splitAhead(r); });
+    ready.forEach(watch);
   };
 })();

@@ -41,6 +41,11 @@ Explain everything to me in simple, plain English. Short sentences.
 - **DONE (7 October 2026):** one call to action ("Start your project" everywhere), form checks
   and spam protection ("the two forms" in `js/sections.js`), Cloudflare Web Analytics on every
   page, http to https in `.htaccess`. A secrets check found nothing but the two public keys.
+- **DONE (8–10 October 2026):** quality pass. Phones: no text under 14px, tap targets 44px (links
+  inside sentences excepted). No line starts with a dash. The text reveal splits ahead instead of
+  at load (start-up on a phone profile: seconds down to a fraction). Compression and caching in
+  `.htaccess`. The unused original images were deleted (they're in git history). AVIF was tested
+  and not adopted: only 16–23% smaller than our WebP for the photos and renders.
 - **TO BUILD:** sections 02 to 06 and the footer, in `index.html` and `css/site.css`.
   Put new motion code in `js/sections.js`. The text reveal lives in `js/reveal.js`.
 
@@ -54,7 +59,10 @@ Explain everything to me in simple, plain English. Short sentences.
 - `js/sections.js` — section colours and all motion for sections 02 to 06
 - `js/reviews.js` — the list the Reviews section is built from. Real reviews only; empty until the first one
 - `frames/desktop/` (80 webp) and `frames/mobile/` (80 webp) — hero footage
-- `fonts/` — create it; self-hosted font files go here
+- `fonts/` — self-hosted font files. Browsers keep them a year (`.htaccess`): a changed font needs a new file name.
+- `images/` — WebP for the page (the Yauvana screenshots in `images/work/` in 720/1080/1440 sizes,
+  the welcome picture), plus `og-image.png` and `logo-lockup.svg` (the source of the footer logo).
+  Originals aren't kept here; git history has them. Browsers keep pictures a month.
 - `privacy.html`, `terms.html` — the legal pages: bone, no JavaScript, styles in the "Launch pages"
   block of `css/site.css`. Their nav and footer are copies of `index.html`'s (the nav's links point
   to `index.html#…`), so a change to either goes in all three files. `[CONFIRM: …]` marks what Naren
@@ -63,7 +71,9 @@ Explain everything to me in simple, plain English. Short sentences.
 - `404.html` — the server shows it for any missing address (`.htaccess`). It has `<base href="/">`,
   so its links and files work at deep addresses too.
 - `.htaccess` — sends every http:// visit to https:// (301; no HSTS yet, on purpose), the 404
-  page, and answers "not found" for `.md` and `.zip` files uploaded by mistake.
+  page, and answers "not found" for `.md` and `.zip` files uploaded by mistake. It also compresses
+  text files and sets caching: fonts a year, pictures (the frames too) a month; pages, styles and
+  scripts are checked with the server on every visit, so an update shows at once.
 - `robots.txt`, `sitemap.xml` — the real pages only: home, privacy, terms.
 - `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` — the 0400 digits from `webessy-logo.svg` on black.
 - `tools/set-domain.js` — the site's address (`https://webessy.com`) is written here, once. After
@@ -202,7 +212,9 @@ Explain everything to me in simple, plain English. Short sentences.
   `https://wa.me/918050082158?text=Hi%2C%20I%20saw%20your%20site%20and%20I%27d%20like%20a%20website%20for%20my%20business`,
   email `0400webessy@gmail.com`.
 - Images: always set `width`, `height`, `alt`, and `loading="lazy"` below the hero.
-- Mobile first. Every section must work at 390px and 1440px wide.
+- Mobile first. Every section must work at 390px and 1440px wide (and at 360px and 430px:
+  nothing wider than the screen, no badly broken lines). On phones no text is under 14px and
+  every tap target is at least 44px tall (links inside a sentence excepted).
 
 ## Workflow
 1. Before building a section: read its part of `WEBSITE-CONTENT.md`, then give me a short plan

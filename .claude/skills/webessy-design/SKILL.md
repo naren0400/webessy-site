@@ -41,7 +41,16 @@ one `<h1>`, with the line under it in Bodoni's real small caps — and the welco
 | `--t-price` | the plan prices (₹6,499 …) | `clamp(56px, 8vw, 120px)`, at most 26cqi of the card | Fraunces 400 | 0.95 | -0.03em |
 | `--t-body` | paragraphs | `17px` (16px under 720px) | Instrument Sans 400 | 1.6 | 0 |
 | `--t-small` | captions, table cells | `14px` | Instrument Sans 400 | 1.5 | 0 |
-| `--t-label` | `02 / WORK` style labels | `11.5px` | JetBrains Mono 400 | 1.2 | 0.14em, uppercase |
+| `--t-label` | `02 / WORK` style labels | `11.5px` (14px under 720px) | JetBrains Mono 400 | 1.2 | 0.14em, uppercase |
+
+**Phones (under 720px): no text under 14px** (quality pass, 8 October 2026). That's why
+`--t-label` is 14px there; the build sheet's small mono (pin numbers, the title block, the
+Yauvana link) is 14px on phones too. Anything new follows the same rule.
+
+**Line breaks.** Every " — " in the HTML has a no-break space before it (`&nbsp;—`), so no line
+starts with a dash, and a number keeps its unit (`45&nbsp;days`). Paragraphs use
+`text-wrap: pretty` (no single word alone on the last line), short display lines `balance`.
+The reveal splits only at real spaces, so both survive it.
 
 Italic accent: at most one word per heading, in Fraunces italic. It may be orange: use
 `color: var(--accent)` and the theme picks the right one — `#FF561D` on black and ultramarine,
@@ -222,8 +231,15 @@ fields' ink 56% border (3.05:1 on orange). Both: visible `:focus-visible` outlin
 offset 3px. While a form sends, its button is disabled (`cursor: progress`, no hover).
 
 **Text links** (`.link`) — Instrument Sans 500, 15px, `var(--fg)`, underlined 1px (2px on
-hover), offset 4px; 8px of padding cancelled by the margin, so they're taller to tap without
-taking room. Works on a `<button>` too.
+hover), offset 4px; 12px of padding cancelled by the margin, so they're at least 44px tall to
+tap without taking room. Works on a `<button>` too.
+
+**Tap targets: at least 44px** on phones. Standalone links that aren't `.link` (the footer row,
+the email in Contact, the Yauvana link, the forms' "Message on WhatsApp") get the same padding
+cancelled by a negative margin, worked out from their line height (`calc((45px - 1.5em) / 2)`;
+45, not 44, so rounding never leaves 43.98). A small circle (pin 5) gets a 44px `::before`.
+Links inside a sentence (the legal pages) are the one exception, as WCAG allows. The nav's
+button is 40px (approved, frozen).
 
 **Plan cards (glass)** — four: Starter, Business, Advanced, Boss. Each shows only its name, its
 starting price and one button; never a feature list or "what's included". The heading reads as
@@ -304,6 +320,12 @@ on orange), and error messages in ink — never red, which fails on orange.
   Screen readers: while text is split, the original stays in the page, visually hidden (`.rv-sr`),
   and the animated copy is `aria-hidden` (`.rv-vis`). When the reveal ends, the original HTML is
   put back exactly as written.
+  Splitting happens ahead, not at load (8 October 2026): a second trigger splits an element's
+  text when it is 1.5 screens below the screen (and at load, whatever is already that close).
+  Split all at once, the text was thousands of extra boxes, and a phone profile spent 1.4–3.6s
+  laying the page out while it loaded; now 20–200ms. ScrollTrigger runs before the browser
+  paints, so even after a jump from the nav no text shows before it's hidden (tested at 390 and
+  1440: 0 of 55).
 - **Section colours** — see §3: a timed 0.7s opacity fade when a section's top passes the middle
   of the screen. It still runs with reduced motion, because nothing moves.
 - **02 Work screenshots:** each image starts `translateX(24%) scale(0.86)` at 40% opacity and

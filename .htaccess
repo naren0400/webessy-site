@@ -19,3 +19,28 @@ ErrorDocument 404 /404.html
 <IfModule mod_alias.c>
   RedirectMatch 404 (?i)\.(md|zip)$
 </IfModule>
+
+# Speed. Text files travel compressed. And the browser keeps what it has already downloaded,
+# so a second page or a second visit doesn't fetch it again: fonts for a year, pictures (the
+# hero frames too) for a month. If a font or a picture ever changes, give it a new file name.
+# The pages, the styles and the scripts change with every update, so for those the browser asks
+# each time whether its copy is still current (a tiny "not changed" when it is), and nobody sees
+# a new page with an old stylesheet.
+<IfModule mod_mime.c>
+  AddType image/webp .webp
+  AddType font/woff2 .woff2
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json application/xml image/svg+xml text/plain
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|css|js|xml|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.woff2$">
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+  <FilesMatch "\.(webp|png|jpg|ico|svg)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
