@@ -87,6 +87,10 @@ Explain everything to me in simple, plain English. Short sentences.
 - `tools/set-domain.js` — the site's address (`https://webessy.com`) is written here, once. After
   changing it, run `node tools/set-domain.js`: it rewrites the canonical, link-preview, sitemap and
   robots addresses in every page. Don't write the domain anywhere else.
+- `tools/build-deploy.js` — makes the upload. `node tools/build-deploy.js` rebuilds `deploy/` from
+  scratch (only the files the pages use, copied unchanged, plus its EXTRAS list: .htaccess, robots,
+  sitemap, og-image, the frames, the font licences) and `deploy.zip` (unzip it into `public_html`).
+  A file no page names goes in EXTRAS. Never edit inside `deploy/`. Both are git-ignored.
 
 ## Page structure — exactly these sections, in this order, nothing else
 01 Hero (built) · 02 Work · 03 What we do · 04 How it works · 05 About · Reviews · 06 Contact · Footer
