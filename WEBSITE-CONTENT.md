@@ -25,7 +25,7 @@ kept out of this repo.
 - [ ] Buy the domain
 - [x] Choose a reply time for the contact section
 - [ ] Yauvana screenshots — 5, desktop and phone
-- [ ] Photo of Naren for About
+- [ ] Photo of Naren for About (off the page since 11 October 2026: the name shows instead)
 - [ ] Testimonials
 - [ ] One real client
 
@@ -664,9 +664,19 @@ Anything broken stays free forever.
 **Why this works:** the cafe and the builder make it concrete. People do not
 remember arguments, they remember examples.
 
+**Under the heading** *(added 11 October 2026, when the photo came off the page)*:
+
+> Narendra R
+> Founder of Webessy Studios
+
+The founder's name is "Narendra R" everywhere on the site, Privacy and Terms.
+
 ---
 
 ## The photo
+
+*(Not on the page since 11 October 2026. The name under the heading takes its
+place. The advice below stays for when a photo is ready.)*
 
 Put a real photo of your face in this section. Not the logo. Not an illustration.
 
@@ -777,7 +787,7 @@ The link opens a panel with the form. Four fields. No asterisks.
 | While it sends | Sending… |
 | Name left empty | Add your name. |
 | Review left empty | Add your review. |
-| Link that isn't a web address | **[TODO: not written yet. Added 7 October 2026, when the link started being checked.]** |
+| Link that isn't a web address | Enter a web address, like yourbusiness.com. *(Written 11 October 2026. The https:// may be left out, so the words don't ask for it.)* |
 | Sent | **Sent.** Thank you. We read every review before it goes on the site. |
 | Did not send | That did not send. *Message on WhatsApp* (a link to WhatsApp, nothing typed) |
 | Sent within 3 seconds of the panel opening (too quick for a person: spam) | the "Did not send" line, and nothing is sent |
@@ -1103,7 +1113,7 @@ Every image needs it. Describe what is in the picture, plainly.
 | Scroll sequence — clubhouse | Frame from the Yauvana scroll sequence: a render of the clubhouse and pool at dusk |
 | Phone screenshot | Yauvana Estate site on a mobile phone, showing the headline “Breathe young.” |
 | Enquiry form | Yauvana Estate enquiry section on a computer: the heading “Ask us anything.”, the site office’s contact details, and a form for name, phone, where you live and site size, with a “Send enquiry” button |
-| Your photo | Naren, founder of Webessy Studios |
+| Your photo (not on the page since 11 October 2026) | Narendra R, founder of Webessy Studios |
 
 *(Yauvana rows updated 3 October 2026 to describe the real screenshots. The hero
 screenshot shows the hills and the headline, not the plotted layout.)*
@@ -1217,11 +1227,13 @@ footer as **Privacy · Terms**.
   2023 and the DPDP Rules, 2025, from what the site really does (two forms through
   Web3Forms, WhatsApp and email links, no cookies, and since 7 October 2026
   Cloudflare Web Analytics, which sets none). Its full text lives in `privacy.html`.
-- **Terms & conditions:** only the terms already on this page (the quote,
-  payments, content and dates, the domain, handover, 45 days of free changes,
-  Care). Its full text lives in `terms.html`.
-- Everything not decided yet is marked **[CONFIRM: …]** on those two pages, in
-  plain sight. Search the files for CONFIRM. Nothing goes live with one left in.
+- **Terms & conditions:** the terms on this page (the quote, payments, content
+  and dates, the domain, handover, 45 days of free changes, Care), plus the
+  answers of 11 October 2026. Its full text lives in `terms.html`.
+- The open questions on those two pages were all answered on 11 October 2026:
+  Narendra R runs Webessy Studios; the rest are fair, simple terms for a small
+  studio, under the laws of India and the courts in Bengaluru. The list, with
+  each answer, is in `LEGAL-DECISIONS.md` (git-ignored). None are left.
 
 ## Titles and descriptions
 

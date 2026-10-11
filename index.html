@@ -553,23 +553,17 @@
       <p class="how__close" data-reveal="lines">Most sites take two to five weeks from advance to launch, depending on size and how fast your content arrives. Your exact date is in your quote.</p>
     </div>
   </section>
-  <!-- 05 ABOUT — a 5/7 split: the photo on the left, the words on the right. The name under the
-       photo and the last line of the text sit level along the bottom. The one-line paragraph is
-       set larger, a line for each half: it's the turn in the story. -->
+  <!-- 05 ABOUT — a 5/7 split: the heading and the founder's name on the left, the words on the
+       right. The one-line paragraph is set larger, a line for each half: it's the turn in the
+       story. (No photo since 11 October 2026.) -->
   <section id="about" class="about" data-theme="bone" aria-labelledby="about-title">
     <div class="container">
       <div class="about__grid">
         <div class="about__head">
           <p class="label" data-reveal="words">05 / About</p>
           <h2 id="about-title" class="display about__title" data-reveal="words">About</h2>
+          <p class="about__by" data-reveal="lines"><span class="about__name">Narendra R</span> <span class="label about__role">Founder of Webessy Studios</span></p>
         </div>
-
-        <!-- Swap the placeholder for the photo, a 4:5 portrait. Alt text is in WEBSITE-CONTENT.md §7:
-             <img src="images/naren.webp" width="1000" height="1250" alt="Naren, founder of Webessy Studios" loading="lazy" decoding="async"> -->
-        <figure class="about__photo reveal">
-          <div class="about__ph label">[TODO: Photo of Naren]</div>
-          <figcaption class="label about__name">Naren</figcaption>
-        </figure>
 
         <!-- each paragraph reveals on its own, as it reaches the screen: on a phone the text runs
              taller than the screen, and one reveal for all of it would play the last lines out of sight -->
@@ -632,7 +626,7 @@
           </div>
           <div class="field">
             <label for="rf-link">Link to your work</label>
-            <input id="rf-link" name="link" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" aria-describedby="rf-link-msg" data-bad="[TODO: the words when the link isn’t a web address]">
+            <input id="rf-link" name="link" type="url" inputmode="url" autocomplete="url" autocapitalize="off" spellcheck="false" aria-describedby="rf-link-msg" data-bad="Enter a web address, like yourbusiness.com.">
             <p id="rf-link-msg" class="field__msg"></p>
           </div>
           <button class="btn btn--primary rform__send" type="submit" data-sending="Sending…">Send</button>

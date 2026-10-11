@@ -247,6 +247,9 @@ html[data-nav="panel"] #nav .neon { --neon-o: 0px; }
 html.nav-in #nav { opacity: 1; }
 #navMark { height: 22px; width: auto; display: block; visibility: hidden; filter: drop-shadow(0 1px 5px rgba(0, 0, 0, .45)); }
 html.nav-done #navMark { visibility: visible; }
+/* the 0400 home link: 44px tall to tap. The padding grows the link round the logo, which
+   the nav keeps centred, so the logo doesn't move or change size (approved 11 October 2026) */
+#nav > a { padding-block: 11px; }
 #nav .links { display: flex; align-items: center; gap: 26px; font-size: 13px; letter-spacing: .04em; color: var(--muted); }
 #nav .links a:not(.cta):hover { color: var(--ink); }
 /* The call to action, "Start your project": the page's main button (.btn--primary), same type,
@@ -350,6 +353,10 @@ html.nav-done #navMark { visibility: visible; }
   margin-top: calc(clamp(8px, 3svh, 30px) - .12em);
   font: 500 13px/1.4 var(--font-body); letter-spacing: .04em;
   color: rgba(236, 234, 251, .82); text-shadow: 0 0 14px rgba(5, 6, 15, .9);
+}
+/* phones: no text under 14px (approved 11 October 2026); everything else as above */
+@media (max-width: 719.98px) {
+  .wl-kicker, .wl-sub, .wl-cue { font-size: 14px; }
 }
 .wl-arrow {
   position: relative; display: block; width: 1px; height: clamp(28px, 6svh, 56px); margin: 12px auto 0;
@@ -1218,27 +1225,24 @@ a.pin__num:hover::after { opacity: 1; }
 }
 
 /* ---------- 05 About ----------
-   A 5/7 split, mirrored: the photo on the left, the words on the right. The name under
-   the photo and the last line ("Based in Bengaluru…") share a row at the bottom, and the
-   hairline above that last line starts exactly where the photo ends: the name and the
-   line both sit 15px below it (the line's 14px padding plus its 1px rule). The one-line
+   A 5/7 split, mirrored: the label, the heading and the founder's name on the left, the
+   words on the right, the first line of the words level with the top of the heading. The
+   last line ("Based in Bengaluru…") closes the words, under a hairline. The one-line
    paragraph is set larger: it's the turn in the story. Phones and tablets stack it all:
-   label, heading, photo, name, text.
-   Nothing here pins, scrubs or sticks. The words and the photo come in once, as they
-   reach the screen (js/reveal.js, js/sections.js), and only transform and opacity move,
-   which keeps it smooth on phones. */
+   label, heading, name, text. (There was a photo on the left until 11 October 2026.)
+   Nothing here pins, scrubs or sticks. The words come in once, as they reach the screen
+   (js/reveal.js), and only transform and opacity move, which keeps it smooth on phones. */
 .about { padding-block: var(--section-pad); }
 .about__title { margin-top: 18px; }
-.about__photo { margin-top: clamp(40px, 7vh, 72px); max-width: 440px; }
-.about__photo img { display: block; width: 100%; height: auto; }
-/* stand-in until the photo arrives: the same shape, visibly marked, tinted from the text colour */
-.about__ph {
-  display: grid; place-items: center; aspect-ratio: 4 / 5; padding: 20px;
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
-  border: 1px dashed color-mix(in srgb, var(--fg) 30%, transparent);
-  text-align: center; text-transform: none; letter-spacing: .04em;
+/* the founder, under the heading: the name in Fraunces at the block-title size, the role a
+   label under it (ink 66%: 5.9:1) */
+.about__by { margin-top: clamp(28px, 5vh, 48px); }
+.about__name, .about__role { display: block; }
+.about__name {
+  font-family: var(--font-display); font-weight: 400; font-size: var(--t-h3);
+  line-height: 1.15; letter-spacing: -.015em; color: var(--fg);
 }
-.about__name { margin-top: 15px; color: var(--fg); }
+.about__role { margin-top: 10px; }
 .about__copy { margin-top: clamp(48px, 8vh, 80px); container-type: inline-size; }
 .about__copy p { text-wrap: pretty; }
 /* the turn: a line for each half. "Meanwhile the competition down the road" is 18.5 to
@@ -1269,23 +1273,15 @@ a.pin__num:hover::after { opacity: 1; }
 }
 
 @media (min-width: 960px) {
-  /* Three rows. On the right: the heading at the top, the text at the bottom of the middle
-     row, then the last line. On the left the figure shares those rows (subgrid): the photo
-     fills the first two and ends where the middle row ends, and the name sits in the third,
-     level with the last line however many lines that takes. */
+  /* Two rows on the right: the text, then the last line. The left column spans both. The
+     text starts one label line and the heading's 18px gap down, level with the heading. */
   .about__grid {
-    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: auto 1fr auto;
-    column-gap: var(--gap);
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: auto auto;
+    column-gap: var(--gap); align-items: start;
   }
-  .about__head { grid-column: 7 / -1; grid-row: 1; }
-  .about__photo {
-    grid-column: 1 / span 5; grid-row: 1 / span 3; display: grid; grid-template-rows: subgrid;
-    max-width: none; margin-top: 0;
-  }
-  .about__ph, .about__photo img { grid-row: 1 / span 2; align-self: end; }
-  .about__name { grid-row: 3; }
-  .about__copy { grid-column: 7 / -1; grid-row: 2; align-self: end; margin-block: clamp(40px, 6vh, 64px); }
-  .about__where { grid-column: 7 / -1; grid-row: 3; margin-top: 0; }
+  .about__head { grid-column: 1 / span 5; grid-row: 1 / span 2; }
+  .about__copy { grid-column: 7 / -1; grid-row: 1; margin-top: calc(var(--t-label) * 1.2 + 18px); }
+  .about__where { grid-column: 7 / -1; grid-row: 2; }
 }
 
 /* ---------- Reviews ----------
@@ -1624,15 +1620,6 @@ html.page-doc, html.page-doc body { background: var(--page); color: var(--fg); }
 }
 /* rupee amounts in Fraunces: Instrument Sans has no ₹ sign */
 .inr { font-family: var(--font-display); }
-/* Still to decide. Marked in the text, visible on purpose, so each one is easy to find
-   (search for CONFIRM) and can't go live unnoticed. Ink on bone with a 7% ink tint: 13.7:1. */
-.confirm {
-  padding: .1em .4em; color: var(--fg);
-  background: color-mix(in srgb, var(--fg) 7%, transparent);
-  border: 1px dashed color-mix(in srgb, var(--fg) 45%, transparent);
-  font-family: var(--font-mono); font-size: .875em; line-height: 1.7; /* 14px in 16px text */
-  -webkit-box-decoration-break: clone; box-decoration-break: clone;
-}
 
 /* 404: one black screen. The words sit low on the left, like the end of a section, with
    the way home under them. */
@@ -1676,8 +1663,10 @@ html.page-doc, html.page-doc body { background: var(--page); color: var(--fg); }
 #introFx .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 42%, rgba(0, 0, 0, .55) 100%); }
 #skipHint {
   position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
-  font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(223, 217, 201, .35);
+  font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(223, 217, 201, .55);
 }
+/* phones: 14px. Its colour was .35 (2.46:1) until 11 October 2026; .55 passes AA on the intro's black */
+@media (max-width: 719.98px) { #skipHint { font-size: 14px; } }
 
 /* ---------- dev readout ---------- */
 #hud { /* hidden unless the address ends in ?debug (hero.js) */

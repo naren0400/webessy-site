@@ -17,7 +17,7 @@ Explain everything to me in simple, plain English. Short sentences.
 ## Status
 - **DONE — FROZEN:** Ignition intro (`js/intro.js`), hero (`js/hero.js`, `js/logo3d.js`, `frames/`),
   nav. Only change these to fix a bug I report. Never refactor, restyle or "improve" them.
-  Four approved nav changes exist, and nothing else in the nav changes:
+  Five approved nav changes exist, and nothing else in the nav changes:
   1. Over bone and orange sections its links show at full strength, and over bone its glass is
      darker, so the links pass AA. It lives in the "section colours" block of `css/site.css`.
   2. The neon edge (see "Neon edge" under Design rules). Over bone and orange it drops its outer
@@ -28,6 +28,11 @@ Explain everything to me in simple, plain English. Short sentences.
   4. (7 October 2026) Its button reads "Start your project" and looks like the page's main
      button (15px, the same orange and ink, no glow; 40px tall to fit the pill). Hovering no
      longer turns its text light (that failed AA). The rules are in the "nav" block.
+  5. (11 October 2026) The 0400 home link is 44px tall to tap: 11px of padding above and below
+     (`#nav > a`, in the "nav" block). The nav keeps it centred, so the logo doesn't move or resize.
+  Intro and welcome fixes (11 October 2026, approved): on phones (under 720px) the welcome's two
+  small lines, "Scroll to enter" and the intro's "Scroll to skip" are 14px, and "Scroll to skip"
+  is its bone at 55% instead of 35% (4.7:1 on the intro's black, was 2.46:1). Nothing else changed.
   Hero end (7 October 2026, approved): the round "Explore" button is now the call to action,
   "Start your project" (`.btn .btn--primary`, opens WhatsApp). It keeps the class `.st-explore`,
   because `js/hero.js` shows it with the line under the statement and ends the thin line at it.
@@ -62,18 +67,21 @@ Explain everything to me in simple, plain English. Short sentences.
 - `fonts/` — self-hosted font files. Browsers keep them a year (`.htaccess`): a changed font needs a new file name.
 - `images/` — WebP for the page (the Yauvana screenshots in `images/work/` in 720/1080/1440 sizes,
   the welcome picture), plus `og-image.png` and `logo-lockup.svg` (the source of the footer logo).
-  Originals aren't kept here; git history has them. Browsers keep pictures a month.
+  Originals aren't kept here; git history has them. Browsers keep pictures a year: a changed
+  picture needs a new file name.
 - `privacy.html`, `terms.html` — the legal pages: bone, no JavaScript, styles in the "Launch pages"
   block of `css/site.css`. Their nav and footer are copies of `index.html`'s (the nav's links point
-  to `index.html#…`), so a change to either goes in all three files. `[CONFIRM: …]` marks what Naren
-  still has to decide. The privacy policy describes what the site really does: if a service, cookie,
-  analytics or form is added, update it first.
+  to `index.html#…`), so a change to either goes in all three files. Their open questions were all
+  answered on 11 October 2026 (the list is in `LEGAL-DECISIONS.md`, git-ignored). The privacy policy
+  describes what the site really does: if a service, cookie, analytics or form is added, update it first.
 - `404.html` — the server shows it for any missing address (`.htaccess`). It has `<base href="/">`,
   so its links and files work at deep addresses too.
 - `.htaccess` — sends every http:// visit to https:// (301; no HSTS yet, on purpose), the 404
   page, and answers "not found" for `.md` and `.zip` files uploaded by mistake. It also compresses
-  text files and sets caching: fonts a year, pictures (the frames too) a month; pages, styles and
-  scripts are checked with the server on every visit, so an update shows at once.
+  text files (Brotli where the server has it, gzip otherwise) and sets caching (11 October 2026):
+  pictures (the frames too) and fonts a year, styles and scripts a week, pages checked with the
+  server on every visit. So a changed CSS or JS file only shows at once with a new file name or a
+  `?v=2` on its links; otherwise returning visitors can keep the old one for up to a week.
 - `robots.txt`, `sitemap.xml` — the real pages only: home, privacy, terms.
 - `favicon.svg`, `favicon.ico`, `apple-touch-icon.png` — the 0400 digits from `webessy-logo.svg` on black.
 - `tools/set-domain.js` — the site's address (`https://webessy.com`) is written here, once. After
@@ -106,7 +114,8 @@ Explain everything to me in simple, plain English. Short sentences.
   prices, no cards, no icons. Then the comparison table "What a website usually costs".
 - **04 How it works** — the 8 steps grouped into 4 stacked sticky panels (2 steps each) that
   slide over each other as you scroll.
-- **05 About** — photo on the left, Version B copy on the right.
+- **05 About** — the heading and the founder's name ("Narendra R", "Founder of Webessy Studios")
+  on the left, Version B copy on the right. No photo (taken out 11 October 2026).
 - **Reviews** (no number, so Contact stays 06; added 3 October 2026) — full width: label, heading and the
   "Write a review" text link, then the reviews as light glass cards (name, business, review, optional photo;
   up to three in a row, stacked on phones, no carousel), built from the list in `js/reviews.js`. While the

@@ -5,9 +5,11 @@ description: Design system for the Webessy Studios site — type scale, spacing,
 
 # Webessy design system
 
-The hero, intro and nav are finished and frozen (the nav has four approved changes: its contrast
-fix in §3, the neon edge in §6, its look over the 04 panels in §3, and its "Start your project"
-button in §7; the hero's end has the same button since 7 October 2026, also in §7).
+The hero, intro and nav are finished and frozen (the nav has five approved changes: its contrast
+fix in §3, the neon edge in §6, its look over the 04 panels in §3, its "Start your project"
+button in §7, and its 0400 link's 44px tap area in §7; the hero's end has the same button since
+7 October 2026, also in §7; the intro's and the welcome's small lines are 14px on phones since
+11 October 2026, §2).
 Everything here is for sections 02 to 06 and the footer. Match what already exists in
 `css/site.css` — reuse its variables, section themes and `.glass` class.
 
@@ -45,7 +47,8 @@ one `<h1>`, with the line under it in Bodoni's real small caps — and the welco
 
 **Phones (under 720px): no text under 14px** (quality pass, 8 October 2026). That's why
 `--t-label` is 14px there; the build sheet's small mono (pin numbers, the title block, the
-Yauvana link) is 14px on phones too. Anything new follows the same rule.
+Yauvana link) is 14px on phones too, and so are the welcome's two small lines, "Scroll to enter"
+and the intro's "Scroll to skip" (approved 11 October 2026). Anything new follows the same rule.
 
 **Line breaks.** Every " — " in the HTML has a no-break space before it (`&nbsp;—`), so no line
 starts with a dash, and a number keeps its unit (`45&nbsp;days`). Paragraphs use
@@ -136,7 +139,8 @@ neon edge (as `#8E7CFF`). Blue — the hero and the neon edge only. Never as gra
 - Section padding: `clamp(96px, 14vh, 180px)` top and bottom
 - Base grid: 12 columns, gap `clamp(16px, 2vw, 28px)`
 - Vary composition: 02 is left-pinned/right-scrolling, 03 is a centred ring of four plan cards
-  (§8) and then a 7/5 split (45 days, Care), 04 is full-width stacked, 05 is a 5/7 split mirrored, Reviews is full width
+  (§8) and then a 7/5 split (45 days, Care), 04 is full-width stacked, 05 is a 5/7 split mirrored (the heading and the founder's name on the
+  left, the words on the right), Reviews is full width
   (the heading with its Write a review link at the end of the line, then a row of cards), 06 is a 7/5 split.
   No two neighbours use the same layout.
 
@@ -239,7 +243,8 @@ the email in Contact, the Yauvana link, the forms' "Message on WhatsApp") get th
 cancelled by a negative margin, worked out from their line height (`calc((45px - 1.5em) / 2)`;
 45, not 44, so rounding never leaves 43.98). A small circle (pin 5) gets a 44px `::before`.
 Links inside a sentence (the legal pages) are the one exception, as WCAG allows. The nav's
-button is 40px (approved, frozen).
+button is 40px (approved, frozen). The nav's 0400 link is 44px tall: 11px of padding round the
+22px logo, which the nav keeps centred, so the logo doesn't move (approved 11 October 2026).
 
 **Plan cards (glass)** — four: Starter, Business, Advanced, Boss. Each shows only its name, its
 starting price and one button; never a feature list or "what's included". The heading reads as
@@ -428,9 +433,9 @@ on orange), and error messages in ink — never red, which fails on orange.
 ## 9. Placeholders for missing assets
 
 Where an asset does not exist yet, render a clean placeholder box at the correct aspect ratio with
-a visible label, for example `[TODO: Photo of Naren]`. Currently missing: Naren's photo, real
-reviews (until the first one, the Reviews section shows its empty state, "Be the first to write
-a review").
+a visible label, for example `[TODO: what is missing]`. Currently missing: real reviews (until the
+first one, the Reviews section shows its empty state, "Be the first to write a review"). About
+has no photo since 11 October 2026: the founder's name, "Narendra R", sits under its heading.
 
 ## 10. Review checklist — run before saying a section is done
 
