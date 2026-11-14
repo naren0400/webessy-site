@@ -1,0 +1,56 @@
+{# Everything inside <head>, for every page. Each page gives its own values in its front matter:
+     title, description, themeColor   always
+     ogTitle, ogDescription           only when the link preview should say something else
+     canonical: false                 a page with no address of its own (the 404): no canonical, no link preview
+     noindex: true                    keep the page out of search engines
+     baseAtRoot: true                 read every link and file from the top of the site (the 404)
+     headExtra                        extra lines for this page only, added last
+   The site's address comes from tools/set-domain.js (through _data/site.js). -#}
+<meta charset="utf-8">
+{% if baseAtRoot %}
+<!-- The server shows this page at any address that doesn't exist, even a deep one like
+     /old/page/, so every link and file below is read from the top of the site (the base).
+     Opened from disk there is no top of the site, so there the base is taken away again.
+     (From disk the browser has already asked once for /css/site.css at the top of the drive,
+     so the console shows one "file not found" line. Online there is no such line.) -->
+<base href="/">
+<script>if(location.protocol==='file:')document.querySelector('base').remove();</script>
+{% endif %}
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{ title }}</title>
+<meta name="description" content="{{ description }}">
+{% if noindex %}
+<meta name="robots" content="noindex">
+{% endif %}
+{% if canonical != false %}
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
+{% endif %}
+<meta name="theme-color" content="{{ themeColor }}">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+{% if canonical != false %}
+<!-- link previews (WhatsApp, Facebook, LinkedIn, X). The site's address is set in tools/set-domain.js -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Webessy Studios">
+<meta property="og:locale" content="en_IN">
+<meta property="og:title" content="{{ ogTitle or title }}">
+<meta property="og:description" content="{{ ogDescription or description }}">
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+<meta property="og:image" content="{{ site.url }}/images/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Webessy Studios logo and the words “Make people choose you.” beside a glowing window in a dark room">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ ogTitle or title }}">
+<meta name="twitter:description" content="{{ ogDescription or description }}">
+<meta name="twitter:image" content="{{ site.url }}/images/og-image.png">
+<meta name="twitter:image:alt" content="The Webessy Studios logo and the words “Make people choose you.” beside a glowing window in a dark room">
+{% endif %}
+<!-- font preload only on a real web address; opened from disk (file://) Chrome refuses it with a CORS error -->
+<script>if(location.protocol!=='file:'){var l=document.createElement('link');l.rel='preload';l.as='font';l.type='font/woff2';l.crossOrigin='anonymous';l.href='fonts/fraunces-opsz-normal.woff2';document.head.appendChild(l);}</script>
+<link rel="stylesheet" href="css/site.css">
+{% if headExtra %}
+{{ headExtra | safe }}
+{% endif %}

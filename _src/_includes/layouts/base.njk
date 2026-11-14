@@ -1,0 +1,13 @@
+{# The frame every page sits in. A page's own file (index.njk, privacy.njk ...) is its body.
+   htmlClass and htmlTheme come from the page's front matter. -#}
+<!DOCTYPE html>
+<html lang="en" class="{{ htmlClass }}"{% if htmlTheme %} data-theme="{{ htmlTheme }}"{% endif %}>
+<head>
+{% include "head.njk" %}
+</head>
+<body>
+
+{{ content | safe -}}
+{% include "analytics.njk" %}
+</body>
+</html>
