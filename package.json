@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "eleventy",
+    "start": "eleventy --serve",
+    "clean": "rm -rf _site"
   },
   "repository": {
     "type": "git",
@@ -19,5 +21,6 @@
   "homepage": "https://github.com/naren0400/webessy-site#readme",
   "devDependencies": {
     "@11ty/eleventy": "^3.1.8"
-  }
+  },
+  "private": true
 }
