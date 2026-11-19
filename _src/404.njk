@@ -1,0 +1,30 @@
+---
+layout: layouts/base.njk
+permalink: 404.html
+htmlClass: nav-in nav-done page-doc
+htmlTheme: black
+title: "Page not found | Webessy Studios"
+description: "This page does not exist. Go back to the Webessy Studios home page."
+themeColor: "#05060F"
+baseAtRoot: true
+noindex: true
+canonical: false
+nav:
+  home: index.html
+  sections: index.html
+---
+<!-- the main page's nav (index.html), its links pointing back there -->
+{% include "nav.njk" %}
+
+<!-- 404 — one black screen: the words low on the left, the way home under them, as a text link
+     (the one button style is for "Start your project", in the nav). No canonical address and
+     no link preview: this page has no address of its own. -->
+<main class="lost" data-theme="black">
+  <div class="container">
+    <p class="label">404</p>
+    <h1 class="display lost__title">Page not <em>found</em></h1>
+    <p class="lost__text">The link may be old, or the address may have a typo.</p>
+    <p class="lost__home"><a class="link" href="index.html">Back to home</a></p>
+  </div>
+</main>
+

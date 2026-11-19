@@ -1,0 +1,26 @@
+{
+  "name": "webessy-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "eleventy",
+    "start": "eleventy --serve",
+    "clean": "rm -rf _site"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naren0400/webessy-site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/naren0400/webessy-site/issues"
+  },
+  "homepage": "https://github.com/naren0400/webessy-site#readme",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.8"
+  },
+  "private": true
+}
